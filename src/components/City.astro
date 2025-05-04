@@ -1,0 +1,2079 @@
+---
+// Cityコンポーネントのプロパティを定義
+export interface Props {
+  currentTown?: string;
+}
+
+// デフォルト値を持つプロパティを展開
+const { currentTown = 'profile' } = Astro.props;
+
+// Worksタウン用の会社リスト（ポイント名に 'Co.' を付加）
+const workNames: string[] = [
+  'Astro Portfolio', 'Chat GPT App', 'Weather Dashboard', 'Task Manager',
+  'Music Player', 'Food Delivery', 'E-commerce Shop', 'Fitness Tracker',
+  'Travel Journal', 'Photo Gallery', 'Finance Manager', 'Recipe Book'
+];
+---
+
+<div class="city">
+  <header class="city-header">
+    <h1 class="city-title">TATSUYA CITY</h1>
+  </header>
+  <div class="city-view" id="cityView">
+    <div class="city-grid" id="cityGrid">
+      <!-- グリッド（地面） -->
+      <div class="ground"></div>
+      
+      <!-- メインストリート（中央の大きな道路） -->
+      <div class="road main-road" style="display: none;"></div>
+      
+      <!-- 交差道路 -->
+      <div class="road cross-road-1" style="display: none;"></div>
+      <div class="road cross-road-2" style="display: none;"></div>
+      
+      <!-- 左側の建物列 -->
+      <div class="building building-tall left-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      <div class="building left-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      <div class="building building-tall left-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front ruins"></div>
+        <div class="building-side ruins"></div>
+      </div>
+      <div class="building megastructure left-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front ruins"></div>
+        <div class="building-side ruins"></div>
+      </div>
+      <div class="building left-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      <div class="building building-small left-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      
+      <!-- 右側の建物列 -->
+      <div class="building building-tall right-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      <div class="building right-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      <div class="building building-tall right-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front ruins"></div>
+        <div class="building-side ruins"></div>
+      </div>
+      <div class="building megastructure right-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front ruins"></div>
+        <div class="building-side ruins"></div>
+      </div>
+      <div class="building right-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      <div class="building building-small right-row" style="display: none;">
+        <div class="building-top"></div>
+        <div class="building-front"></div>
+        <div class="building-side"></div>
+      </div>
+      
+      <!-- オブジェクト -->
+      <div class="object debris debris-1" style="display: none;"></div>
+      <div class="object debris debris-2" style="display: none;"></div>
+      <div class="object wild-plant plant-1" style="display: none;"></div>
+      <div class="object wild-plant plant-2" style="display: none;"></div>
+      <div class="object car rusted-car" style="display: none;"></div>
+
+      <!-- 空間に吹き出しポイントを追加 -->
+      <div class={`point-bubble point-1 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Astro Portfolio">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Astro Portfolio</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-2 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Chat GPT App">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Chat GPT App</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-3 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Weather Dashboard">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Weather Dashboard</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-4 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Task Manager">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Task Manager</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-5 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Music Player">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Music Player</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-6 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Food Delivery">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Food Delivery</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-7 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="E-commerce Shop">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">E-commerce Shop</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-8 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Fitness Tracker">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Fitness Tracker</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-9 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Travel Journal">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Travel Journal</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-10 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Photo Gallery">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Photo Gallery</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-11 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Finance Manager">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Finance Manager</div>
+          </>
+        )}
+      </div>
+      <div class={`point-bubble point-12 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Recipe Book">
+        {currentTown === 'works' && (
+          <>
+            <div class="work-image"></div>
+            <div class="work-title">Recipe Book</div>
+          </>
+        )}
+      </div>
+    </div>
+    
+    <!-- 人を配置する -->
+    <div class="person" id="mainPerson">
+      <div class="person-body">
+        <div class="person-head"></div>
+        <div class="person-torso"></div>
+        <div class="person-leg left"></div>
+        <div class="person-leg right"></div>
+        <div class="person-arm left"></div>
+        <div class="person-arm right"></div>
+      </div>
+      <div class="person-shadow"></div>
+    </div>
+    
+    <!-- 操作コントロール -->
+    <div class="controls">
+      <button id="w-btn">W</button>
+      <div class="controls-row">
+        <button id="a-btn">A</button>
+        <button id="s-btn">S</button>
+        <button id="d-btn">D</button>
+      </div>
+    </div>
+    
+    <!-- テーマ切替ボタン -->
+    <div class="theme-switcher">
+      <button id="theme-toggle" aria-label="テーマ切替">
+        <div class="theme-icon light">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 3V5M12 19V21M5 12H3M21 12H19M18.364 5.636L16.95 7.05M7.05 16.95L5.636 18.364M16.95 16.95L18.364 18.364M7.05 7.05L5.636 5.636" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="theme-icon dark">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 12.79C20.8427 14.4922 20.2039 16.1144 19.1582 17.4668C18.1126 18.8192 16.7035 19.8458 15.0957 20.4265C13.4879 21.0073 11.7479 21.1181 10.0794 20.7461C8.41093 20.3741 6.88202 19.5345 5.67425 18.3267C4.46649 17.119 3.62688 15.5901 3.2549 13.9216C2.88293 12.2531 2.99374 10.5132 3.57451 8.90536C4.15528 7.29748 5.18191 5.88837 6.53433 4.84275C7.88674 3.79713 9.50897 3.15832 11.211 3C10.2508 4.34827 9.79869 5.9867 9.94571 7.62017C10.0927 9.25364 10.8259 10.7803 12.0187 11.9162C13.2115 13.0521 14.787 13.7072 16.4132 13.7692C18.0394 13.8312 19.6522 13.2961 21 12.29" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+      </button>
+      
+      <!-- 位置リセットボタン -->
+      <button id="reset-position" aria-label="位置リセット">
+        <div class="reset-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 10.8406 21.7701 9.73493 21.3486 8.72022" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4"/>
+          </svg>
+        </div>
+      </button>
+    </div>
+    
+    {currentTown === 'works' && (
+      <div class="company-list">
+        <h3>company list</h3>
+        <ul>
+          {workNames.map(name => (
+            <li class="company-item" onclick={`showWorkInfo('${name}')`}>
+              {name} Co.
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+    
+    <!-- タウン名リスト -->
+    <div class="town-list">
+      <ul>
+        <li class={currentTown === 'profile' ? 'active' : ''}>
+          <span class="bullet">{currentTown === 'profile' ? '•' : ''}</span> 
+          <a href="/profile">Profile town</a>
+        </li>
+        <li class={currentTown === 'works' ? 'active' : ''}>
+          <span class={currentTown === 'works' ? 'bullet' : 'placeholder'}>{currentTown === 'works' ? '•' : ''}</span>
+          <a href="/works">Works town</a>
+        </li>
+        <li class={currentTown === 'blogs' ? 'active' : ''}>
+          <span class={currentTown === 'blogs' ? 'bullet' : 'placeholder'}>{currentTown === 'blogs' ? '•' : ''}</span>
+          <a href="/blogs">Blogs town</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- モーダルコンポーネント -->
+<div class="building-modal" id="buildingModal">
+  <div class="modal-backdrop"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle">Building Info</h2>
+      <button class="close-button" aria-label="Close modal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div id="modalContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- テーマ切替スクリプト - より直接的なアプローチ -->
+<script is:inline>
+document.querySelector('#theme-toggle')?.addEventListener('click', function() {
+  const html = document.documentElement;
+  const isDark = html.classList.toggle('dark-theme');
+  this.classList.toggle('dark-active', isDark);
+  localStorage.setItem('cityTheme', isDark ? 'dark' : 'light');
+  console.log('Theme toggled to:', isDark ? 'dark' : 'light');
+});
+
+// 保存されたテーマを適用
+if (localStorage.getItem('cityTheme') === 'dark') {
+  document.documentElement.classList.add('dark-theme');
+  document.querySelector('#theme-toggle')?.classList.add('dark-active');
+}
+
+// インデックスページにアクセスした場合、プロファイルページにリダイレクト
+if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+  window.location.href = '/profile';
+}
+</script>
+
+<!-- メインスクリプト -->
+<script>
+  // DOM要素
+  let cityView: HTMLElement | null = null;
+  let cityGrid: HTMLElement | null = null;
+  let person: HTMLElement | null = null;
+  let buildingModal: HTMLElement | null = null;
+  let modalTitle: HTMLElement | null = null;
+  let modalContent: HTMLElement | null = null;
+  
+  // 建物データ
+  const buildingData = [
+    { id: 'building-1', name: 'セントラルタワー', type: 'megastructure', description: '都市の中心に位置する最も高い超高層ビル。多くの企業のオフィスや高級住居があります。' },
+    { id: 'building-2', name: 'テクノロジーセンター', type: 'tall', description: '最先端技術の研究開発が行われるハイテクビル。革新的な発明の源泉です。' },
+    { id: 'building-3', name: 'ルイン・プラザ', type: 'ruins', description: '過去の栄光を偲ばせる廃墟ビル。かつては賑わいのあった商業施設でした。' },
+    { id: 'building-4', name: 'メガストラクチャーX', type: 'megastructure', description: '自己完結型の巨大複合施設。住居、仕事、娯楽のすべてを内包しています。' },
+    { id: 'building-5', name: 'コーポレートビル', type: 'standard', description: '中小企業のオフィスが集まるビジネスの中心地。多くのスタートアップ企業が入居しています。' },
+    { id: 'building-6', name: 'マイクロアパートメント', type: 'small', description: '小型だが効率的に設計された住居ビル。若い世代に人気があります。' },
+    { id: 'building-7', name: 'グランドタワー', type: 'tall', description: '洗練されたデザインの高層オフィスビル。ガラスとスチールの美しい外観が特徴です。' },
+    { id: 'building-8', name: 'ミッドタウンビル', type: 'standard', description: '伝統的な様式を持つ中層ビル。長い歴史を持つ老舗企業が多く入居しています。' },
+    { id: 'building-9', name: '崩壊コンプレックス', type: 'ruins', description: '地震で崩壊した古い複合施設。都市の歴史的悲劇を物語る遺構です。' },
+    { id: 'building-10', name: 'ネオ・コロッサス', type: 'megastructure', description: '未来的デザインの新世代メガストラクチャー。自家発電システムを備えた環境配慮型建築です。' },
+    { id: 'building-11', name: 'コンパクトモール', type: 'standard', description: '効率的レイアウトの商業施設。日常の買い物に便利なショップが揃っています。' },
+    { id: 'building-12', name: 'ミニハウジング', type: 'small', description: '小さいながらも機能的な住居ビル。最小限の空間で最大限の快適さを提供します。' }
+  ];
+  
+  // 状態変数
+  let personX = 50; // 初期X位置（%）
+  let personY = 70; // 初期Y位置（%）
+  const speed = 0.8; // 移動速度
+  let cameraX = 0;
+  let cameraY = 0;
+  let isMoving = false;
+  let walkCycle = 0;
+  
+  // DOMが読み込まれた後に実行
+  document.addEventListener('DOMContentLoaded', () => {
+    cityView = document.getElementById('cityView');
+    cityGrid = document.getElementById('cityGrid');
+    person = document.getElementById('mainPerson');
+    buildingModal = document.getElementById('buildingModal');
+    modalTitle = document.getElementById('modalTitle');
+    modalContent = document.getElementById('modalContent');
+    
+    // 建物の配置処理
+    setupBuildings();
+    setupObjects();
+    
+    // 吹き出しポイントのセットアップ
+    setupPointBubbles();
+    
+    // 初期位置を設定
+    updatePosition();
+    
+    // キーボード操作
+    setupKeyboardControls();
+    
+    // ボタン操作
+    setupButtonControls();
+    
+    // タッチイベント
+    setupTouchControls();
+    
+    // モーダル関連のイベント設定
+    setupModalEvents();
+    
+    // タウン切り替えのイベント設定
+    setupTownSwitching();
+    
+    // 位置リセットボタンのイベントリスナー
+    setupResetPositionButton();
+  });
+  
+  // ポイントとの衝突判定関連のコードを削除
+  
+  // カメラと人の位置の更新
+  function updatePosition() {
+    if (person) {
+      // 人の位置を更新
+      person.style.left = `${personX}%`;
+      person.style.top = `${personY}%`;
+      
+      // 三人称視点のカメラ位置を計算（人を中心に少し後ろから斜め上を見る）
+      cameraX = personX - 50;
+      cameraY = personY - 50 + 15; // 少し下から見上げる感じに
+      
+      // 視点の更新（都市グリッドを動かす）
+      if (cityGrid) {
+        cityGrid.style.transform = `translate(${-cameraX}%, ${-cameraY}%)`;
+      }
+    }
+  }
+  
+  // キーボード操作のセットアップ
+  function setupKeyboardControls() {
+    document.addEventListener('keydown', (e: KeyboardEvent) => {
+      isMoving = true;
+      const oldX = personX;
+      const oldY = personY;
+      
+      switch (e.key.toLowerCase()) {
+        case 'w':
+          personY = Math.max(10, personY - speed);
+          break;
+        case 'a':
+          personX = Math.max(10, personX - speed);
+          break;
+        case 's':
+          personY = Math.min(90, personY + speed);
+          break;
+        case 'd':
+          personX = Math.min(90, personX + speed);
+          break;
+      }
+      
+      // 位置が変わった場合のみ更新
+      if (oldX !== personX || oldY !== personY) {
+        updatePosition();
+      }
+    });
+    
+    document.addEventListener('keyup', () => {
+      isMoving = false;
+    });
+  }
+  
+  // ボタン操作のセットアップ
+  function setupButtonControls() {
+    document.getElementById('w-btn')?.addEventListener('mousedown', () => {
+      isMoving = true;
+      personY = Math.max(10, personY - speed);
+      updatePosition();
+    });
+    
+    document.getElementById('a-btn')?.addEventListener('mousedown', () => {
+      isMoving = true;
+      personX = Math.max(10, personX - speed);
+      updatePosition();
+    });
+    
+    document.getElementById('s-btn')?.addEventListener('mousedown', () => {
+      isMoving = true;
+      personY = Math.min(90, personY + speed);
+      updatePosition();
+    });
+    
+    document.getElementById('d-btn')?.addEventListener('mousedown', () => {
+      isMoving = true;
+      personX = Math.min(90, personX + speed);
+      updatePosition();
+    });
+    
+    // ボタンから指が離れたときの処理
+    document.querySelectorAll('.controls button').forEach(button => {
+      button.addEventListener('mouseup', () => {
+        isMoving = false;
+      });
+      button.addEventListener('mouseleave', () => {
+        isMoving = false;
+      });
+    });
+  }
+  
+  // タッチ操作のセットアップ
+  function setupTouchControls() {
+    let touchStartX = 0;
+    let touchStartY = 0;
+    
+    if (cityView) {
+      cityView.addEventListener('touchstart', (e: TouchEvent) => {
+        isMoving = true;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      });
+      
+      cityView.addEventListener('touchmove', (e: TouchEvent) => {
+        e.preventDefault();
+        const touchX = e.touches[0].clientX;
+        const touchY = e.touches[0].clientY;
+        
+        const diffX = touchX - touchStartX;
+        const diffY = touchY - touchStartY;
+        
+        // 移動量が十分大きい場合のみ処理
+        if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+          if (Math.abs(diffX) > Math.abs(diffY)) {
+            // 横方向の移動
+            if (diffX > 0) {
+              personX = Math.min(90, personX + speed);
+            } else {
+              personX = Math.max(10, personX - speed);
+            }
+          } else {
+            // 縦方向の移動
+            if (diffY > 0) {
+              personY = Math.min(90, personY + speed);
+            } else {
+              personY = Math.max(10, personY - speed);
+            }
+          }
+          
+          touchStartX = touchX;
+          touchStartY = touchY;
+          updatePosition();
+        }
+      });
+      
+      cityView.addEventListener('touchend', () => {
+        isMoving = false;
+      });
+    }
+  }
+  
+  // 歩行アニメーション関数
+  function animateWalk() {
+    if (isMoving) {
+      walkCycle = (walkCycle + 1) % 20;
+      const leftLeg = document.querySelector('.person-leg.left') as HTMLElement | null;
+      const rightLeg = document.querySelector('.person-leg.right') as HTMLElement | null;
+      const leftArm = document.querySelector('.person-arm.left') as HTMLElement | null;
+      const rightArm = document.querySelector('.person-arm.right') as HTMLElement | null;
+      
+      if (leftLeg && rightLeg && leftArm && rightArm) {
+        // 脚のアニメーション
+        if (walkCycle < 10) {
+          leftLeg.style.transform = 'rotate(-15deg)';
+          rightLeg.style.transform = 'rotate(15deg)';
+          leftArm.style.transform = 'rotate(15deg)';
+          rightArm.style.transform = 'rotate(-15deg)';
+        } else {
+          leftLeg.style.transform = 'rotate(15deg)';
+          rightLeg.style.transform = 'rotate(-15deg)';
+          leftArm.style.transform = 'rotate(-15deg)';
+          rightArm.style.transform = 'rotate(15deg)';
+        }
+      }
+    } else {
+      // 止まっているときは直立
+      const leftLeg = document.querySelector('.person-leg.left') as HTMLElement | null;
+      const rightLeg = document.querySelector('.person-leg.right') as HTMLElement | null;
+      const leftArm = document.querySelector('.person-arm.left') as HTMLElement | null;
+      const rightArm = document.querySelector('.person-arm.right') as HTMLElement | null;
+      
+      if (leftLeg && rightLeg && leftArm && rightArm) {
+        leftLeg.style.transform = 'rotate(0)';
+        rightLeg.style.transform = 'rotate(0)';
+        leftArm.style.transform = 'rotate(0)';
+        rightArm.style.transform = 'rotate(0)';
+      }
+    }
+  }
+  
+  // アニメーションループ
+  setInterval(animateWalk, 100);
+  
+  // モーダルイベントの設定
+  function setupModalEvents() {
+    // モーダルを閉じるボタンのイベント
+    const closeButton = document.querySelector('.close-button');
+    closeButton?.addEventListener('click', () => {
+      closeModal();
+    });
+    
+    // モーダル外クリックで閉じる
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('buildingModal');
+      const backdrop = document.querySelector('.modal-backdrop');
+      if (modal && (e.target === modal || e.target === backdrop)) {
+        closeModal();
+      }
+    });
+    
+    // ESCキーでモーダルを閉じる
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+      }
+    });
+  }
+  
+  // モーダルを閉じる関数
+  function closeModal() {
+    const modal = document.getElementById('buildingModal');
+    if (modal) {
+      modal.classList.remove('active');
+      
+      // アニメーション完了後に非表示
+      setTimeout(() => {
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }, 300);
+    }
+  }
+  
+  // 建物情報を表示する関数
+  function showBuildingInfo(buildingId: string) {
+    const building = buildingData.find(b => b.id === buildingId);
+    const modal = document.getElementById('buildingModal');
+    
+    if (building && modalTitle && modalContent && modal) {
+      modalTitle.textContent = building.name;
+      
+      // 建物の詳細情報をセット
+      modalContent.innerHTML = `
+        <div class="building-type">${getBuildingTypeText(building.type)}</div>
+        <p class="building-description">${building.description}</p>
+      `;
+      
+      // モーダルを表示（アニメーションのためにactive追加）
+      modal.style.display = 'flex';
+      
+      // フォーカストラップのために必要
+      setTimeout(() => {
+        modal?.classList.add('active');
+      }, 10);
+    } else {
+      console.error('建物情報が見つかりません:', buildingId);
+    }
+  }
+  
+  // 建物タイプのテキストを取得
+  function getBuildingTypeText(type: string): string {
+    switch (type) {
+      case 'megastructure':
+        return '超高層複合ビル';
+      case 'tall':
+        return '高層ビル';
+      case 'standard':
+        return '標準ビル';
+      case 'small':
+        return '小型建築';
+      case 'ruins':
+        return '廃墟';
+      default:
+        return '建築物';
+    }
+  }
+
+  // ポイントをクリックしたときの処理を追加
+  function setupPointBubbles() {
+    const points = document.querySelectorAll('.point-bubble');
+    const activeTownElement = document.querySelector('.town-list li.active a');
+    const currentTown = activeTownElement?.textContent?.trim().toLowerCase() || 'profile';
+    
+    points.forEach((point, index) => {
+      // ポイントにIDを設定
+      point.setAttribute('id', `point-${index + 1}`);
+      point.classList.add('interactive');
+      
+      // Works townの場合は作品情報を表示
+      if (currentTown.includes('works')) {
+        const workName = point.getAttribute('data-work-name') || '';
+        
+        point.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showWorkInfo(workName);
+        });
+      } else {
+        // それ以外のタウンでは建物情報と同じデータを利用
+        point.addEventListener('click', (e) => {
+          e.stopPropagation();
+          showBuildingInfo(`building-${index + 1}`);
+        });
+      }
+    });
+  }
+
+  // 作品情報を表示する関数
+  function showWorkInfo(workName: string) {
+    if (!workName || !buildingModal || !modalTitle || !modalContent) return;
+    
+    modalTitle.textContent = workName;
+    
+    // 作品の詳細情報（サンプル）
+    const workDescriptions: Record<string, string> = {
+      'Astro Portfolio': 'Astroを活用した個人ポートフォリオサイト。高速で軽量なUXを提供します。',
+      'Chat GPT App': 'GPTを活用したチャットアプリケーション。自然な会話体験を実現しました。',
+      'Weather Dashboard': '世界各地の天気情報をリアルタイムで表示するダッシュボード。',
+      'Task Manager': 'シンプルで使いやすいタスク管理アプリ。生産性向上をサポートします。',
+      'Music Player': '洗練されたUIのミュージックプレーヤー。多様なフォーマットに対応。',
+      'Food Delivery': '食事の配達サービスのウェブアプリ。注文からデリバリーまでスムーズに。',
+      'E-commerce Shop': 'フルスタックのEコマースサイト。決済からユーザー管理まで完備。',
+      'Fitness Tracker': 'フィットネス活動を記録・分析するためのトラッカー。目標設定も可能。',
+      'Travel Journal': '旅行体験を記録・共有するためのジャーナルアプリ。位置情報も統合。',
+      'Photo Gallery': '高パフォーマンスの写真ギャラリー。画像の整理と共有が簡単にできます。',
+      'Finance Manager': '個人の財務を管理するためのツール。予算設定と支出追跡機能を搭載。',
+      'Recipe Book': 'お気に入りのレシピを保存・共有できるレシピブック。検索機能も充実。'
+    };
+    
+    // 作品の種類（サンプル）
+    const workTypes: Record<string, string> = {
+      'Astro Portfolio': 'ウェブサイト',
+      'Chat GPT App': 'AIアプリケーション',
+      'Weather Dashboard': 'データビジュアライゼーション',
+      'Task Manager': '生産性アプリ',
+      'Music Player': 'メディアアプリ',
+      'Food Delivery': 'サービスアプリ',
+      'E-commerce Shop': 'Eコマース',
+      'Fitness Tracker': 'ヘルスケア',
+      'Travel Journal': 'ライフスタイル',
+      'Photo Gallery': 'メディア管理',
+      'Finance Manager': '金融ツール',
+      'Recipe Book': 'ライフスタイル'
+    };
+    
+    // 作品の詳細情報をセット
+    modalContent.innerHTML = `
+      <div class="work-type">${workTypes[workName] || 'ウェブアプリケーション'}</div>
+      <p class="work-description">${workDescriptions[workName] || 'この作品の詳細情報は準備中です。'}</p>
+      <div class="work-details">
+        <a href="#" class="work-link">詳細を見る</a>
+      </div>
+    `;
+    
+    // モーダルを表示（アニメーションのためにactive追加）
+    buildingModal.style.display = 'flex';
+    
+    // フォーカストラップのために必要
+    setTimeout(() => {
+      buildingModal?.classList.add('active');
+    }, 10);
+  }
+
+  // タウンを切り替える機能
+  function setupTownSwitching() {
+    const townLinks = document.querySelectorAll('.town-list a');
+    
+    townLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        if (href) {
+          // ページ遷移前のトランジションアニメーション
+          document.body.classList.add('page-transition');
+          
+          // タウン切り替えの視覚効果
+          if (cityView) {
+            cityView.style.opacity = '0';
+            cityView.style.transform = 'scale(0.95)';
+          }
+          
+          // 少し遅延してから実際のページ遷移
+          setTimeout(() => {
+            window.location.href = href;
+          }, 300);
+          
+          e.preventDefault();
+        }
+      });
+    });
+  }
+  
+  // 位置リセットボタンの設定
+  function setupResetPositionButton() {
+    const resetButton = document.getElementById('reset-position');
+    resetButton?.addEventListener('click', function() {
+      // グローバル変数を初期位置に戻す
+      personX = 50; // 初期X位置（%）
+      personY = 70; // 初期Y位置（%）
+      
+      // カメラを初期位置に戻す
+      cameraX = 0;
+      cameraY = 0;
+      
+      // 位置を更新
+      updatePosition();
+      console.log('User position reset to initial coordinates');
+    });
+  }
+  
+  // 建物の位置をランダムに設定する関数
+  function setupBuildings() {
+    const buildings = document.querySelectorAll('.building');
+    buildings.forEach((building, index) => {
+      // 建物にIDを設定
+      building.setAttribute('id', `building-${index + 1}`);
+      building.classList.add('interactive');
+      
+      // 建物の種類を判定
+      const isMegastructure = building.classList.contains('megastructure');
+      const isLeftSide = building.classList.contains('left-row');
+      const isRightSide = building.classList.contains('right-row');
+      const isRuined = building.classList.contains('ruined-building') || building.querySelector('.ruins');
+      
+      // 左側の建物の場合
+      if (isLeftSide) {
+        // 左側の建物番号を取得（同じクラスの何番目か）
+        const leftBuildings = document.querySelectorAll('.left-row');
+        const leftIndex = Array.from(leftBuildings).indexOf(building);
+        
+        // 一列に整然と並べる - 道路との間隔を調整
+        let left = 28; // 道路からの距離をさらに離す
+        let top = 15 + (leftIndex * 25); // 間隔をさらに広げる
+        
+        // 建物のスタイル設定
+        const buildingEl = building as HTMLElement;
+        buildingEl.style.left = `${left}%`;
+        buildingEl.style.top = `${top}%`;
+        buildingEl.style.zIndex = `${20 - leftIndex}`; // z-indexの値を上げる
+        
+        // 各建物を少しずつずらして配置
+        const offsetX = leftIndex % 2 === 0 ? -2 : 0;
+        buildingEl.style.transform = `translateX(${offsetX}%)`;
+      }
+      // 右側の建物の場合
+      else if (isRightSide) {
+        // 右側の建物番号を取得
+        const rightBuildings = document.querySelectorAll('.right-row');
+        const rightIndex = Array.from(rightBuildings).indexOf(building);
+        
+        // 一列に整然と並べる - 道路との間隔を調整
+        let left = 66; // 道路からの距離をさらに離す
+        let top = 15 + (rightIndex * 25); // 間隔をさらに広げる
+        
+        // 建物のスタイル設定
+        const buildingEl = building as HTMLElement;
+        buildingEl.style.left = `${left}%`;
+        buildingEl.style.top = `${top}%`;
+        buildingEl.style.zIndex = `${20 - rightIndex}`; // z-indexの値を上げる
+        
+        // 各建物を少しずつずらして配置
+        const offsetX = rightIndex % 2 === 0 ? 2 : 0;
+        buildingEl.style.transform = `translateX(${offsetX}%)`;
+      }
+      
+      // 建物の高さを均一に設定
+      let height;
+      
+      if (isMegastructure) {
+        height = 400; // 巨大建築物の高さを少し抑える
+      } else if (building.classList.contains('building-tall')) {
+        height = 280; // 高いビルの高さを少し抑える
+      } else if (building.classList.contains('building-small')) {
+        height = 110;  // 小さいビルも少し抑える
+      } else if (isRuined) {
+        height = 180; // 崩壊した建物
+      } else {
+        height = 160; // 標準ビル
+      }
+      
+      // 建物の高さを設定
+      const buildingEl = building as HTMLElement;
+      buildingEl.style.height = `${height}px`;
+      
+      // 幅を設定
+      if (isMegastructure) {
+        // 巨大建築物は幅も大きく
+        buildingEl.style.width = `120px`;
+      } else if (building.classList.contains('building-wide')) {
+        buildingEl.style.width = `100px`;
+      } else if (building.classList.contains('building-small')) {
+        buildingEl.style.width = `50px`;
+      } else {
+        buildingEl.style.width = `70px`;
+      }
+      
+      // 廃墟の場合は傾きを加える
+      const ruins = building.querySelector('.ruins');
+      if (isRuined || ruins) {
+        const tiltDegree = (Math.random() * 5) - 2.5;
+        const currentTransform = buildingEl.style.transform || '';
+        buildingEl.style.transform = `${currentTransform} rotateZ(${tiltDegree}deg)`;
+      }
+      
+      // クリックイベントを追加
+      buildingEl.addEventListener('click', (e) => {
+        e.stopPropagation(); // イベントの伝播を停止
+        showBuildingInfo(buildingEl.id);
+      });
+    });
+  }
+  
+  // その他のオブジェクトの配置
+  function setupObjects() {
+    // 追加のオブジェクトの配置
+    const objects = document.querySelectorAll('.object:not(.debris):not(.wild-plant)');
+    objects.forEach((object) => {
+      const x = 10 + Math.random() * 80;
+      const y = 10 + Math.random() * 80;
+      
+      const objectEl = object as HTMLElement;
+      objectEl.style.left = `${x}%`;
+      objectEl.style.top = `${y}%`;
+      
+      // 回転をランダムに設定
+      if (object.classList.contains('car')) {
+        const rotation = Math.random() * 360;
+        objectEl.style.transform = `rotateZ(${rotation}deg)`;
+      }
+    });
+    
+    // 廃棄物の配置
+    const debris = document.querySelectorAll('.debris');
+    debris.forEach((item) => {
+      const x = 20 + Math.random() * 60;
+      const y = 20 + Math.random() * 60;
+      
+      const debrisEl = item as HTMLElement;
+      debrisEl.style.left = `${x}%`;
+      debrisEl.style.top = `${y}%`;
+      
+      const rotation = Math.random() * 360;
+      debrisEl.style.transform = `rotateZ(${rotation}deg)`;
+    });
+    
+    // 野生植物の配置
+    const plants = document.querySelectorAll('.wild-plant');
+    plants.forEach((plant) => {
+      const x = 10 + Math.random() * 80;
+      const y = 10 + Math.random() * 80;
+      
+      const plantEl = plant as HTMLElement;
+      plantEl.style.left = `${x}%`;
+      plantEl.style.top = `${y}%`;
+      
+      const scale = 0.8 + Math.random() * 0.4;
+      plantEl.style.transform = `scale(${scale})`;
+    });
+  }
+</script>
+
+<style>
+  /* ルート要素でテーマ変数を定義 */
+  :root {
+    /* ライトテーマ（デフォルト） */
+    --bg-gradient-start: #e8e8e8;
+    --bg-gradient-end: #d0d0d0;
+    --ground-color: #e0e0e0;
+    --ground-line-color: rgba(180, 180, 180, 0.3);
+    --ground-shadow: rgba(0,0,0,0.1);
+    --building-front: #e5e5e5;
+    --building-border: #d8d8d8;
+    --building-side: #d8d8d8;
+    --building-top: #f0f0f0;
+    --ruins-color: #d5d5d5;
+    --ruins-detail: rgba(150, 150, 150, 0.2);
+    --road-color: #c5c5c5;
+    --road-line: rgba(255, 255, 255, 0.8);
+    --debris-color: #c0c0c0;
+    --plant-color: #a8b8a8;
+    --car-color: #b5b5b5;
+    --person-color: #909090;
+    --text-color: #333;
+    --controls-bg: rgba(220, 220, 220, 0.8);
+    --panel-bg: rgba(240, 240, 240, 0.8);
+  }
+  
+  /* ダークテーマ */
+  html.dark-theme {
+    --bg-gradient-start: #a3a3a3;
+    --bg-gradient-end: #5a5a5a;
+    --ground-color: #505050;
+    --ground-line-color: rgba(100, 100, 100, 0.3);
+    --ground-shadow: rgba(0,0,0,0.2);
+    --building-front: #5a5a5a;
+    --building-border: #4a4a4a;
+    --building-side: #4d4d4d;
+    --building-top: #6a6a6a;
+    --ruins-color: #4a4a4a;
+    --ruins-detail: rgba(30, 30, 30, 0.3);
+    --road-color: #333333;
+    --road-line: rgba(255, 255, 255, 0.3);
+    --debris-color: #555;
+    --plant-color: #567356;
+    --car-color: #5d5d5d;
+    --person-color: #e0e0e0;
+    --text-color: #e0e0e0;
+    --controls-bg: rgba(60, 60, 60, 0.8);
+    --panel-bg: rgba(40, 40, 40, 0.7);
+  }
+  
+  .city {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f5;
+  }
+  
+  .elem1{
+    background-color: #000;
+  }
+  
+  header {
+    padding: 1rem;
+    color: #333;
+    z-index: 100;
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .town-name {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    font-size: 0.9rem;
+    font-weight: 200;
+    letter-spacing: 1.5px;
+    color: var(--text-color);
+    opacity: 0.8;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    z-index: 200;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .town-name:hover {
+    opacity: 1;
+  }
+  
+  html.dark-theme .town-name {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .city-view {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    perspective: 1500px;
+  }
+  
+  .city-grid {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+    transform-origin: center center;
+    transform: rotateX(55deg) scale(1.8);
+  }
+  
+  .ground {
+    position: absolute;
+    width: 300%;
+    height: 300%;
+    left: -100%;
+    top: -100%;
+    background-color: var(--ground-color);
+    background-image: 
+      linear-gradient(to right, var(--ground-line-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--ground-line-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    box-shadow: inset 0 0 40px var(--ground-shadow);
+  }
+  
+  .building {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    transform-style: preserve-3d;
+    transform: translateZ(0);
+  }
+  
+  .building-small {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .building-front, .building-side, .building-top {
+    position: absolute;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+  }
+  
+  .building-front {
+    width: 100%;
+    height: 100%;
+    transform-origin: bottom center;
+    background-color: var(--building-front);
+    border-left: 1px solid var(--building-border);
+    border-right: 1px solid var(--building-border);
+  }
+  
+  /* ニーアオートマタ風の廃墟テクスチャ */
+  .building-front.ruins {
+    background-color: var(--ruins-color);
+    background-image: 
+      linear-gradient(90deg, var(--ruins-detail) 0%, transparent 20%, transparent 80%, var(--ruins-detail) 100%),
+      linear-gradient(to bottom, var(--ruins-detail) 0%, transparent 20%, transparent 80%, var(--ruins-detail) 100%);
+  }
+  
+  .building-front.ruins::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 30% 40%, var(--ruins-detail) 0%, transparent 30%),
+      radial-gradient(circle at 70% 60%, var(--ruins-detail) 0%, transparent 20%);
+    z-index: 1;
+  }
+  
+  .building-side {
+    width: 20px;
+    height: 100%;
+    right: -20px;
+    transform-origin: left center;
+    transform: rotateY(90deg);
+    background-color: var(--building-side);
+  }
+  
+  .building-side.ruins {
+    background-color: var(--ruins-color);
+    filter: brightness(0.9);
+  }
+  
+  .building-top {
+    width: 100%;
+    height: 20px;
+    top: -5px;
+    transform-origin: bottom center;
+    transform: rotateX(-90deg);
+    background-color: var(--building-top);
+  }
+  
+  .building-tall {
+    height: 80px;
+    z-index: 5;
+  }
+  
+  .building-wide {
+    width: 100px;
+  }
+  
+  /* 巨大建築物（メガストラクチャー） */
+  .megastructure {
+    z-index: 6;
+  }
+  
+  /* メインロード（中央の大きな道路） */
+  .road.main-road {
+    position: absolute;
+    width: 80px;
+    height: 300%;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--road-color);
+    z-index: 2;
+    /* box-shadow: 0 0 15px var(--ground-shadow); */
+  }
+  
+  .road.main-road::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--road-line);
+  }
+  
+  /* 交差道路 */
+  .road.cross-road-1, .road.cross-road-2 {
+    position: absolute;
+    height: 25px;
+    width: 200%;
+    left: -50%;
+    background-color: var(--road-color);
+    z-index: 1;
+    /* box-shadow: 0 0 12px var(--ground-shadow); */
+  }
+  
+  .road.cross-road-1 {
+    top: 30%;
+  }
+  
+  .road.cross-road-2 {
+    top: 60%;
+  }
+  
+  /* 廃棄物や瓦礫 */
+  .debris {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    z-index: 4;
+  }
+  
+  .debris-1 {
+    background-color: var(--debris-color);
+    clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
+  }
+  
+  .debris-2 {
+    background-color: var(--debris-color);
+    filter: brightness(1.05);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+  
+  /* 荒廃地に生える植物 */
+  .wild-plant {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    z-index: 3;
+  }
+  
+  .wild-plant::before {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: var(--plant-color);
+    clip-path: polygon(50% 0%, 65% 35%, 100% 35%, 75% 60%, 85% 100%, 50% 80%, 15% 100%, 25% 60%, 0% 35%, 35% 35%);
+  }
+  
+  /* 崩壊した車両 */
+  .car.rusted-car {
+    width: 25px;
+    height: 12px;
+    background-color: var(--car-color);
+    border-radius: 2px;
+    position: absolute;
+    z-index: 4;
+  }
+  
+  .car.rusted-car::before, .car.rusted-car::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: var(--car-color);
+    filter: brightness(0.9);
+    border-radius: 50%;
+  }
+  
+  .car.rusted-car::before {
+    left: 3px;
+    bottom: -2px;
+  }
+  
+  .car.rusted-car::after {
+    right: 3px;
+    bottom: -2px;
+  }
+  
+  /* 追加のオブジェクト */
+  .object {
+    position: absolute;
+    transform-style: preserve-3d;
+    z-index: 5;
+  }
+  
+  /* 人型のスタイル */
+  .person {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+  }
+  
+  .person-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+  
+  .person-head {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--person-color);
+    border-radius: 50%;
+    left: 6px;
+    top: -2px;
+    z-index: 3;
+  }
+  
+  .person-torso {
+    position: absolute;
+    width: 10px;
+    height: 14px;
+    background-color: var(--person-color);
+    filter: brightness(0.9);
+    left: 5px;
+    top: 5px;
+    z-index: 2;
+  }
+  
+  .person-leg {
+    position: absolute;
+    width: 4px;
+    height: 10px;
+    background-color: var(--person-color);
+    filter: brightness(0.8);
+    bottom: -10px;
+    transform-origin: top center;
+  }
+  
+  .person-leg.left {
+    left: 5px;
+  }
+  
+  .person-leg.right {
+    left: 11px;
+  }
+  
+  .person-arm {
+    position: absolute;
+    width: 3px;
+    height: 8px;
+    background-color: var(--person-color);
+    filter: brightness(0.8);
+    top: 6px;
+    transform-origin: top center;
+  }
+  
+  .person-arm.left {
+    left: 2px;
+  }
+  
+  .person-arm.right {
+    right: 2px;
+  }
+  
+  .person-shadow {
+    position: absolute;
+    width: 12px;
+    height: 4px;
+    background-color: rgba(0,0,0,0.15);
+    border-radius: 50%;
+    bottom: -14px;
+    left: 4px;
+    filter: blur(1px);
+  }
+  
+  /* テーマ切替ボタン */
+  .theme-switcher {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 200;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+  
+  .theme-switcher button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--panel-bg);
+    border: 1px solid rgba(150, 150, 150, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+    color: var(--text-color);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .theme-switcher button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .theme-switcher button:active {
+    transform: translateY(0);
+  }
+  
+  #theme-toggle .theme-icon.dark {
+    display: none;
+  }
+  
+  #theme-toggle.dark-active .theme-icon.light {
+    display: none;
+  }
+  
+  #theme-toggle.dark-active .theme-icon.dark {
+    display: block;
+  }
+  
+  #reset-position:hover .reset-icon {
+    animation: pulse 1s ease infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 200;
+  }
+  
+  .controls-row {
+    display: flex;
+  }
+  
+  .controls button {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    border-radius: 8px;
+    background-color: var(--controls-bg);
+    border: 1px solid var(--building-border);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: var(--text-color);
+  }
+  
+  .controls button:hover {
+    filter: brightness(1.05);
+  }
+  
+  .controls button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  /* モバイル向け調整 */
+  @media (max-width: 768px) {
+    .controls button {
+      width: 50px;
+      height: 50px;
+      font-size: 16px;
+    }
+    
+    #theme-toggle {
+      width: 42px;
+      height: 42px;
+    }
+    
+    .theme-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  /* 建物のインタラクティブ化 */
+  .building.interactive {
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+  
+  .building.interactive:hover {
+    transform: translateZ(20px) scale(1.05);
+    filter: brightness(1.2);
+    z-index: 10;
+  }
+  
+  /* モーダルのスタイル - 洗練されたSaaSスタイル */
+  .building-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none; /* 初期状態ではクリックを通過させる */
+    transition: opacity 0.3s ease;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .building-modal.active {
+    opacity: 1;
+    pointer-events: auto; /* アクティブ時にクリックを検知 */
+  }
+  
+  .modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(4px);
+  }
+  
+  .modal-content {
+    position: relative;
+    width: 90%;
+    max-width: 500px;
+    background-color: var(--panel-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: translateY(30px) scale(0.95);
+    opacity: 0;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    z-index: 1001;
+  }
+  
+  .building-modal.active .modal-content {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.1);
+  }
+  
+  .modal-body {
+    padding: 24px;
+  }
+  
+  #modalTitle {
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  
+  .close-button {
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    color: var(--text-color);
+    opacity: 0.6;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .close-button:hover {
+    opacity: 1;
+    background-color: rgba(226, 232, 240, 0.1);
+  }
+  
+  .building-type {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #6366F1;
+    background-color: rgba(99, 102, 241, 0.1);
+    border-radius: 16px;
+    padding: 4px 12px;
+    margin-bottom: 16px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+  
+  .building-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-color);
+    opacity: 0.9;
+    margin: 0;
+  }
+
+  /* 吹き出しポイントのスタイル */
+  .point-bubble {
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.8);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.3s ease;
+    transform-style: preserve-3d;
+    transform: translate(-50%, -50%) translateZ(5px);
+  }
+
+  .point-bubble::before {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    z-index: 2;
+  }
+
+  .point-bubble::after {
+    content: '';
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulse 2s infinite ease-out;
+    z-index: 1;
+  }
+
+  .point-bubble:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6), inset 0 0 15px rgba(255, 255, 255, 1);
+    transform: translate(-50%, -50%) translateZ(10px) scale(1.1);
+  }
+
+  /* Profileタウン用のスタイル強化 */
+  .point-bubble:not(.work-item) {
+    background-color: rgba(228, 243, 255, 0.75);
+    box-shadow: 0 0 15px rgba(120, 200, 255, 0.5), inset 0 0 10px rgba(180, 230, 255, 0.8);
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  .point-bubble:not(.work-item)::before {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(100, 190, 255, 0.95);
+    box-shadow: 0 0 8px rgba(100, 190, 255, 0.9);
+  }
+
+  .point-bubble:not(.work-item)::after {
+    border: 1px solid rgba(150, 210, 255, 0.6);
+    width: 50px;
+    height: 50px;
+    animation: subtlePulse 3s infinite ease-out;
+  }
+
+  .point-bubble:not(.work-item):hover {
+    background-color: rgba(230, 245, 255, 0.85);
+    box-shadow: 0 0 25px rgba(120, 200, 255, 0.7), inset 0 0 15px rgba(180, 230, 255, 1);
+    transform: translate(-50%, -50%) translateZ(10px) scale(1.08);
+  }
+
+  /* Blogsタウン用のスタイル - 他のスタイルより後に配置して優先度を高くする */
+  .point-bubble:not(.work-item)[data-work-name] {
+    background: linear-gradient(135deg, rgba(245, 245, 245, 0.8), rgba(235, 235, 245, 0.8));
+    box-shadow: 0 0 15px rgba(150, 150, 200, 0.4), inset 0 0 10px rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.9);
+  }
+
+  .point-bubble:not(.work-item)[data-work-name]::before {
+    background-color: rgba(130, 150, 255, 0.95);
+    box-shadow: 0 0 8px rgba(130, 150, 255, 0.9);
+  }
+
+  .point-bubble:not(.work-item)[data-work-name]::after {
+    border-color: rgba(180, 190, 255, 0.7);
+  }
+
+  .point-bubble:not(.work-item)[data-work-name]:hover {
+    background: linear-gradient(135deg, rgba(250, 250, 255, 0.9), rgba(240, 240, 255, 0.9));
+    box-shadow: 0 0 20px rgba(150, 150, 220, 0.6), inset 0 0 15px rgba(255, 255, 255, 1);
+  }
+
+  .point-bubble.interactive {
+    cursor: pointer;
+  }
+
+  @keyframes pulse {
+    0% {
+      width: 60px;
+      height: 60px;
+      opacity: 0.6;
+    }
+    70% {
+      width: 90px;
+      height: 90px;
+      opacity: 0.2;
+    }
+    100% {
+      width: 60px;
+      height: 60px;
+      opacity: 0.6;
+    }
+  }
+
+  @keyframes subtlePulse {
+    0% {
+      width: 50px;
+      height: 50px;
+      opacity: 0.5;
+    }
+    70% {
+      width: 65px;
+      height: 65px;
+      opacity: 0.2;
+    }
+    100% {
+      width: 50px;
+      height: 50px;
+      opacity: 0.5;
+    }
+  }
+
+  /* ポイント配置のバリエーション */
+  .point-1 { left: 25%; top: 20%; animation-delay: 0s; }
+  .point-2 { left: 75%; top: 25%; animation-delay: 0.4s; }
+  .point-3 { left: 35%; top: 40%; animation-delay: 0.8s; }
+  .point-4 { left: 65%; top: 45%; animation-delay: 1.2s; }
+  .point-5 { left: 20%; top: 60%; animation-delay: 1.6s; }
+  .point-6 { left: 80%; top: 65%; animation-delay: 2s; }
+  .point-7 { left: 50%; top: 30%; animation-delay: 2.4s; }
+  .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }
+  .point-9 { left: 60%; top: 15%; animation-delay: 3.2s; }
+  .point-10 { left: 30%; top: 85%; animation-delay: 3.6s; }
+  .point-11 { left: 70%; top: 80%; animation-delay: 4s; }
+  .point-12 { left: 50%; top: 50%; animation-delay: 4.4s; }
+
+  /* ダークテーマ時のポイント表示を調整 */
+  html.dark-theme .point-bubble {
+    background-color: rgba(120, 190, 255, 0.7);
+    box-shadow: 0 0 15px rgba(100, 170, 255, 0.6), inset 0 0 10px rgba(150, 200, 255, 0.9);
+  }
+
+  html.dark-theme .point-bubble::before {
+    background-color: rgba(180, 220, 255, 0.95);
+    box-shadow: 0 0 10px rgba(150, 200, 255, 0.9);
+  }
+
+  html.dark-theme .point-bubble::after {
+    border: 2px solid rgba(150, 210, 255, 0.7);
+    box-shadow: 0 0 8px rgba(100, 180, 255, 0.5);
+  }
+
+  html.dark-theme .point-bubble:hover {
+    background-color: rgba(140, 200, 255, 0.85);
+    box-shadow: 0 0 25px rgba(100, 170, 255, 0.8), inset 0 0 15px rgba(180, 220, 255, 1);
+  }
+
+  /* タウンリストのスタイル */
+  .town-list {
+    position: absolute;
+    left: 20px;
+    top: 80px;
+    z-index: 200;
+  }
+
+  .town-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .town-list li {
+    margin-bottom: 12px;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+  }
+
+  .town-list li:hover {
+    opacity: 0.9;
+  }
+
+  .town-list li.active {
+    opacity: 1;
+  }
+
+  .town-list .bullet {
+    margin-right: 6px;
+    font-size: 1.2em;
+    color: var(--text-color);
+    width: 10px;
+    display: inline-block;
+    text-align: center;
+  }
+
+  .town-list .placeholder {
+    width: 10px;
+    margin-right: 6px;
+    display: inline-block;
+  }
+
+  .town-list a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 0.8rem;
+    font-weight: 300;
+    letter-spacing: 1px;
+    transition: all 0.2s ease;
+  }
+
+  .town-list li.active a {
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.8px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+
+  html.dark-theme .town-list li.active a {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ページ遷移アニメーション */
+  .page-transition {
+    pointer-events: none;
+  }
+  
+  .city-view {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  /* 作品表示のスタイル - Works Town用 */
+  .work-item {
+    position: absolute; /* relativeからabsoluteに変更して位置を維持 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+  }
+
+  .work-item::before {
+    display: none;
+  }
+
+  .work-item::after {
+    width: 50px;
+    height: 50px;
+    border-color: rgba(200, 200, 255, 0.6);
+    z-index: 1;
+  }
+
+  .work-image {
+    width: 90%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 3;
+  }
+
+  .work-title {
+    position: absolute;
+    width: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -24px;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-color);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 2px 6px;
+    border-radius: 10px;
+    pointer-events: none;
+  }
+
+  .work-item:hover .work-title {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+  }
+
+  html.dark-theme .work-title {
+    background-color: rgba(50, 50, 70, 0.85);
+  }
+
+  /* 各作品のサムネイル画像 */
+  .point-1 .work-image { background-image: url('https://picsum.photos/id/1/200'); }
+  .point-2 .work-image { background-image: url('https://picsum.photos/id/2/200'); }
+  .point-3 .work-image { background-image: url('https://picsum.photos/id/3/200'); }
+  .point-4 .work-image { background-image: url('https://picsum.photos/id/4/200'); }
+  .point-5 .work-image { background-image: url('https://picsum.photos/id/5/200'); }
+  .point-6 .work-image { background-image: url('https://picsum.photos/id/6/200'); }
+  .point-7 .work-image { background-image: url('https://picsum.photos/id/7/200'); }
+  .point-8 .work-image { background-image: url('https://picsum.photos/id/8/200'); }
+  .point-9 .work-image { background-image: url('https://picsum.photos/id/9/200'); }
+  .point-10 .work-image { background-image: url('https://picsum.photos/id/10/200'); }
+  .point-11 .work-image { background-image: url('https://picsum.photos/id/11/200'); }
+  .point-12 .work-image { background-image: url('https://picsum.photos/id/12/200'); }
+
+  .work-type {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #4F46E5;
+    background-color: rgba(79, 70, 229, 0.1);
+    border-radius: 16px;
+    padding: 4px 12px;
+    margin-bottom: 16px;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+
+  .work-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--text-color);
+    opacity: 0.9;
+    margin: 0 0 20px 0;
+  }
+
+  .work-details {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .work-link {
+    background-color: #4F46E5;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .work-link:hover {
+    background-color: #4338CA;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .work-link::after {
+    content: '→';
+    margin-left: 6px;
+  }
+
+  /* Worksタウン用のポイントサイズ調整 */
+  .point-bubble.work-item {
+    width: 50px;
+    height: 50px;
+    overflow: visible;
+    position: absolute;
+  }
+
+  .point-bubble.work-item::before {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(255, 255, 255, 0.9);
+    z-index: 2;
+  }
+
+  .point-bubble.work-item::after {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(200, 200, 255, 0.6);
+    animation: worksPulse 4s infinite ease-out;
+    z-index: 1;
+  }
+
+  .point-bubble.work-item:hover {
+    transform: translate(-50%, -50%) translateZ(8px) scale(1.1);
+  }
+
+  @keyframes worksPulse {
+    0% {
+      width: 40px;
+      height: 40px;
+      opacity: 0.7;
+      border-width: 2px;
+    }
+    50% {
+      width: 80px;
+      height: 80px;
+      opacity: 0.2;
+      border-width: 1px;
+    }
+    100% {
+      width: 40px;
+      height: 40px;
+      opacity: 0.7;
+      border-width: 2px;
+    }
+  }
+
+  .city-header{
+    display: flex;
+    align-items: center;
+    /* justify-content: center; */
+    padding: 16px 24px;
+    /* background-color: transparent; */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 100;
+  }
+
+  /* 会社リストスタイル */
+  .company-list {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    z-index: 200;
+    padding: 12px;
+    border-radius: 8px;
+  }
+  .company-list h3 {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    color: var(--text-color);
+    text-transform: capitalize;
+  }
+  .company-list ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .company-list .company-item {
+    margin-bottom: 6px;
+    padding: 6px 12px;
+    background: var(--panel-bg);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    color: var(--text-color);
+    font-size: 0.7rem;
+  }
+  .company-list .company-item:hover {
+    background: rgba(150,150,150,0.1);
+    transform: translateX(2px);
+  }
+</style> 

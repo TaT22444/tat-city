@@ -1,0 +1,115 @@
+---
+---
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>テーマ切替テスト</title>
+  <style>
+    :root {
+      --bg-color: #ffffff;
+      --text-color: #333333;
+    }
+    
+    html.dark-theme {
+      --bg-color: #222222;
+      --text-color: #dddddd;
+    }
+    
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: sans-serif;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    
+    h1 {
+      margin-bottom: 2rem;
+    }
+    
+    .theme-toggle {
+      background: #eaeaea;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s;
+    }
+    
+    html.dark-theme .theme-toggle {
+      background: #444444;
+    }
+    
+    .theme-status {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid var(--text-color);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>テーマ切替テスト</h1>
+    <button id="theme-toggle" class="theme-toggle">テーマ切り替え</button>
+    <div class="theme-status" id="status">
+      現在のテーマ: <span id="theme-name">ライト</span>
+    </div>
+  </div>
+
+  <script is:inline>
+    console.log('テーマテスト - スクリプト開始');
+    
+    // DOM読み込み完了トリガー
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('テーマテスト - DOM読み込み完了');
+      setupTheme();
+    });
+    
+    // 即時実行関数
+    (function() {
+      console.log('テーマテスト - 即時関数実行');
+      if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        console.log('テーマテスト - 即時セットアップ');
+        setupTheme();
+      }
+    })();
+    
+    function setupTheme() {
+      console.log('テーマテスト - セットアップ開始');
+      const themeToggle = document.getElementById('theme-toggle');
+      const themeName = document.getElementById('theme-name');
+      
+      // ローカルストレージから初期テーマを設定
+      if (localStorage.getItem('testTheme') === 'dark') {
+        document.documentElement.classList.add('dark-theme');
+        themeName.textContent = 'ダーク';
+        console.log('テーマテスト - 初期状態: ダーク');
+      } else {
+        console.log('テーマテスト - 初期状態: ライト');
+      }
+      
+      // クリックイベント設定
+      themeToggle.onclick = function() {
+        console.log('テーマテスト - ボタンクリック');
+        const isDark = document.documentElement.classList.toggle('dark-theme');
+        localStorage.setItem('testTheme', isDark ? 'dark' : 'light');
+        themeName.textContent = isDark ? 'ダーク' : 'ライト';
+        console.log('テーマテスト - テーマ変更:', isDark ? 'ダーク' : 'ライト');
+      };
+      
+      console.log('テーマテスト - セットアップ完了');
+    }
+  </script>
+</body>
+</html> 
