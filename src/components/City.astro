@@ -17,10 +17,66 @@ const workNames: string[] = [
   <header class="city-header">
     <h1 class="city-title">TATSUYA CITY</h1>
   </header>
-  <div class="city-view" id="cityView">
+  <div class={`city-view town-${currentTown}`} id="cityView">
     <div class="city-grid" id="cityGrid">
       <!-- グリッド（地面） -->
       <div class="ground"></div>
+      
+      {/* Profileタウン用のプロフィールカード */}
+      {currentTown === 'profile' && (
+        <div class="profile-card">
+          <div class="profile-image" style="background-image: url('/assets/images/profile/profile.png');"></div>
+          <h2 class="profile-name">
+            相原立弥
+            <span class="profile-name-sub">Tatsuya Aihara</span>
+            </h2>
+          <p class="profile-text">千葉工業大学大学院 デザイン科専攻 <br>修士1年</p>
+          <ul class="profile-sns-list">
+            <li class="profile-sns-item">
+              <a href="https://twitter.com/your_handle" target="_blank" class="profile-sns-link">
+                <svg width="12" height="12" viewBox="0 0 34 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_616_61)">
+                  <path d="M9.99971 0.472656H23.9997C29.333 0.472656 33.6663 4.80599 33.6663 10.1393V24.1393C33.6663 26.703 32.6479 29.1618 30.835 30.9746C29.0222 32.7875 26.5634 33.806 23.9997 33.806H9.99971C4.66634 33.806 0.333008 29.4726 0.333008 24.1393V10.1393C0.333008 7.57557 1.35146 5.11681 3.16431 3.30396C4.97716 1.49111 7.43591 0.472656 9.99971 0.472656ZM9.66634 3.80599C8.07504 3.80599 6.54892 4.43813 5.4237 5.56335C4.29848 6.68857 3.66634 8.21469 3.66634 9.80599V24.4726C3.66634 27.7893 6.34967 30.4726 9.66634 30.4726H24.333C25.9243 30.4726 27.4504 29.8405 28.5756 28.7152C29.7009 27.59 30.333 26.0639 30.333 24.4726V9.80599C30.333 6.48932 27.6497 3.80599 24.333 3.80599H9.66634ZM25.7497 6.30599C26.3022 6.30599 26.8321 6.52548 27.2228 6.91619C27.6135 7.30689 27.833 7.83679 27.833 8.38932C27.833 8.94186 27.6135 9.47176 27.2228 9.86246C26.8321 10.2531 26.3022 10.4726 25.7497 10.4726C25.1971 10.4726 24.6672 10.2531 24.2765 9.86246C23.8858 9.47176 23.6663 8.94186 23.6663 8.38932C23.6663 7.83679 23.8858 7.30689 24.2765 6.91619C24.6672 6.52548 25.1971 6.30599 25.7497 6.30599ZM16.9997 8.80599C19.2098 8.80599 21.3294 9.68396 22.8922 11.2467C24.455 12.8095 25.333 14.9291 25.333 17.1393C25.333 19.3494 24.455 21.469 22.8922 23.0318C21.3294 24.5946 19.2098 25.4726 16.9997 25.4726C14.7895 25.4726 12.6699 24.5946 11.1071 23.0318C9.54431 21.469 8.66634 19.3494 8.66634 17.1393C8.66634 14.9291 9.54431 12.8095 11.1071 11.2467C12.6699 9.68396 14.7895 8.80599 16.9997 8.80599ZM16.9997 12.1393C15.6736 12.1393 14.4018 12.6661 13.4641 13.6037C12.5264 14.5414 11.9997 15.8132 11.9997 17.1393C11.9997 18.4654 12.5264 19.7371 13.4641 20.6748C14.4018 21.6125 15.6736 22.1393 16.9997 22.1393C18.3257 22.1393 19.5975 21.6125 20.5352 20.6748C21.4729 19.7371 21.9997 18.4654 21.9997 17.1393C21.9997 15.8132 21.4729 14.5414 20.5352 13.6037C19.5975 12.6661 18.3257 12.1393 16.9997 12.1393Z" fill="#252528"/>
+                  </g>
+                  <defs>
+                  <clipPath id="clip0_616_61">
+                  <rect width="34" height="34" fill="white" transform="translate(0 0.139648)"/>
+                  </clipPath>
+                  </defs>
+                </svg>
+              </a>
+            </li>
+            <li class="profile-sns-item">
+              <a href="https://instagram.com/your_handle" target="_blank" class="profile-sns-link">
+                <svg width="12" height="12" viewBox="0 0 39 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_616_64)">
+                  <path d="M12.7233 0.472656H1.05664L14.8233 18.8293L1.80664 33.806H6.22331L16.8699 21.5576L26.0566 33.806H37.7233L23.3766 14.6759L35.7233 0.472656H31.3066L21.3299 11.9493L12.7233 0.472656ZM27.7233 30.4726L7.72331 3.80599H11.0566L31.0566 30.4726H27.7233Z" fill="#252528"/>
+                  </g>
+                  <defs>
+                  <clipPath id="clip0_616_64">
+                  <rect width="38" height="34" fill="white" transform="translate(0.389648 0.139648)"/>
+                  </clipPath>
+                  </defs>
+                </svg>
+              </a>
+            </li>
+            <li class="profile-sns-item">
+              <a href="https://yourwebsite.com" target="_blank" class="profile-sns-link">
+                <svg width="12" height="12" viewBox="0 0 34 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#clip0_616_61)">
+                  <path d="M9.99971 0.472656H23.9997C29.333 0.472656 33.6663 4.80599 33.6663 10.1393V24.1393C33.6663 26.703 32.6479 29.1618 30.835 30.9746C29.0222 32.7875 26.5634 33.806 23.9997 33.806H9.99971C4.66634 33.806 0.333008 29.4726 0.333008 24.1393V10.1393C0.333008 7.57557 1.35146 5.11681 3.16431 3.30396C4.97716 1.49111 7.43591 0.472656 9.99971 0.472656ZM9.66634 3.80599C8.07504 3.80599 6.54892 4.43813 5.4237 5.56335C4.29848 6.68857 3.66634 8.21469 3.66634 9.80599V24.4726C3.66634 27.7893 6.34967 30.4726 9.66634 30.4726H24.333C25.9243 30.4726 27.4504 29.8405 28.5756 28.7152C29.7009 27.59 30.333 26.0639 30.333 24.4726V9.80599C30.333 6.48932 27.6497 3.80599 24.333 3.80599H9.66634ZM25.7497 6.30599C26.3022 6.30599 26.8321 6.52548 27.2228 6.91619C27.6135 7.30689 27.833 7.83679 27.833 8.38932C27.833 8.94186 27.6135 9.47176 27.2228 9.86246C26.8321 10.2531 26.3022 10.4726 25.7497 10.4726C25.1971 10.4726 24.6672 10.2531 24.2765 9.86246C23.8858 9.47176 23.6663 8.94186 23.6663 8.38932C23.6663 7.83679 23.8858 7.30689 24.2765 6.91619C24.6672 6.52548 25.1971 6.30599 25.7497 6.30599ZM16.9997 8.80599C19.2098 8.80599 21.3294 9.68396 22.8922 11.2467C24.455 12.8095 25.333 14.9291 25.333 17.1393C25.333 19.3494 24.455 21.469 22.8922 23.0318C21.3294 24.5946 19.2098 25.4726 16.9997 25.4726C14.7895 25.4726 12.6699 24.5946 11.1071 23.0318C9.54431 21.469 8.66634 19.3494 8.66634 17.1393C8.66634 14.9291 9.54431 12.8095 11.1071 11.2467C12.6699 9.68396 14.7895 8.80599 16.9997 8.80599ZM16.9997 12.1393C15.6736 12.1393 14.4018 12.6661 13.4641 13.6037C12.5264 14.5414 11.9997 15.8132 11.9997 17.1393C11.9997 18.4654 12.5264 19.7371 13.4641 20.6748C14.4018 21.6125 15.6736 22.1393 16.9997 22.1393C18.3257 22.1393 19.5975 21.6125 20.5352 20.6748C21.4729 19.7371 21.9997 18.4654 21.9997 17.1393C21.9997 15.8132 21.4729 14.5414 20.5352 13.6037C19.5975 12.6661 18.3257 12.1393 16.9997 12.1393Z" fill="#252528"/>
+                  </g>
+                  <defs>
+                  <clipPath id="clip0_616_61">
+                  <rect width="34" height="34" fill="white" transform="translate(0 0.139648)"/>
+                  </clipPath>
+                  </defs>
+                </svg>
+              </a>
+            </li>
+          </ul>
+        </div>
+      )}
       
       <!-- メインストリート（中央の大きな道路） -->
       <div class="road main-road" style="display: none;"></div>
@@ -366,7 +422,7 @@ const workNames: string[] = [
   </div>
   <div class="popup-footer">
     <button class="popup-close-btn">閉じる</button>
-    <button class="popup-more-btn">説明文を聞きに行く</button>
+    <button class="popup-more-btn">準備中</button>
   </div>
 </div>
 
@@ -857,13 +913,22 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   function zoomToPoint(workName) {
     if (!workName) return;
     
+    // 現在のタウンを取得
+    const activeTownElement = document.querySelector('.town-list li.active a');
+    const currentTownText = activeTownElement?.textContent?.trim().toLowerCase() || 'profile';
+    // town-{name} クラスからcurrentTownを抽出、一致しなければprofileをデフォルトとする
+    const currentTown = currentTownText.includes('profile') ? 'profile' : 
+                        currentTownText.includes('works') ? 'works' : 
+                        currentTownText.includes('blogs') ? 'blogs' : 'profile';
+    
     // 既存の表示されているwork-titleを全て非表示にする
     document.querySelectorAll('.work-title').forEach(title => {
       title.classList.remove('title-visible');
     });
     
-    // 対応するポイントの位置を取得
-    const pos = pointOffsetMap[workName];
+    // 対応するポイントの位置を取得 (該当タウンにないならprofileの位置を使用)
+    const townMap = pointOffsetMap[currentTown] || pointOffsetMap['profile'];
+    const pos = townMap[workName];
     if (pos && cityGrid) {
       // ズーム状態をセット
       isZoomed = true;
@@ -902,6 +967,13 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   // 作品情報をポップアップで表示する関数
   function showWorkPopup(workName) {
     if (!workName) return;
+    
+    // 現在のタウンを取得（zoomToPoint関数と同じロジック）
+    const activeTownElement = document.querySelector('.town-list li.active a');
+    const currentTownText = activeTownElement?.textContent?.trim().toLowerCase() || 'profile';
+    const currentTown = currentTownText.includes('profile') ? 'profile' : 
+                      currentTownText.includes('works') ? 'works' : 
+                      currentTownText.includes('blogs') ? 'blogs' : 'profile';
     
     const popup = document.getElementById('workPopup');
     const popupTitle = document.getElementById('popupTitle');
@@ -1231,14 +1303,16 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     });
   }
 
-  // 作品ごとのポイント位置マップ（%）
+  // 作品ごとのポイント位置マップ（%）- タウン別
   const pointOffsetMap = {
-    'Hamori': { x: 60, y: 65 },
-    'MasiMasi': { x: 75, y: 35 },
-    'Atta!': { x: 35, y: 40 },
-    'CIT portal': { x: 45, y: 78 },
-    '市民の木': { x: 24, y: 64 },
-    'Invidi': { x: 58, y: 45 },
+    'works': {
+      'Hamori': { x: 60, y: 65 },
+      'MasiMasi': { x: 75, y: 35 },
+      'Atta!': { x: 35, y: 40 },
+      'CIT portal': { x: 45, y: 78 },
+      '市民の木': { x: 24, y: 64 },
+      'Invidi': { x: 58, y: 45 }
+    },
   };
 
   // 衝突判定関数の追加
@@ -2143,18 +2217,52 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   }
 
   /* ポイント配置のバリエーション */
-  .point-1 { left: 60%; top: 65%; animation-delay: 0s; }
-  .point-2 { left: 75%; top: 35%; animation-delay: 0.4s; }
-  .point-3 { left: 35%; top: 40%; animation-delay: 0.8s; }
-  .point-4 { left: 45%; top: 78%; animation-delay: 1.2s; }
-  .point-5 { left: 24%; top: 64%; animation-delay: 1.6s; }
-  .point-6 { left: 58%; top: 45%; animation-delay: 2s; }
-  .point-7 { left: 50%; top: 30%; animation-delay: 2.4s; }
-  .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }
-  .point-9 { left: 60%; top: 15%; animation-delay: 3.2s; }
-  .point-10 { left: 35%; top: 95%; animation-delay: 3.6s; }
-  .point-11 { left: 68%; top: 85%; animation-delay: 4s; }
-  .point-12 { left: 50%; top: 50%; animation-delay: 4.4s; }
+  /* デフォルトポイント位置 - 全タウン共通基本設定 */
+  .point-1, .point-2, .point-3, .point-4, .point-5, .point-6,
+  .point-7, .point-8, .point-9, .point-10, .point-11, .point-12 {
+    animation-delay: 0s;
+  }
+
+  .town-profile .point-1 { left: 20%; top: 100%; animation-delay: 0.4s; }
+  .town-profile .point-2 { left: 70%; top: 30%; animation-delay: 0.4s; }
+  .town-profile .point-3 { left: 25%; top: 45%; animation-delay: 0.8s; }
+  .town-profile .point-4 { left: 75%; top: 50%; animation-delay: 1.2s; }
+  .town-profile .point-5 { left: 30%; top: 70%; animation-delay: 1.6s; }
+  .town-profile .point-6 { left: 65%; top: 75%; animation-delay: 2s; }
+  .town-profile .point-7 { left: 45%; top: 40%; animation-delay: 2.4s; }
+  .town-profile .point-8 { left: 60%; top: 50%; animation-delay: 2.8s; }
+  .town-profile .point-9 { left: 20%; top: 60%; animation-delay: 3.2s; }
+  .town-profile .point-10 { left: 80%; top: 65%; animation-delay: 3.6s; }
+  .town-profile .point-11 { left: 40%; top: 50%; animation-delay: 4s; }
+  .town-profile .point-12 { left: 60%; top: 20%; animation-delay: 4.4s; }
+
+  /* Worksタウン用のポイント位置 - 現在の設定を維持 */
+  .town-works .point-1 { left: 60%; top: 65%; animation-delay: 0s; } /* Hamori */
+  .town-works .point-2 { left: 75%; top: 35%; animation-delay: 0.4s; } /* MasiMasi */
+  .town-works .point-3 { left: 35%; top: 40%; animation-delay: 0.8s; } /* Atta! */
+  .town-works .point-4 { left: 45%; top: 78%; animation-delay: 1.2s; } /* CIT portal */
+  .town-works .point-5 { left: 24%; top: 64%; animation-delay: 1.6s; } /* 市民の木 */
+  .town-works .point-6 { left: 58%; top: 45%; animation-delay: 2s; } /* Invidi */
+  .town-works .point-7 { left: 50%; top: 30%; animation-delay: 2.4s; }
+  .town-works .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }
+  .town-works .point-9 { left: 60%; top: 15%; animation-delay: 3.2s; }
+  .town-works .point-10 { left: 35%; top: 95%; animation-delay: 3.6s; }
+  .town-works .point-11 { left: 68%; top: 85%; animation-delay: 4s; }
+  .town-works .point-12 { left: 50%; top: 50%; animation-delay: 4.4s; }
+
+  /* Blogsタウン用のポイント位置 */
+  .town-blogs .point-1 { left: 40%; top: 20%; animation-delay: 0s; }
+  .town-blogs .point-2 { left: 65%; top: 15%; animation-delay: 0.4s; }
+  .town-blogs .point-3 { left: 20%; top: 30%; animation-delay: 0.8s; }
+  .town-blogs .point-4 { left: 50%; top: 40%; animation-delay: 1.2s; }
+  .town-blogs .point-5 { left: 80%; top: 30%; animation-delay: 1.6s; }
+  .town-blogs .point-6 { left: 30%; top: 55%; animation-delay: 2s; }
+  .town-blogs .point-7 { left: 70%; top: 55%; animation-delay: 2.4s; }
+  .town-blogs .point-8 { left: 25%; top: 75%; animation-delay: 2.8s; }
+  .town-blogs .point-9 { left: 45%; top: 65%; animation-delay: 3.2s; }
+  .town-blogs .point-10 { left: 60%; top: 75%; animation-delay: 3.6s; }
+  .town-blogs .point-11 { left: 85%; top: 70%; animation-delay: 4s; }
+  .town-blogs .point-12 { left: 75%; top: 45%; animation-delay: 4.4s; }
 
   /* ダークテーマ時のポイント表示を調整 */
   html.dark-theme .point-bubble {
@@ -2790,5 +2898,278 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       width: calc(100% - 20px);
       max-width: 320px;
     }
+  }
+
+  /* ポイント配置のバリエーション */
+  /* デフォルトポイント位置 - バックアップとして基本位置を設定 */
+  .point-1 { left: 30%; top: 30%; animation-delay: 0s; }
+  .point-2 { left: 70%; top: 30%; animation-delay: 0.4s; }
+  .point-3 { left: 35%; top: 45%; animation-delay: 0.8s; }
+  .point-4 { left: 65%; top: 45%; animation-delay: 1.2s; }
+  .point-5 { left: 30%; top: 65%; animation-delay: 1.6s; }
+  .point-6 { left: 70%; top: 65%; animation-delay: 2s; }
+  .point-7 { left: 50%; top: 30%; animation-delay: 2.4s; }
+  .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }
+  .point-9 { left: 60%; top: 60%; animation-delay: 3.2s; }
+  .point-10 { left: 35%; top: 80%; animation-delay: 3.6s; }
+  .point-11 { left: 65%; top: 80%; animation-delay: 4s; }
+  .point-12 { left: 50%; top: 50%; animation-delay: 4.4s; }
+
+  /* アニメーション遅延の基本設定 */
+  .point-1, .point-2, .point-3, .point-4, .point-5, .point-6,
+  .point-7, .point-8, .point-9, .point-10, .point-11, .point-12 {
+    animation-delay: 0s;
+  }
+
+  /* プロフィールブロックスタイル - point-1をプロフィールブロックとして特別扱い */
+  .town-profile .point-1 {
+    left: 36%; 
+    top: 90%;
+    animation-delay: 0s;
+  }
+
+  /* グラウンドに直接表示されるプロフィールカード */
+  .profile-card {
+    position: absolute;
+    width: 200px;
+    padding: 24px;
+    /* background-color: rgba(255, 255, 255, 0.92); */
+    border-radius: 16px;
+    /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%);
+    z-index: 20;
+    /* backdrop-filter: blur(5px); */
+    /* border: 1px solid rgba(255, 255, 255, 0.8); */
+  }
+
+  .profile-card .profile-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 16px;
+    margin: 0 auto 16px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: all 0.3s;
+    overflow: visible; /* hidden から visible に変更 */
+    z-index: 2;
+  }
+
+  .profile-card .profile-image::after {
+    content: '';
+    position: absolute;
+    width: 105%; /* 小さく調整 */
+    height: 105%;
+    border-radius: 16px;
+    border: 1px solid rgba(180,190,255,0.7); /* 境界線を薄く */
+    top: -2.5%; /* 調整 */
+    left: -2.5%;
+    z-index: -1; /* 画像の下に表示されるように変更 */
+    animation: profilePulse 4s infinite ease-out; /* アニメーション速度を調整 */
+    pointer-events: none;
+    box-shadow: 0 0 50px rgba(120, 180, 255, 0.6), 
+               inset 0 0 30px rgba(140, 210, 255, 0.5);
+    border-color: rgba(180, 190, 255, 1);
+    background-color: rgba(120, 180, 255, 0.6);
+    filter: blur(4px);
+    transform: translateZ(-1px); /* 3D空間で背面に配置 */
+  }
+
+  @keyframes profilePulse {
+    0% {
+      opacity: 0.7;
+      transform: scale(.9) translateZ(-1px);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2), 
+                 inset 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(1.1) translateZ(-1px);
+      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0), 
+                 inset 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    100% {
+      opacity: 0.7;
+      transform: scale(.9) translateZ(-1px);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2), 
+                 inset 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  {/* .profile-card:hover .profile-image::after {
+    animation-duration: 3s;
+    border-color: rgba(255, 255, 255, 0.5);
+  } */}
+
+  html.dark-theme .profile-card .profile-image {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  html.dark-theme .profile-card .profile-image::before {
+    box-shadow: 0 0 15px rgba(100, 150, 255, 0.2);
+  }
+
+  html.dark-theme .profile-card .profile-image::after {
+    box-shadow: inset 0 0 15px rgba(100, 150, 200, 0.1);
+  }
+
+  .profile-card .profile-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #252528;
+    margin: 0 0 8px;
+    padding: 0 8px;
+  }
+
+  .profile-card .profile-name-sub {
+    font-size: 12px;
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+
+  .profile-card .profile-text {
+    font-size: 10px;
+    color: #66666d;
+    margin: 0 0 16px;
+    line-height: 1.8;
+    padding: 0 8px;
+  }
+
+  /* ダークテーマ対応 */
+  html.dark-theme .profile-card {
+
+    border-color: rgba(70, 70, 90, 0.5);
+
+  }
+
+  html.dark-theme .profile-card .profile-image {
+    border-color: rgba(50, 50, 60, 1);
+  }
+
+  html.dark-theme .profile-card .profile-name {
+    color: #e0e0e0;
+  }
+
+  html.dark-theme .profile-card .profile-text {
+    color: #aaaaaa;
+  }
+
+  html.dark-theme .profile-skills li {
+    color: #a5b4fc;
+  }
+
+  /* モバイル対応 */
+  @media (max-width: 768px) {
+    .profile-card {
+      width: 90%;
+      max-width: 320px;
+      padding: 16px;
+    }
+    
+    .profile-card .profile-image {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .profile-card .profile-name {
+      font-size: 20px;
+    }
+    
+    .profile-card .profile-text {
+      font-size: 14px;
+    }
+    
+    .profile-skills li {
+      font-size: 12px;
+      padding: 4px 10px;
+    }
+  }
+
+  /* SNSリストのスタイル */
+  .profile-sns-list {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+    margin: 16px 0;
+    width: 100%;
+  }
+
+  .profile-sns-item {
+    flex: 1;
+    position: relative;
+    transform-style: preserve-3d;
+  }
+
+  .profile-sns-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    border-radius: 18px;
+    background-color: #e0e0e0;
+    border: 1px solid #fff;
+    color: #4285f4;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    
+  }
+
+  .profile-sns-link:hover {
+    background: linear-gradient(135deg, rgba(230, 244, 255, 0.95), rgba(190, 230, 255, 0.8));
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 6px 12px rgba(100, 180, 255, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.8);
+    color: #2c6fdb;
+  }
+
+  @keyframes snsPulse {
+    0% {
+      opacity: 0.7;
+      transform: scale(0.98);
+      box-shadow: 0 0 0 0 rgba(100, 180, 255, 0.4);
+    }
+    50% {
+      opacity: 0.3;
+      transform: scale(1.07);
+      box-shadow: 0 0 0 8px rgba(100, 180, 255, 0);
+    }
+    100% {
+      opacity: 0.7;
+      transform: scale(0.98);
+      box-shadow: 0 0 0 0 rgba(100, 180, 255, 0);
+    }
+  }
+
+  .sns-icon {
+    position: relative;
+    z-index: 2;
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+  }
+
+  html.dark-theme .profile-sns-link {
+    color: #a5c4ff;
+    border: 1px solid rgba(100, 140, 200, 0.3);
+  }
+
+  html.dark-theme .profile-sns-link:hover {
+    color: #d5e3ff;
+  }
+
+  html.dark-theme .profile-sns-link::after {
+    border: 1px solid rgba(100, 140, 200, 0.4);
+    background: radial-gradient(circle at center, rgba(100, 150, 220, 0.2) 0%, transparent 70%);
   }
 </style> 
