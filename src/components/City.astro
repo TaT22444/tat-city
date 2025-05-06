@@ -26,6 +26,11 @@ const workNames: string[] = [
       {currentTown === 'profile' && (
         <div class="profile-card">
           <div class="profile-image" style="background-image: url('/assets/images/profile/profile.png');"></div>
+          <div class="profile-image-popup">
+            <img src="/assets/images/profile/profile.png" alt="相原立弥" />
+            <h3>相原立弥（あいはら たつや）</h3>
+            <p>UI/UXデザイン、フロントエンド開発を専門とするデザイナー兼エンジニア。使いやすさと美しさを追求した体験設計が得意です。</p>
+          </div>
           <h2 class="profile-name">
             相原立弥
             <span class="profile-name-sub">Tatsuya Aihara</span>
@@ -75,6 +80,11 @@ const workNames: string[] = [
               </a>
             </li>
           </ul>
+          
+          <!-- 新しいクリックポイントの追加 -->
+          <div class="point-bubble profile-point" data-profile-point="true">
+            <div class="point-title">Profile</div>
+          </div>
         </div>
       )}
       
@@ -426,6 +436,34 @@ const workNames: string[] = [
   </div>
 </div>
 
+<!-- プロフィール情報ポップアップ - 左側に表示 -->
+<div class="profile-popup" id="profilePopup">
+  <div class="popup-header">
+    <h3 id="profilePopupTitle">相原立弥</h3>
+    <button class="popup-close-button" aria-label="閉じる">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="popup-image-container">
+    <img src="/assets/images/profile/profile.png" alt="相原立弥" class="profile-image-large">
+  </div>
+  <div class="popup-body">
+    <div class="popup-meta">
+      <span>デザイナー</span>
+      <span>エンジニア</span>
+      <span>千葉工業大学大学院</span>
+    </div>
+    <p id="profilePopupDescription">UI/UXデザイン、フロントエンド開発を専門とするデザイナー兼エンジニア。使いやすさと美しさを追求した体験設計が得意です。</p>
+  </div>
+  <div class="popup-footer">
+    <button class="popup-close-btn">閉じる</button>
+    <button class="popup-more-btn">詳細を見る</button>
+  </div>
+</div>
+
 <!-- テーマ切替スクリプト - より直接的なアプローチ -->
 <script is:inline>
 document.querySelector('#theme-toggle')?.addEventListener('click', function() {
@@ -521,6 +559,63 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     
     // 位置リセットボタンのイベントリスナー
     setupResetPositionButton();
+    
+    // プロフィールポップアップのイベントリスナー設定
+    const profilePopup = document.getElementById('profilePopup');
+    if (profilePopup) {
+      const setupProfilePopupEvents = () => {
+        const closeButton = profilePopup.querySelector('.popup-close-button');
+        const closeBtn = profilePopup.querySelector('.popup-close-btn');
+        const moreBtn = profilePopup.querySelector('.popup-more-btn');
+        
+        // 閉じるボタンクリックイベント
+        const closePopup = () => {
+          profilePopup.classList.remove('active');
+          
+          // ポップアップが閉じられたらズームモードも終了
+          exitZoomMode();
+          
+          setTimeout(() => {
+            profilePopup.style.display = 'none';
+          }, 300);
+        };
+        
+        if (closeButton) {
+          closeButton.addEventListener('click', closePopup);
+        }
+        
+        if (closeBtn) {
+          closeBtn.addEventListener('click', closePopup);
+        }
+        
+        if (moreBtn) {
+          moreBtn.addEventListener('click', () => {
+            // 詳細ページに遷移するなどの処理
+            console.log('詳細ページに遷移: プロフィール');
+          });
+        }
+        
+        // ESCキーでポップアップを閉じる
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && profilePopup.classList.contains('active')) {
+            closePopup();
+          }
+        });
+        
+        // ポップアップの外側をクリックしたときに閉じる
+        document.addEventListener('click', function(e) {
+          const profilePoint = document.querySelector('.profile-card .profile-point');
+          if (profilePopup.classList.contains('active') && 
+              !profilePopup.contains(e.target) && 
+              e.target !== profilePoint) {
+            closePopup();
+          }
+        });
+      };
+      
+      // イベントリスナーのセットアップを実行
+      setupProfilePopupEvents();
+    }
   });
   
   // ポイントとの衝突判定関連のコードを削除
@@ -573,12 +668,21 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
         title.style.transform = 'translateX(-50%)';
       });
       
-      // ポップアップも閉じる
-      const popup = document.getElementById('workPopup');
-      if (popup && popup.classList.contains('active')) {
-        popup.classList.remove('active');
+      // ワークポップアップを閉じる
+      const workPopup = document.getElementById('workPopup');
+      if (workPopup && workPopup.classList.contains('active')) {
+        workPopup.classList.remove('active');
         setTimeout(() => {
-          popup.style.display = 'none';
+          workPopup.style.display = 'none';
+        }, 300);
+      }
+      
+      // プロフィールポップアップも閉じる
+      const profilePopup = document.getElementById('profilePopup');
+      if (profilePopup && profilePopup.classList.contains('active')) {
+        profilePopup.classList.remove('active');
+        setTimeout(() => {
+          profilePopup.style.display = 'none';
         }, 300);
       }
       
@@ -887,6 +991,39 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       point.setAttribute('id', `point-${index + 1}`);
       point.classList.add('interactive');
       
+      // プロフィールポイントの特別処理
+      if (point.hasAttribute('data-profile-point')) {
+        // プロフィールポイントのクリックではモーダルを表示しない
+        point.addEventListener('click', (e) => {
+          e.stopPropagation();
+          // プロフィールポップアップを表示
+          const profilePopup = document.getElementById('profilePopup');
+          
+          if (profilePopup) {
+            // ポップアップの表示状態を確認
+            const isActive = profilePopup.classList.contains('active');
+            
+            if (isActive) {
+              // ポップアップが表示されている場合は閉じる
+              profilePopup.classList.remove('active');
+              exitZoomMode();
+            } else {
+              // ポップアップを表示
+              profilePopup.style.display = 'flex';
+              
+              // アニメーションのためにタイムアウトを設定
+              setTimeout(() => {
+                profilePopup.classList.add('active');
+              }, 10);
+              
+              // ポイントにズーム
+              zoomToPoint('profile');
+            }
+          }
+        });
+        return; // この後の処理をスキップ
+      }
+      
       // Works townの場合は作品情報を表示
       if (currentTown.includes('works')) {
         const workName = point.getAttribute('data-work-name') || '';
@@ -937,7 +1074,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       // ズーム中クラスを追加
       document.body.classList.add('is-zoomed');
       
-      // カメラ位置を設定
+      // カメラ位置を設定（中央からのオフセット）
       const camX = pos.x - 50;
       const camY = pos.y - 50;
       
@@ -1140,12 +1277,21 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
         title.classList.remove('title-visible');
       });
       
-      // ポップアップも閉じる
-      const popup = document.getElementById('workPopup');
-      if (popup && popup.classList.contains('active')) {
-        popup.classList.remove('active');
+      // ワークポップアップを閉じる
+      const workPopup = document.getElementById('workPopup');
+      if (workPopup && workPopup.classList.contains('active')) {
+        workPopup.classList.remove('active');
         setTimeout(() => {
-          popup.style.display = 'none';
+          workPopup.style.display = 'none';
+        }, 300);
+      }
+      
+      // プロフィールポップアップも閉じる
+      const profilePopup = document.getElementById('profilePopup');
+      if (profilePopup && profilePopup.classList.contains('active')) {
+        profilePopup.classList.remove('active');
+        setTimeout(() => {
+          profilePopup.style.display = 'none';
         }, 300);
       }
       
@@ -1313,6 +1459,9 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       '市民の木': { x: 24, y: 64 },
       'Invidi': { x: 58, y: 45 }
     },
+    'profile': {
+      'profile': { x: 50, y: 80 } // プロフィールポイントの位置（カード下部中央）
+    }
   };
 
   // 衝突判定関数の追加
@@ -2933,94 +3082,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     position: absolute;
     width: 200px;
     padding: 24px;
-    /* background-color: rgba(255, 255, 255, 0.92); */
-    border-radius: 16px;
-    /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
     top: 100%;
     left: 50%;
     transform: translateX(-50%) translateY(-100%);
     z-index: 20;
-    /* backdrop-filter: blur(5px); */
-    /* border: 1px solid rgba(255, 255, 255, 0.8); */
-  }
-
-  .profile-card .profile-image {
-    width: 100%;
-    aspect-ratio: 4/3;
-    border-radius: 16px;
-    margin: 0 auto 16px;
-    background-size: cover;
-    background-position: center;
-    border: 1px solid white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    position: relative;
-    transform-style: preserve-3d;
-    transition: all 0.3s;
-    overflow: visible; /* hidden から visible に変更 */
-    z-index: 2;
-  }
-
-  .profile-card .profile-image::after {
-    content: '';
-    position: absolute;
-    width: 105%; /* 小さく調整 */
-    height: 105%;
-    border-radius: 16px;
-    border: 1px solid rgba(180,190,255,0.7); /* 境界線を薄く */
-    top: -2.5%; /* 調整 */
-    left: -2.5%;
-    z-index: -1; /* 画像の下に表示されるように変更 */
-    animation: profilePulse 4s infinite ease-out; /* アニメーション速度を調整 */
-    pointer-events: none;
-    box-shadow: 0 0 50px rgba(120, 180, 255, 0.6), 
-               inset 0 0 30px rgba(140, 210, 255, 0.5);
-    border-color: rgba(180, 190, 255, 1);
-    background-color: rgba(120, 180, 255, 0.6);
-    filter: blur(4px);
-    transform: translateZ(-1px); /* 3D空間で背面に配置 */
-  }
-
-  @keyframes profilePulse {
-    0% {
-      opacity: 0.7;
-      transform: scale(.9) translateZ(-1px);
-      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2), 
-                 inset 0 0 10px rgba(255, 255, 255, 0.2);
-    }
-    50% {
-      opacity: 0.4;
-      transform: scale(1.1) translateZ(-1px);
-      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0), 
-                 inset 0 0 20px rgba(255, 255, 255, 0.1);
-    }
-    100% {
-      opacity: 0.7;
-      transform: scale(.9) translateZ(-1px);
-      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2), 
-                 inset 0 0 10px rgba(255, 255, 255, 0.2);
-    }
-  }
-
-  .profile-image:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  }
-
-  {/* .profile-card:hover .profile-image::after {
-    animation-duration: 3s;
-    border-color: rgba(255, 255, 255, 0.5);
-  } */}
-
-  html.dark-theme .profile-card .profile-image {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  }
-
-  html.dark-theme .profile-card .profile-image::before {
-    box-shadow: 0 0 15px rgba(100, 150, 255, 0.2);
-  }
-
-  html.dark-theme .profile-card .profile-image::after {
-    box-shadow: inset 0 0 15px rgba(100, 150, 200, 0.1);
   }
 
   .profile-card .profile-name {
@@ -3047,6 +3112,76 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
 
   /* ダークテーマ対応 */
   html.dark-theme .profile-card {
+    border-color: rgba(70, 70, 90, 0.5);
+  }
+
+  html.dark-theme .profile-card .profile-name {
+    color: #e0e0e0;
+  }
+
+  html.dark-theme .profile-card .profile-text {
+    color: #aaa;
+  }
+
+  .profile-card .profile-image-popup {
+    position: absolute;
+    left: -280px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    width: 220px;
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 30;
+    padding: 15px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    pointer-events: auto;
+  }
+
+  /* プロフィール画像ポップアップの表示設定 - アクティブ時のみ表示 */
+  .profile-card .profile-image-popup.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) scale(1);
+    left: -280px;
+  }
+
+  /* ホバー時の表示設定を削除 */
+  /* .profile-card .profile-image:hover + .profile-image-popup,
+  .profile-card .profile-image-popup:hover {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) scale(1);
+    left: -280px;
+  } */
+
+  .profile-card .profile-image-popup img {
+    width: 100%;
+    border-radius: 10px;
+    transform: scale(1.05);
+    filter: blur(0.5px);
+    transition: all 0.3s ease;
+  }
+
+  .profile-card .profile-image-popup h3 {
+    font-size: 16px;
+    margin: 12px 0 5px;
+    color: #333;
+  }
+
+  .profile-card .profile-image-popup p {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* ダークテーマ対応 */
+  html.dark-theme .profile-card {
 
     border-color: rgba(70, 70, 90, 0.5);
 
@@ -3064,9 +3199,47 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     color: #aaaaaa;
   }
 
-  html.dark-theme .profile-skills li {
-    color: #a5b4fc;
+  .profile-card .profile-image-popup {
+    position: absolute;
+    left: -250px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    width: 220px;
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 30;
+    padding: 15px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    pointer-events: none; /* ポップアップ自体にはホバーできないように */
   }
+
+  .profile-image-popup img {
+    width: 100%;
+    border-radius: 10px;
+    transform: scale(1.05);
+    filter: blur(0.5px);
+    transition: all 0.3s ease;
+  }
+
+  .profile-image-popup h3 {
+    font-size: 16px;
+    margin: 12px 0 5px;
+    color: #333;
+  }
+
+  .profile-image-popup p {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  
 
   /* モバイル対応 */
   @media (max-width: 768px) {
@@ -3171,5 +3344,204 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   html.dark-theme .profile-sns-link::after {
     border: 1px solid rgba(100, 140, 200, 0.4);
     background: radial-gradient(circle at center, rgba(100, 150, 220, 0.2) 0%, transparent 70%);
+  }
+
+  .profile-card .profile-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 16px;
+    margin: 0 auto 16px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: visible;
+    z-index: 10; /* z-indexをさらに高くして他要素より前面に表示 */
+    cursor: pointer !important; /* カーソルをポインターに固定 */
+    pointer-events: auto; /* ポインターイベントを明示的に有効化 */
+    /* will-change: transform; ホバー時のパフォーマンス改善 */
+  }
+
+  .profile-card .profile-image::after {
+    content: '';
+    position: absolute;
+    width: 105%;
+    height: 105%;
+    border-radius: 16px;
+    border: 1px solid rgba(180,190,255,0.7);
+    top: -2.5%;
+    left: -2.5%;
+    z-index: -1;
+    animation: profilePulse 4s infinite ease-out;
+    pointer-events: none; /* ポインターイベントを完全に透過 */
+    box-shadow: 0 0 50px rgba(120, 180, 255, 0.6), 
+               inset 0 0 30px rgba(140, 210, 255, 0.5);
+    border-color: rgba(180, 190, 255, 1);
+    background-color: rgba(120, 180, 255, 0.6);
+    filter: blur(4px);
+    transform: translateZ(-1px);
+    /* transform-origin: center center; 変形の基準点を中央に固定 */
+  }
+
+  @keyframes profilePulse {
+    0% {
+      opacity: 0.7;
+      transform: scale(.9) translateZ(-1px);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2), 
+                 inset 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(1.1) translateZ(-1px);
+      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0), 
+                 inset 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    100% {
+      opacity: 0.7;
+      transform: scale(.9) translateZ(-1px);
+      box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.2), 
+                 inset 0 0 10px rgba(255, 255, 255, 0.2);
+    }
+  }
+
+  .profile-card .profile-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+    cursor: pointer !important; /* ホバー時にもカーソルをポインターに固定 */
+  }
+
+  .profile-card .profile-image:hover::after {
+    filter: blur(6px);
+    background-color: rgba(120, 180, 255, 0.7);
+  }
+
+  html.dark-theme .profile-card .profile-image {
+    border-color: rgba(50, 50, 60, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* プロフィールポップアップスタイル - worksタウンのポップアップと同様のスタイル */
+  .profile-popup {
+    position: fixed;
+    left: 4%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-4%);
+    width: 30%;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 32px;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 16px 24px;
+  }
+
+  .profile-popup.active {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .profile-image-large {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+  }
+
+  /* ダークテーマ対応 */
+  html.dark-theme .profile-popup {
+    background-color: rgba(30, 30, 35, 0.92);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 
+                0 5px 10px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  html.dark-theme .profile-popup .popup-header h3 {
+    color: #F9FAFB;
+  }
+  
+  /* 既存のプロフィール画像ポップアップスタイルはそのまま残す */
+  .profile-card .profile-image-popup {
+    position: absolute;
+    left: -280px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
+    width: 220px;
+    background-color: rgba(255, 255, 255, 0.92);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    z-index: 30;
+    padding: 15px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    pointer-events: auto;
+    display: none; /* 非表示に変更 */
+  }
+
+  /* プロフィール用のポイント */
+  .profile-card .profile-point {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    z-index: 30;
+  }
+
+  .profile-card .point-title {
+    position: absolute;
+    width: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -24px;
+    text-align: center;
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: var(--text-color);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 2px 6px;
+    border-radius: 10px;
+    pointer-events: none;
+  }
+
+  .profile-card .profile-point:hover .point-title {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+  }
+
+  /* プロフィール画像のスタイル調整 */
+  .profile-card .profile-image {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 16px;
+    margin: 0 auto 16px;
+    background-size: cover;
+    background-position: center;
+    border: 1px solid white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    overflow: visible;
+    z-index: 10;
+    cursor: default; /* カーソルをデフォルトに変更 */
+    pointer-events: auto;
+  }
+
+  .profile-card .profile-image:hover {
+    transform: none; /* ホバー時の拡大を無効化 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* 元のシャドウを維持 */
+    cursor: default;
   }
 </style> 
