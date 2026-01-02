@@ -1,0 +1,559 @@
+---
+// CityStyles.astro - スタイル専用コンポーネント
+---
+
+<style>
+  /* ルート要素でテーマ変数を定義 */
+  :root {
+    /* ライトテーマ（デフォルト） */
+    --bg-gradient-start: #e8e8e8;
+    --bg-gradient-end: #d0d0d0;
+    --ground-color: #e0e0e0;
+    --ground-line-color: rgba(180, 180, 180, 0.3);
+    --ground-shadow: rgba(0,0,0,0.1);
+    --building-front: #e5e5e5;
+    --building-border: #d8d8d8;
+    --building-side: #d8d8d8;
+    --building-top: #f0f0f0;
+    --ruins-color: #d5d5d5;
+    --ruins-detail: rgba(150, 150, 150, 0.2);
+    --road-color: #c5c5c5;
+    --road-line: rgba(255, 255, 255, 0.8);
+    --debris-color: #c0c0c0;
+    --plant-color: #a8b8a8;
+    --car-color: #b5b5b5;
+    --person-color: #909090;
+    --text-color: #333;
+    --controls-bg: rgba(220, 220, 220, 0.8);
+    --panel-bg: rgba(240, 240, 240, 0.8);
+  }
+  
+  /* ダークテーマ */
+  html.dark-theme {
+    --bg-gradient-start: #a3a3a3;
+    --bg-gradient-end: #5a5a5a;
+    --ground-color: #505050;
+    --ground-line-color: rgba(100, 100, 100, 0.3);
+    --ground-shadow: rgba(0,0,0,0.2);
+    --building-front: #5a5a5a;
+    --building-border: #4a4a4a;
+    --building-side: #4d4d4d;
+    --building-top: #6a6a6a;
+    --ruins-color: #4a4a4a;
+    --ruins-detail: rgba(30, 30, 30, 0.3);
+    --road-color: #333333;
+    --road-line: rgba(255, 255, 255, 0.3);
+    --debris-color: #555;
+    --plant-color: #567356;
+    --car-color: #5d5d5d;
+    --person-color: #e0e0e0;
+    --text-color: #e0e0e0;
+    --controls-bg: rgba(60, 60, 60, 0.8);
+    --panel-bg: rgba(40, 40, 40, 0.7);
+  }
+  
+  .city {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f5f5f5;
+  }
+  
+  .elem1{
+    background-color: #000;
+  }
+  
+  header {
+    padding: 1rem;
+    color: #333;
+    z-index: 100;
+  }
+  
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  h1 {
+    font-size: 1.5rem;
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .town-name {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    font-size: 0.9rem;
+    font-weight: 200;
+    letter-spacing: 1.5px;
+    color: var(--text-color);
+    opacity: 0.8;
+    padding: 0.3rem 0.6rem;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    z-index: 200;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+  
+  .town-name:hover {
+    opacity: 1;
+  }
+  
+  html.dark-theme .town-name {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+  
+  .city-view {
+    position: relative;
+    flex: 1;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    perspective: 1500px;
+  }
+  
+  .city-grid {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    transform-style: preserve-3d;
+    transition: transform 0.1s ease-out;
+    transform-origin: center center;
+    transform: rotateX(55deg) scale(1.8);
+  }
+  
+  .city-grid.reset-transition {
+    transition: transform 0.5s ease-out;
+  }
+  
+  .ground {
+    position: absolute;
+    width: 300%;
+    height: 300%;
+    left: -100%;
+    top: -100%;
+    background-color: var(--ground-color);
+    background-image: 
+      linear-gradient(to right, var(--ground-line-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--ground-line-color) 1px, transparent 1px);
+    background-size: 40px 40px;
+    box-shadow: inset 0 0 40px var(--ground-shadow);
+  }
+  
+  .building {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    transform-style: preserve-3d;
+    transform: translateZ(0);
+  }
+  
+  .building-small {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .building-front, .building-side, .building-top {
+    position: absolute;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+  }
+  
+  .building-front {
+    width: 100%;
+    height: 100%;
+    transform-origin: bottom center;
+    background-color: var(--building-front);
+    border-left: 1px solid var(--building-border);
+    border-right: 1px solid var(--building-border);
+  }
+  
+  /* ニーアオートマタ風の廃墟テクスチャ */
+  .building-front.ruins {
+    background-color: var(--ruins-color);
+    background-image: 
+      linear-gradient(90deg, var(--ruins-detail) 0%, transparent 20%, transparent 80%, var(--ruins-detail) 100%),
+      linear-gradient(to bottom, var(--ruins-detail) 0%, transparent 20%, transparent 80%, var(--ruins-detail) 100%);
+  }
+  
+  .building-front.ruins::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 30% 40%, var(--ruins-detail) 0%, transparent 30%),
+      radial-gradient(circle at 70% 60%, var(--ruins-detail) 0%, transparent 20%);
+    z-index: 1;
+  }
+  
+  .building-side {
+    width: 20px;
+    height: 100%;
+    right: -20px;
+    transform-origin: left center;
+    transform: rotateY(90deg);
+    background-color: var(--building-side);
+  }
+  
+  .building-side.ruins {
+    background-color: var(--ruins-color);
+    filter: brightness(0.9);
+  }
+  
+  .building-top {
+    width: 100%;
+    height: 20px;
+    top: -5px;
+    transform-origin: bottom center;
+    transform: rotateX(-90deg);
+    background-color: var(--building-top);
+  }
+  
+  .building-tall {
+    height: 80px;
+    z-index: 5;
+  }
+  
+  .building-wide {
+    width: 100px;
+  }
+  
+  /* 巨大建築物（メガストラクチャー） */
+  .megastructure {
+    z-index: 6;
+  }
+  
+  /* メインロード（中央の大きな道路） */
+  .road.main-road {
+    position: absolute;
+    width: 80px;
+    height: 300%;
+    top: -100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--road-color);
+    z-index: 2;
+    /* box-shadow: 0 0 15px var(--ground-shadow); */
+  }
+  
+  .road.main-road::after {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 100%;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--road-line);
+  }
+  
+  /* 交差道路 */
+  .road.cross-road-1, .road.cross-road-2 {
+    position: absolute;
+    height: 25px;
+    width: 200%;
+    left: -50%;
+    background-color: var(--road-color);
+    z-index: 1;
+    /* box-shadow: 0 0 12px var(--ground-shadow); */
+  }
+  
+  .road.cross-road-1 {
+    top: 30%;
+  }
+  
+  .road.cross-road-2 {
+    top: 60%;
+  }
+  
+  /* 廃棄物や瓦礫 */
+  .debris {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    z-index: 4;
+  }
+  
+  .debris-1 {
+    background-color: var(--debris-color);
+    clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
+  }
+  
+  .debris-2 {
+    background-color: var(--debris-color);
+    filter: brightness(1.05);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+  
+  /* 荒廃地に生える植物 */
+  .wild-plant {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    z-index: 3;
+  }
+  
+  .wild-plant::before {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: var(--plant-color);
+    clip-path: polygon(50% 0%, 65% 35%, 100% 35%, 75% 60%, 85% 100%, 50% 80%, 15% 100%, 25% 60%, 0% 35%, 35% 35%);
+  }
+  
+  /* 崩壊した車両 */
+  .car.rusted-car {
+    width: 25px;
+    height: 12px;
+    background-color: var(--car-color);
+    border-radius: 2px;
+    position: absolute;
+    z-index: 4;
+  }
+  
+  .car.rusted-car::before, .car.rusted-car::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background-color: var(--car-color);
+    filter: brightness(0.9);
+    border-radius: 50%;
+  }
+  
+  .car.rusted-car::before {
+    left: 3px;
+    bottom: -2px;
+  }
+  
+  .car.rusted-car::after {
+    right: 3px;
+    bottom: -2px;
+  }
+  
+  /* 追加のオブジェクト */
+  .object {
+    position: absolute;
+    transform-style: preserve-3d;
+    z-index: 5;
+  }
+  
+  /* 人型のスタイル */
+  .person {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+  }
+  
+  .person-body {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+  }
+  
+  .person-head {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--person-color);
+    border-radius: 50%;
+    left: 6px;
+    top: -2px;
+    z-index: 3;
+  }
+  
+  .person-torso {
+    position: absolute;
+    width: 10px;
+    height: 14px;
+    background-color: var(--person-color);
+    filter: brightness(0.9);
+    left: 5px;
+    top: 5px;
+    z-index: 2;
+  }
+  
+  .person-leg {
+    position: absolute;
+    width: 4px;
+    height: 10px;
+    background-color: var(--person-color);
+    filter: brightness(0.8);
+    bottom: -10px;
+    transform-origin: top center;
+  }
+  
+  .person-leg.left {
+    left: 5px;
+  }
+  
+  .person-leg.right {
+    left: 11px;
+  }
+  
+  .person-arm {
+    position: absolute;
+    width: 3px;
+    height: 8px;
+    background-color: var(--person-color);
+    filter: brightness(0.8);
+    top: 6px;
+    transform-origin: top center;
+  }
+  
+  .person-arm.left {
+    left: 2px;
+  }
+  
+  .person-arm.right {
+    right: 2px;
+  }
+  
+  .person-shadow {
+    position: absolute;
+    width: 12px;
+    height: 4px;
+    background-color: rgba(0,0,0,0.15);
+    border-radius: 50%;
+    bottom: -14px;
+    left: 4px;
+    filter: blur(1px);
+  }
+  
+  /* テーマ切替ボタン */
+  .theme-switcher {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 200;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+  }
+  
+  .theme-switcher button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--panel-bg);
+    border: 1px solid rgba(150, 150, 150, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(5px);
+    color: var(--text-color);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .theme-switcher button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .theme-switcher button:active {
+    transform: translateY(0);
+  }
+  
+  #theme-toggle .theme-icon.dark {
+    display: none;
+  }
+  
+  #theme-toggle.dark-active .theme-icon.light {
+    display: none;
+  }
+  
+  #theme-toggle.dark-active .theme-icon.dark {
+    display: block;
+  }
+  
+  #reset-position:hover .reset-icon {
+    animation: pulse 1s ease infinite;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
+  .controls {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 200;
+  }
+  
+  .controls-row {
+    display: flex;
+  }
+  
+  .controls button {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    border-radius: 8px;
+    background-color: var(--controls-bg);
+    border: 1px solid var(--building-border);
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    color: var(--text-color);
+  }
+  
+  .controls button:hover {
+    filter: brightness(1.05);
+  }
+  
+  .controls button:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  
+  /* モバイル向け調整 */
+  @media (max-width: 768px) {
+    .controls button {
+      width: 50px;
+      height: 50px;
+      font-size: 16px;
+    }
+    
+    #theme-toggle {
+      width: 42px;
+      height: 42px;
+    }
+    
+    .theme-icon svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  
+  /* 建物のインタラクティブ化 */
+  .building.interactive {
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+  }
+  
+  .building.interactive:hover {
+    transform: translateZ(20px) scale(1.05);
+    filter: brightness(1.2);
+    z-index: 10;
+  }
+</style>

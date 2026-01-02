@@ -7,15 +7,22 @@ export interface Props {
 // デフォルト値を持つプロパティを展開
 const { currentTown = 'profile' } = Astro.props;
 
+// 作品データを外部ファイルから読み込み
+import { worksData } from '../data/worksData.js';
+// スタイルコンポーネントをインポート
+import CityStyles from './CityStyles.astro';
+
 // Worksタウン用の会社リスト（ポイント名に 'Co.' を付加）
-const workNames: string[] = [
-  'Hamori', 'MasiMasi', 'Atta!', 'CIT portal', '市民の木', 'Invidi'
+const workNames: string[] = worksData.names;
+const blogNames: string[] = [
+  'ブログはじめました', 'UIデザインのコツ', '最近読んだ本'
 ];
 ---
 
+<CityStyles />
 <div class="city">
   <header class="city-header">
-    <h1 class="city-title">TATSUYA CITY</h1>
+    <h1 class="city-title">tatsuya city</h1>
   </header>
   <div class={`city-view town-${currentTown}`} id="cityView">
     <div class="city-grid" id="cityGrid">
@@ -87,84 +94,6 @@ const workNames: string[] = [
           </div>
         </div>
       )}
-      
-      <!-- メインストリート（中央の大きな道路） -->
-      <div class="road main-road" style="display: none;"></div>
-      
-      <!-- 交差道路 -->
-      <div class="road cross-road-1" style="display: none;"></div>
-      <div class="road cross-road-2" style="display: none;"></div>
-      
-      <!-- 左側の建物列 -->
-      <div class="building building-tall left-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      <div class="building left-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      <div class="building building-tall left-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front ruins"></div>
-        <div class="building-side ruins"></div>
-      </div>
-      <div class="building megastructure left-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front ruins"></div>
-        <div class="building-side ruins"></div>
-      </div>
-      <div class="building left-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      <div class="building building-small left-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      
-      <!-- 右側の建物列 -->
-      <div class="building building-tall right-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      <div class="building right-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      <div class="building building-tall right-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front ruins"></div>
-        <div class="building-side ruins"></div>
-      </div>
-      <div class="building megastructure right-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front ruins"></div>
-        <div class="building-side ruins"></div>
-      </div>
-      <div class="building right-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      <div class="building building-small right-row" style="display: none;">
-        <div class="building-top"></div>
-        <div class="building-front"></div>
-        <div class="building-side"></div>
-      </div>
-      
-      <!-- オブジェクト -->
-      <div class="object debris debris-1" style="display: none;"></div>
-      <div class="object debris debris-2" style="display: none;"></div>
-      <div class="object wild-plant plant-1" style="display: none;"></div>
-      <div class="object wild-plant plant-2" style="display: none;"></div>
-      <div class="object car rusted-car" style="display: none;"></div>
 
       <!-- 空間に吹き出しポイントを追加 -->
       <div class={`point-bubble point-1 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Hamori">
@@ -215,86 +144,40 @@ const workNames: string[] = [
           </>
         )}
       </div>
-      <div class={`point-bubble point-7 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Weather Dashboard">
+      <div class={`point-bubble point-7 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Ittow">
         {currentTown === 'works' && (
           <>
             <div class="work-image"></div>
-            <div class="work-title">Weather Dashboard</div>
+            <div class="work-title">Ittow</div>
           </>
         )}
       </div>
-      <div class={`point-bubble point-8 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Task Manager">
+      <div class={`point-bubble point-8 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Wink">
         {currentTown === 'works' && (
           <>
             <div class="work-image"></div>
-            <div class="work-title">Task Manager</div>
+            <div class="work-title">Wink</div>
           </>
         )}
       </div>
-      <div class={`point-bubble point-9 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Music Player">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Music Player</div>
-          </>
-        )}
-      </div>
-      <div class={`point-bubble point-10 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Food Delivery">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Food Delivery</div>
-          </>
-        )}
-      </div>
-      <div class={`point-bubble point-11 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="E-commerce Shop">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">E-commerce Shop</div>
-          </>
-        )}
-      </div>
-      <div class={`point-bubble point-12 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Fitness Tracker">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Fitness Tracker</div>
-          </>
-        )}
-      </div>
-      <div class={`point-bubble point-13 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Travel Journal">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Travel Journal</div>
-          </>
-        )}
-      </div>
-      <div class={`point-bubble point-14 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Photo Gallery">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Photo Gallery</div>
-          </>
-        )}
-      </div>
-      <div class={`point-bubble point-15 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Finance Manager">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Finance Manager</div>
-          </>
-        )}
-      </div>
-      <div class={`point-bubble point-16 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Recipe Book">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Recipe Book</div>
-          </>
-        )}
-      </div>
+
+      {/* Blogsタウン用のポイント */}
+      {currentTown === 'blogs' && (
+        <>
+          <div class={`point-bubble point-1 blog-item`} data-blog-name="ブログはじめました">
+            <div class="work-image" style="background-image: url(https://picsum.photos/id/40/200)"></div>
+            <div class="work-title">ブログはじめました</div>
+          </div>
+          <div class={`point-bubble point-2 blog-item`} data-blog-name="UIデザインのコツ">
+            <div class="work-image" style="background-image: url(https://picsum.photos/id/41/200)"></div>
+            <div class="work-title">UIデザインのコツ</div>
+          </div>
+          <div class={`point-bubble point-3 blog-item`} data-blog-name="最近読んだ本">
+            <div class="work-image" style="background-image: url(https://picsum.photos/id/42/200)"></div>
+            <div class="work-title">最近読んだ本</div>
+          </div>
+        </>
+      )}
     </div>
     
     <!-- 人を配置する -->
@@ -464,6 +347,31 @@ const workNames: string[] = [
   </div>
 </div>
 
+<!-- ブログ情報ポップアップ -->
+<div class="work-popup" id="blogPopup" style="display: none;">
+  <div class="popup-header">
+    <h3 id="blogPopupTitle"></h3>
+    <button class="popup-close-button" aria-label="閉じる">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="popup-image-container" id="blogPopupImage"></div>
+  <div class="popup-body">
+    <div class="popup-meta">
+      <span id="blogPopupDate"></span>
+      <span id="blogPopupCategory"></span>
+    </div>
+    <p id="blogPopupDescription"></p>
+  </div>
+  <div class="popup-footer">
+    <button class="popup-close-btn">閉じる</button>
+    <button class="popup-more-btn">続きを読む</button>
+  </div>
+</div>
+
 <!-- テーマ切替スクリプト - より直接的なアプローチ -->
 <script is:inline>
 document.querySelector('#theme-toggle')?.addEventListener('click', function() {
@@ -488,6 +396,61 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
 
 <!-- メインスクリプト -->
 <script is:inline>
+  // 作品データをクライアントサイドで使用可能にする
+  const worksData = {
+    descriptions: {
+      'Hamori': '複数人での飲食店決めを楽しくスムーズにするアプリ。みんなの好みを集計して最適な候補を提案します。',
+      'MasiMasi': 'オンラインで簡単に募金ができる寄付プラットフォーム。支援したい団体や活動を選んでスピーディに支援できます。',
+      'Atta!': '新たな視点を提供する発見系メディア。多様な意見と視点に触れることで、新しい気づきや学びを得られます。',
+      'CIT portal': '千葉工業大学の学生向けポータルサイト。授業情報や学内イベントなどをまとめて確認できます。',
+      '市民の木': '地域の課題解決を市民が主体となって行うプラットフォーム。住民同士のコミュニケーションと協力を促進します。',
+      'Invidi': '個人の思考や興味を整理・共有するための知識管理ツール。アイデアの整理からコラボレーションまでサポートします。',
+      'Ittow': 'スキマ時間の学習アプリ',
+      'Wink': '積読防止スマートリンク管理アプリ'
+    },
+    types: {
+      'Hamori': 'モバイルアプリ',
+      'MasiMasi': 'ウェブサービス',
+      'Atta!': 'オンラインメディア',
+      'CIT portal': '学生ポータル',
+      '市民の木': 'コミュニティプラットフォーム',
+      'Invidi': '知識管理ツール',
+      'Ittow': 'モバイルアプリ',
+      'Wink': 'モバイルアプリ'
+    },
+    scopes: {
+      'Hamori': 'チーム制作',
+      'MasiMasi': 'チーム制作',
+      'Atta!': '企業案件',
+      'CIT portal': '大学プロジェクト',
+      '市民の木': '自治体連携',
+      'Invidi': '個人制作',
+      'Ittow': '個人制作',
+      'Wink': '個人制作'
+    },
+    durations: {
+      'Hamori': '3ヶ月',
+      'MasiMasi': '2ヶ月',
+      'Atta!': '4ヶ月',
+      'CIT portal': '6ヶ月',
+      '市民の木': '3ヶ月',
+      'Invidi': '1ヶ月',
+      'Ittow': '2週間',
+      'Wink': '1ヶ月半'
+    },
+    positions: {
+      'Hamori': { x: 60, y: 65 },
+      'MasiMasi': { x: 75, y: 35 },
+      'Atta!': { x: 35, y: 40 },
+      'CIT portal': { x: 45, y: 75 },
+      '市民の木': { x: 24, y: 64 },
+      'Invidi': { x: 58, y: 45 },
+      'Ittow': { x: 55, y: 90 },
+      'Wink': { x: 40, y: 60 }
+    },
+    names: ['Hamori', 'MasiMasi', 'Atta!', 'CIT portal', '市民の木', 'Invidi', 'Ittow', 'Wink']
+  };
+  
   // DOM要素
   let cityView = null;
   let cityGrid = null;
@@ -497,7 +460,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   let modalContent = null;
 
   // 建物データ
-  const buildingData = [
+  {/* const buildingData = [
     { id: 'building-1', name: 'セントラルタワー', type: 'megastructure', description: '都市の中心に位置する最も高い超高層ビル。多くの企業のオフィスや高級住居があります。' },
     { id: 'building-2', name: 'テクノロジーセンター', type: 'tall', description: '最先端技術の研究開発が行われるハイテクビル。革新的な発明の源泉です。' },
     { id: 'building-3', name: 'ルイン・プラザ', type: 'ruins', description: '過去の栄光を偲ばせる廃墟ビル。かつては賑わいのあった商業施設でした。' },
@@ -510,7 +473,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     { id: 'building-10', name: 'ネオ・コロッサス', type: 'megastructure', description: '未来的デザインの新世代メガストラクチャー。自家発電システムを備えた環境配慮型建築です。' },
     { id: 'building-11', name: 'コンパクトモール', type: 'standard', description: '効率的レイアウトの商業施設。日常の買い物に便利なショップが揃っています。' },
     { id: 'building-12', name: 'ミニハウジング', type: 'small', description: '小さいながらも機能的な住居ビル。最小限の空間で最大限の快適さを提供します。' }
-  ];
+  ]; */}
   
   // 状態変数
   let personX = 50; // 初期X位置（%）
@@ -522,6 +485,8 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   let walkCycle = 0;
   let isZoomed = false; // ズーム状態を追跡するフラグ
   let zoomedPointName = null; // ズーム中のポイント名
+  let collidingWork = null; // 衝突中の作品名
+  let isEventLocked = false; // イベント発生時の操作ロック
   
   // DOMが読み込まれた後に実行
   document.addEventListener('DOMContentLoaded', () => {
@@ -640,13 +605,14 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       }
       
       // ポイントとの衝突判定
-      // checkPointCollision(); // 一時的に無効化
+      checkPointCollision();
     }
   }
   
   // ズーム状態を解除する関数
   function exitZoomMode() {
     if (isZoomed) {
+      isEventLocked = false; // Ensure unlock on exit
       isZoomed = false;
       zoomedPointName = null;
       
@@ -693,6 +659,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   // キーボード操作のセットアップ
   function setupKeyboardControls() {
     document.addEventListener('keydown', (e) => {
+      // イベント発生直後は操作をロック
+      if (isEventLocked) {
+        return;
+      }
       // キーボード入力があればズームモードを終了
       if (isZoomed) {
         exitZoomMode();
@@ -732,6 +702,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   // ボタン操作のセットアップ
   function setupButtonControls() {
     document.getElementById('w-btn')?.addEventListener('mousedown', () => {
+      // イベント発生直後は操作をロック
+      if (isEventLocked) {
+        return;
+      }
       // ボタン操作があればズームモードを終了
       if (isZoomed) {
         exitZoomMode();
@@ -744,6 +718,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     });
     
     document.getElementById('a-btn')?.addEventListener('mousedown', () => {
+      // イベント発生直後は操作をロック
+      if (isEventLocked) {
+        return;
+      }
       // ボタン操作があればズームモードを終了
       if (isZoomed) {
         exitZoomMode();
@@ -756,6 +734,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     });
     
     document.getElementById('s-btn')?.addEventListener('mousedown', () => {
+      // イベント発生直後は操作をロック
+      if (isEventLocked) {
+        return;
+      }
       // ボタン操作があればズームモードを終了
       if (isZoomed) {
         exitZoomMode();
@@ -768,6 +750,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     });
     
     document.getElementById('d-btn')?.addEventListener('mousedown', () => {
+      // イベント発生直後は操作をロック
+      if (isEventLocked) {
+        return;
+      }
       // ボタン操作があればズームモードを終了
       if (isZoomed) {
         exitZoomMode();
@@ -797,6 +783,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     
     if (cityView) {
       cityView.addEventListener('touchstart', function(e) {
+        // イベント発生直後は操作をロック
+        if (isEventLocked) {
+          return;
+        }
         // タッチ操作があればズームモードを終了
         if (isZoomed) {
           exitZoomMode();
@@ -809,6 +799,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       });
       
       cityView.addEventListener('touchmove', function(e) {
+        // イベント発生直後は操作をロック
+        if (isEventLocked) {
+          return;
+        }
         // ズーム中はタッチ操作を無視
         if (isZoomed) return;
         
@@ -986,6 +980,9 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     const activeTownElement = document.querySelector('.town-list li.active a');
     const currentTown = activeTownElement?.textContent?.trim().toLowerCase() || 'profile';
     
+    console.log('setupPointBubbles called, found', points.length, 'points');
+    console.log('Current town:', currentTown);
+    
     points.forEach((point, index) => {
       // ポイントにIDを設定
       point.setAttribute('id', `point-${index + 1}`);
@@ -993,32 +990,13 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       
       // プロフィールポイントの特別処理
       if (point.hasAttribute('data-profile-point')) {
-        // プロフィールポイントのクリックではモーダルを表示しない
         point.addEventListener('click', (e) => {
           e.stopPropagation();
-          // プロフィールポップアップを表示
           const profilePopup = document.getElementById('profilePopup');
-          
-          if (profilePopup) {
-            // ポップアップの表示状態を確認
-            const isActive = profilePopup.classList.contains('active');
-            
-            if (isActive) {
-              // ポップアップが表示されている場合は閉じる
-              profilePopup.classList.remove('active');
-              exitZoomMode();
-            } else {
-              // ポップアップを表示
-              profilePopup.style.display = 'flex';
-              
-              // アニメーションのためにタイムアウトを設定
-              setTimeout(() => {
-                profilePopup.classList.add('active');
-              }, 10);
-              
-              // ポイントにズーム
-              zoomToPoint('profile');
-            }
+          if (profilePopup?.classList.contains('active')) {
+            hideProfilePopup();
+          } else {
+            showProfilePopup();
           }
         });
         return; // この後の処理をスキップ
@@ -1027,15 +1005,30 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       // Works townの場合は作品情報を表示
       if (currentTown.includes('works')) {
         const workName = point.getAttribute('data-work-name') || '';
+        console.log('Setting up click event for work:', workName);
         
         point.addEventListener('click', (e) => {
           e.stopPropagation();
+          console.log('Point clicked:', workName);
           // まずズームして、その後ポップアップを表示
           zoomToPoint(workName);
           setTimeout(() => {
             showWorkPopup(workName);
           }, 600);
         });
+      }
+      // Blogs townの場合はブログ情報を表示
+      else if (currentTown.includes('blogs')) {
+        const blogName = point.getAttribute('data-blog-name') || '';
+        if (blogName) {
+          point.addEventListener('click', (e) => {
+            e.stopPropagation();
+            zoomToPoint(blogName);
+            setTimeout(() => {
+              showBlogPopup(blogName);
+            }, 600);
+          });
+        }
       } else {
         // それ以外のタウンでは建物情報と同じデータを利用
         point.addEventListener('click', (e) => {
@@ -1046,8 +1039,82 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     });
   }
 
+  // プロフィールポップアップ表示関数
+  function showProfilePopup() {
+    const profilePopup = document.getElementById('profilePopup');
+    if (profilePopup && !profilePopup.classList.contains('active')) {
+      profilePopup.style.display = 'flex';
+      setTimeout(() => {
+        profilePopup.classList.add('active');
+      }, 10);
+      zoomToPoint('profile');
+    }
+  }
+
+  // プロフィールポップアップ非表示関数
+  function hideProfilePopup() {
+    const profilePopup = document.getElementById('profilePopup');
+    if (profilePopup && profilePopup.classList.contains('active')) {
+      profilePopup.classList.remove('active');
+      exitZoomMode();
+    }
+  }
+
+  // ブログポップアップ表示関数
+  function showBlogPopup(blogName) {
+    const popup = document.getElementById('blogPopup');
+    if (!popup) return;
+
+    // --- Placeholder Content ---
+    const blogData = {
+      'ブログはじめました': {
+        date: '2025.09.18',
+        category: '雑記',
+        description: 'このブログの最初の記事です。これから技術的な内容や日々の考えを綴っていきます。',
+        image: 'https://picsum.photos/id/40/400/200',
+      },
+      'UIデザインのコツ': {
+        date: '2025.09.20',
+        category: 'デザイン',
+        description: 'ユーザーにとって分かりやすく、使いやすいUIをデザインするためのいくつかのコツを紹介します。',
+        image: 'https://picsum.photos/id/41/400/200',
+      },
+      '最近読んだ本': {
+        date: '2025.09.22',
+        category: '読書',
+        description: '最近読んで面白かったビジネス書や小説についての感想です。',
+        image: 'https://picsum.photos/id/42/400/200',
+      }
+    };
+    const data = blogData[blogName] || { date: 'N/A', category: 'N/A', description: '記事が見つかりません。', image: '' };
+    // --- End Placeholder ---
+
+    popup.querySelector('#blogPopupTitle').textContent = blogName;
+    popup.querySelector('#blogPopupDate').textContent = data.date;
+    popup.querySelector('#blogPopupCategory').textContent = data.category;
+    popup.querySelector('#blogPopupDescription').textContent = data.description;
+    popup.querySelector('#blogPopupImage').innerHTML = `<img src="${data.image}" alt="${blogName}">`;
+
+    popup.style.display = 'flex';
+    setTimeout(() => {
+      popup.classList.add('active');
+    }, 10);
+
+    // Setup close events
+    const closePopup = () => {
+      popup.classList.remove('active');
+      exitZoomMode();
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 300);
+    };
+    popup.querySelector('.popup-close-button').onclick = closePopup;
+    popup.querySelector('.popup-close-btn').onclick = closePopup;
+  }
+
   // ポイントにズームする機能だけを提供する関数（モーダルは表示しない）
   function zoomToPoint(workName) {
+    console.log('zoomToPoint called with:', workName);
     if (!workName) return;
     
     // 現在のタウンを取得
@@ -1058,6 +1125,9 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
                         currentTownText.includes('works') ? 'works' : 
                         currentTownText.includes('blogs') ? 'blogs' : 'profile';
     
+    console.log('Current town:', currentTown);
+    console.log('pointOffsetMap:', pointOffsetMap);
+    
     // 既存の表示されているwork-titleを全て非表示にする
     document.querySelectorAll('.work-title').forEach(title => {
       title.classList.remove('title-visible');
@@ -1066,6 +1136,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     // 対応するポイントの位置を取得 (該当タウンにないならprofileの位置を使用)
     const townMap = pointOffsetMap[currentTown] || pointOffsetMap['profile'];
     const pos = townMap[workName];
+    console.log('Position for', workName, ':', pos);
     if (pos && cityGrid) {
       // ズーム状態をセット
       isZoomed = true;
@@ -1146,43 +1217,11 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       //   `translateY(-50%) translateX(-120%)`;
     }
     
-    // 作品の詳細情報
-    const workDescriptions = {
-      'Hamori': '複数人での飲食店決めを楽しくスムーズにするアプリ。みんなの好みを集計して最適な候補を提案します。',
-      'MasiMasi': 'オンラインで簡単に募金ができる寄付プラットフォーム。支援したい団体や活動を選んでスピーディに支援できます。',
-      'Atta!': '新たな視点を提供する発見系メディア。多様な意見と視点に触れることで、新しい気づきや学びを得られます。',
-      'CIT portal': '千葉工業大学の学生向けポータルサイト。授業情報や学内イベントなどをまとめて確認できます。',
-      '市民の木': '地域の課題解決を市民が主体となって行うプラットフォーム。住民同士のコミュニケーションと協力を促進します。',
-      'Invidi': '個人の思考や興味を整理・共有するための知識管理ツール。アイデアの整理からコラボレーションまでサポートします。'
-    };
-    
-    // 作品のメタ情報
-    const workTypes = {
-      'Hamori': 'モバイルアプリ',
-      'MasiMasi': 'ウェブサービス',
-      'Atta!': 'オンラインメディア',
-      'CIT portal': '学生ポータル',
-      '市民の木': 'コミュニティプラットフォーム',
-      'Invidi': '知識管理ツール'
-    };
-    
-    const workScopes = {
-      'Hamori': 'チーム制作',
-      'MasiMasi': 'チーム制作',
-      'Atta!': '企業案件',
-      'CIT portal': '大学プロジェクト',
-      '市民の木': '自治体連携',
-      'Invidi': '個人制作'
-    };
-    
-    const workDurations = {
-      'Hamori': '3ヶ月',
-      'MasiMasi': '2ヶ月',
-      'Atta!': '4ヶ月',
-      'CIT portal': '6ヶ月',
-      '市民の木': '3ヶ月',
-      'Invidi': '1ヶ月'
-    };
+    // 作品の詳細情報 - 外部データから取得
+    const workDescriptions = worksData.descriptions;
+    const workTypes = worksData.types;
+    const workScopes = worksData.scopes;
+    const workDurations = worksData.durations;
     
     // ポップアップの内容を設定
     popupTitle.textContent = `${workName} Co.`;
@@ -1451,27 +1490,79 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
 
   // 作品ごとのポイント位置マップ（%）- タウン別
   const pointOffsetMap = {
-    'works': {
-      'Hamori': { x: 60, y: 65 },
-      'MasiMasi': { x: 75, y: 35 },
-      'Atta!': { x: 35, y: 40 },
-      'CIT portal': { x: 45, y: 78 },
-      '市民の木': { x: 24, y: 64 },
-      'Invidi': { x: 58, y: 45 }
-    },
+    'works': worksData.positions,
     'profile': {
       'profile': { x: 50, y: 80 } // プロフィールポイントの位置（カード下部中央）
+    },
+    'blogs': {
+      'ブログはじめました': { x: 40, y: 30 },
+      'UIデザインのコツ': { x: 70, y: 50 },
+      '最近読んだ本': { x: 30, y: 70 },
     }
   };
 
   // 衝突判定関数の追加
   // ポイントとの衝突判定を行い、名前を表示する関数
   function checkPointCollision() {
-    // ポイント名表示機能を一時的に無効化
-    // 表示要素を取得し、非表示にする
-    const pointNameDisplay = document.getElementById('pointNameDisplay');
-    if (pointNameDisplay) {
-      pointNameDisplay.style.opacity = '0';
+    if (!person) return;
+
+    const personRect = person.getBoundingClientRect();
+    const bubbles = document.querySelectorAll('.point-bubble');
+    
+    let foundItemName = null;
+    let foundItemType = null;
+
+    for (const bubble of bubbles) {
+      // 画面に表示されていない要素は無視
+      if (bubble.offsetParent === null) continue;
+
+      const bubbleRect = bubble.getBoundingClientRect();
+      const overlap = !(personRect.right < bubbleRect.left || 
+                        personRect.left > bubbleRect.right || 
+                        personRect.bottom < bubbleRect.top || 
+                        personRect.top > bubbleRect.bottom);
+
+      if (overlap) {
+        if (bubble.dataset.workName) {
+            foundItemName = bubble.dataset.workName;
+            foundItemType = 'work';
+        } else if (bubble.dataset.profilePoint) {
+            foundItemName = 'profile';
+            foundItemType = 'profile';
+        } else if (bubble.dataset.blogName) {
+            foundItemName = bubble.dataset.blogName;
+            foundItemType = 'blog';
+        }
+        break;
+      }
+    }
+
+    if (foundItemName && foundItemName !== collidingWork) {
+      collidingWork = foundItemName;
+      if (!isZoomed) {
+        isEventLocked = true;
+        
+        if (foundItemType === 'work') {
+            zoomToPoint(foundItemName);
+            setTimeout(() => {
+              if (isZoomed && zoomedPointName === foundItemName) showWorkPopup(foundItemName);
+              isEventLocked = false;
+            }, 600);
+        } else if (foundItemType === 'profile') {
+            showProfilePopup(); // zoomToPointは内部で呼ばれる
+            setTimeout(() => {
+              isEventLocked = false;
+            }, 600);
+        } else if (foundItemType === 'blog') {
+            zoomToPoint(foundItemName);
+            setTimeout(() => {
+              if (isZoomed && zoomedPointName === foundItemName) showBlogPopup(foundItemName);
+              isEventLocked = false;
+            }, 600);
+        }
+      }
+    } else if (!foundItemName) {
+      collidingWork = null;
     }
   }
 
@@ -2389,11 +2480,11 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   .town-works .point-1 { left: 60%; top: 65%; animation-delay: 0s; } /* Hamori */
   .town-works .point-2 { left: 75%; top: 35%; animation-delay: 0.4s; } /* MasiMasi */
   .town-works .point-3 { left: 35%; top: 40%; animation-delay: 0.8s; } /* Atta! */
-  .town-works .point-4 { left: 45%; top: 78%; animation-delay: 1.2s; } /* CIT portal */
+  .town-works .point-4 { left: 45%; top: 75%; animation-delay: 1.2s; } /* CIT portal */
   .town-works .point-5 { left: 24%; top: 64%; animation-delay: 1.6s; } /* 市民の木 */
   .town-works .point-6 { left: 58%; top: 45%; animation-delay: 2s; } /* Invidi */
-  .town-works .point-7 { left: 50%; top: 30%; animation-delay: 2.4s; }
-  .town-works .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }
+  .town-works .point-7 { left: 55%; top: 90%; animation-delay: 2.4s; }/* Ittow */
+  .town-works .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }/* Wink */
   .town-works .point-9 { left: 60%; top: 15%; animation-delay: 3.2s; }
   .town-works .point-10 { left: 35%; top: 95%; animation-delay: 3.6s; }
   .town-works .point-11 { left: 68%; top: 85%; animation-delay: 4s; }
@@ -2567,6 +2658,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   .work-item:hover .work-title {
     opacity: 1;
     transform: translateX(-50%) translateY(-5px);
+    z-index: 1000;
   }
 
   html.dark-theme .work-title {
@@ -2577,15 +2669,11 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   .point-1 .work-image { background-image: url('/assets/images/works/hamori_pop.png'); }
   .point-2 .work-image { background-image: url('/assets/images/works/masimasi_pop.png'); }
   .point-3 .work-image { background-image: url('/assets/images/works/atta_pop.png'); }
-  .point-4 .work-image { background-image: url('/assets/images/works/cit-portal_pop.png'); }
+  .point-4 .work-image { background-image: url('/assets/images/works/citportal_pop.png'); }
   .point-5 .work-image { background-image: url('/assets/images/works/市民の木_pop.png'); }
   .point-6 .work-image { background-image: url('/assets/images/works/invidi_pop.png'); }
-  .point-7 .work-image { background-image: url('https://picsum.photos/id/7/200'); }
-  .point-8 .work-image { background-image: url('https://picsum.photos/id/8/200'); }
-  .point-9 .work-image { background-image: url('https://picsum.photos/id/9/200'); }
-  .point-10 .work-image { background-image: url('https://picsum.photos/id/10/200'); }
-  .point-11 .work-image { background-image: url('https://picsum.photos/id/11/200'); }
-  .point-12 .work-image { background-image: url('https://picsum.photos/id/12/200'); }
+  .point-7 .work-image { background-image: url('/assets/images/works/ittow_pop.png'); }
+  .point-8 .work-image { background-image: url('/assets/images/works/wink_pop.png'); }
 
   .work-type {
     display: inline-block;
@@ -3063,10 +3151,15 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   .point-10 { left: 35%; top: 80%; animation-delay: 3.6s; }
   .point-11 { left: 65%; top: 80%; animation-delay: 4s; }
   .point-12 { left: 50%; top: 50%; animation-delay: 4.4s; }
+  .point-13 { left: 25%; top: 50%; animation-delay: 4.8s; }
+  .point-14 { left: 75%; top: 50%; animation-delay: 5.2s; }
+  .point-15 { left: 20%; top: 70%; animation-delay: 5.6s; }
+  .point-16 { left: 80%; top: 70%; animation-delay: 6.0s; }
 
   /* アニメーション遅延の基本設定 */
   .point-1, .point-2, .point-3, .point-4, .point-5, .point-6,
-  .point-7, .point-8, .point-9, .point-10, .point-11, .point-12 {
+  .point-7, .point-8, .point-9, .point-10, .point-11, .point-12,
+  .point-13, .point-14, .point-15, .point-16 {
     animation-delay: 0s;
   }
 
