@@ -58,6 +58,18 @@ export const worksData = {
     'Wink': { x: 40, y: 60 }
   },
   
+  // 画像パス（ポップアップ表示用）
+  images: {
+    'Hamori': '/assets/images/works/hamori_pop.png',
+    'MasiMasi': '/assets/images/works/masimasi_pop.png',
+    'Atta!': '/assets/images/works/atta_pop.png',
+    'CIT portal': '/assets/images/works/citportal_pop.png',
+    '市民の木': '/assets/images/works/市民の木_pop.png',
+    'Invidi': '/assets/images/works/invidi_pop.png',
+    'Ittow': '/assets/images/works/ittow_pop.png',
+    'Wink': '/assets/images/works/wink_pop.png'
+  },
+  
   // 作品名リスト
   names: ['Hamori', 'MasiMasi', 'Atta!', 'CIT portal', '市民の木', 'Invidi', 'Ittow', 'Wink']
 };
@@ -71,6 +83,7 @@ export function addWork(workData) {
   worksData.scopes[name] = scope;
   worksData.durations[name] = duration;
   worksData.positions[name] = position;
+  worksData.images[name] = image; // 画像パスも追加
   worksData.names.push(name);
   
   return worksData;

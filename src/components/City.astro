@@ -4,11 +4,13 @@ export interface Props {
   currentTown?: string;
 }
 
-// デフォルト値を持つプロパティを展開
-const { currentTown = 'profile' } = Astro.props;
+// デフォルト値を持つプロパティを展開（統合後は常にworksタウン）
+const { currentTown = 'works' } = Astro.props;
 
 // 作品データを外部ファイルから読み込み
 import { worksData } from '../data/worksData.js';
+// プロフィールデータを外部ファイルから読み込み
+import { profileData } from '../data/profileData.js';
 // スタイルコンポーネントをインポート
 import CityStyles from './CityStyles.astro';
 
@@ -23,161 +25,62 @@ const blogNames: string[] = [
 <div class="city">
   <header class="city-header">
     <h1 class="city-title">tatsuya city</h1>
+    <button class="view-mode-toggle" id="viewModeToggle" aria-label="Toggle to portfolio view">
+      <span>Portfolio View</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="3" width="7" height="7"></rect>
+        <rect x="14" y="3" width="7" height="7"></rect>
+        <rect x="14" y="14" width="7" height="7"></rect>
+        <rect x="3" y="14" width="7" height="7"></rect>
+      </svg>
+    </button>
   </header>
-  <div class={`city-view town-${currentTown}`} id="cityView">
+  <div class="city-view town-works" id="cityView">
     <div class="city-grid" id="cityGrid">
       <!-- グリッド（地面） -->
       <div class="ground"></div>
       
-      {/* Profileタウン用のプロフィールカード */}
-      {currentTown === 'profile' && (
-        <div class="profile-card">
-          <div class="profile-image" style="background-image: url('/assets/images/profile/profile.png');"></div>
-          <div class="profile-image-popup">
-            <img src="/assets/images/profile/profile.png" alt="相原立弥" />
-            <h3>相原立弥（あいはら たつや）</h3>
-            <p>UI/UXデザイン、フロントエンド開発を専門とするデザイナー兼エンジニア。使いやすさと美しさを追求した体験設計が得意です。</p>
-          </div>
-          <h2 class="profile-name">
-            相原立弥
-            <span class="profile-name-sub">Tatsuya Aihara</span>
-            </h2>
-          <p class="profile-text">千葉工業大学大学院 デザイン科専攻 <br>修士1年</p>
-          <ul class="profile-sns-list">
-            <li class="profile-sns-item">
-              <a href="https://twitter.com/your_handle" target="_blank" class="profile-sns-link">
-                <svg width="12" height="12" viewBox="0 0 34 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#clip0_616_61)">
-                  <path d="M9.99971 0.472656H23.9997C29.333 0.472656 33.6663 4.80599 33.6663 10.1393V24.1393C33.6663 26.703 32.6479 29.1618 30.835 30.9746C29.0222 32.7875 26.5634 33.806 23.9997 33.806H9.99971C4.66634 33.806 0.333008 29.4726 0.333008 24.1393V10.1393C0.333008 7.57557 1.35146 5.11681 3.16431 3.30396C4.97716 1.49111 7.43591 0.472656 9.99971 0.472656ZM9.66634 3.80599C8.07504 3.80599 6.54892 4.43813 5.4237 5.56335C4.29848 6.68857 3.66634 8.21469 3.66634 9.80599V24.4726C3.66634 27.7893 6.34967 30.4726 9.66634 30.4726H24.333C25.9243 30.4726 27.4504 29.8405 28.5756 28.7152C29.7009 27.59 30.333 26.0639 30.333 24.4726V9.80599C30.333 6.48932 27.6497 3.80599 24.333 3.80599H9.66634ZM25.7497 6.30599C26.3022 6.30599 26.8321 6.52548 27.2228 6.91619C27.6135 7.30689 27.833 7.83679 27.833 8.38932C27.833 8.94186 27.6135 9.47176 27.2228 9.86246C26.8321 10.2531 26.3022 10.4726 25.7497 10.4726C25.1971 10.4726 24.6672 10.2531 24.2765 9.86246C23.8858 9.47176 23.6663 8.94186 23.6663 8.38932C23.6663 7.83679 23.8858 7.30689 24.2765 6.91619C24.6672 6.52548 25.1971 6.30599 25.7497 6.30599ZM16.9997 8.80599C19.2098 8.80599 21.3294 9.68396 22.8922 11.2467C24.455 12.8095 25.333 14.9291 25.333 17.1393C25.333 19.3494 24.455 21.469 22.8922 23.0318C21.3294 24.5946 19.2098 25.4726 16.9997 25.4726C14.7895 25.4726 12.6699 24.5946 11.1071 23.0318C9.54431 21.469 8.66634 19.3494 8.66634 17.1393C8.66634 14.9291 9.54431 12.8095 11.1071 11.2467C12.6699 9.68396 14.7895 8.80599 16.9997 8.80599ZM16.9997 12.1393C15.6736 12.1393 14.4018 12.6661 13.4641 13.6037C12.5264 14.5414 11.9997 15.8132 11.9997 17.1393C11.9997 18.4654 12.5264 19.7371 13.4641 20.6748C14.4018 21.6125 15.6736 22.1393 16.9997 22.1393C18.3257 22.1393 19.5975 21.6125 20.5352 20.6748C21.4729 19.7371 21.9997 18.4654 21.9997 17.1393C21.9997 15.8132 21.4729 14.5414 20.5352 13.6037C19.5975 12.6661 18.3257 12.1393 16.9997 12.1393Z" fill="#252528"/>
-                  </g>
-                  <defs>
-                  <clipPath id="clip0_616_61">
-                  <rect width="34" height="34" fill="white" transform="translate(0 0.139648)"/>
-                  </clipPath>
-                  </defs>
-                </svg>
-              </a>
-            </li>
-            <li class="profile-sns-item">
-              <a href="https://instagram.com/your_handle" target="_blank" class="profile-sns-link">
-                <svg width="12" height="12" viewBox="0 0 39 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#clip0_616_64)">
-                  <path d="M12.7233 0.472656H1.05664L14.8233 18.8293L1.80664 33.806H6.22331L16.8699 21.5576L26.0566 33.806H37.7233L23.3766 14.6759L35.7233 0.472656H31.3066L21.3299 11.9493L12.7233 0.472656ZM27.7233 30.4726L7.72331 3.80599H11.0566L31.0566 30.4726H27.7233Z" fill="#252528"/>
-                  </g>
-                  <defs>
-                  <clipPath id="clip0_616_64">
-                  <rect width="38" height="34" fill="white" transform="translate(0.389648 0.139648)"/>
-                  </clipPath>
-                  </defs>
-                </svg>
-              </a>
-            </li>
-            <li class="profile-sns-item">
-              <a href="https://yourwebsite.com" target="_blank" class="profile-sns-link">
-                <svg width="12" height="12" viewBox="0 0 34 35" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#clip0_616_61)">
-                  <path d="M9.99971 0.472656H23.9997C29.333 0.472656 33.6663 4.80599 33.6663 10.1393V24.1393C33.6663 26.703 32.6479 29.1618 30.835 30.9746C29.0222 32.7875 26.5634 33.806 23.9997 33.806H9.99971C4.66634 33.806 0.333008 29.4726 0.333008 24.1393V10.1393C0.333008 7.57557 1.35146 5.11681 3.16431 3.30396C4.97716 1.49111 7.43591 0.472656 9.99971 0.472656ZM9.66634 3.80599C8.07504 3.80599 6.54892 4.43813 5.4237 5.56335C4.29848 6.68857 3.66634 8.21469 3.66634 9.80599V24.4726C3.66634 27.7893 6.34967 30.4726 9.66634 30.4726H24.333C25.9243 30.4726 27.4504 29.8405 28.5756 28.7152C29.7009 27.59 30.333 26.0639 30.333 24.4726V9.80599C30.333 6.48932 27.6497 3.80599 24.333 3.80599H9.66634ZM25.7497 6.30599C26.3022 6.30599 26.8321 6.52548 27.2228 6.91619C27.6135 7.30689 27.833 7.83679 27.833 8.38932C27.833 8.94186 27.6135 9.47176 27.2228 9.86246C26.8321 10.2531 26.3022 10.4726 25.7497 10.4726C25.1971 10.4726 24.6672 10.2531 24.2765 9.86246C23.8858 9.47176 23.6663 8.94186 23.6663 8.38932C23.6663 7.83679 23.8858 7.30689 24.2765 6.91619C24.6672 6.52548 25.1971 6.30599 25.7497 6.30599ZM16.9997 8.80599C19.2098 8.80599 21.3294 9.68396 22.8922 11.2467C24.455 12.8095 25.333 14.9291 25.333 17.1393C25.333 19.3494 24.455 21.469 22.8922 23.0318C21.3294 24.5946 19.2098 25.4726 16.9997 25.4726C14.7895 25.4726 12.6699 24.5946 11.1071 23.0318C9.54431 21.469 8.66634 19.3494 8.66634 17.1393C8.66634 14.9291 9.54431 12.8095 11.1071 11.2467C12.6699 9.68396 14.7895 8.80599 16.9997 8.80599ZM16.9997 12.1393C15.6736 12.1393 14.4018 12.6661 13.4641 13.6037C12.5264 14.5414 11.9997 15.8132 11.9997 17.1393C11.9997 18.4654 12.5264 19.7371 13.4641 20.6748C14.4018 21.6125 15.6736 22.1393 16.9997 22.1393C18.3257 22.1393 19.5975 21.6125 20.5352 20.6748C21.4729 19.7371 21.9997 18.4654 21.9997 17.1393C21.9997 15.8132 21.4729 14.5414 20.5352 13.6037C19.5975 12.6661 18.3257 12.1393 16.9997 12.1393Z" fill="#252528"/>
-                  </g>
-                  <defs>
-                  <clipPath id="clip0_616_61">
-                  <rect width="34" height="34" fill="white" transform="translate(0 0.139648)"/>
-                  </clipPath>
-                  </defs>
-                </svg>
-              </a>
-            </li>
-          </ul>
-          
-          <!-- 新しいクリックポイントの追加 -->
-          <div class="point-bubble profile-point" data-profile-point="true">
-            <div class="point-title">Profile</div>
-          </div>
-        </div>
-      )}
+      {/* プロフィールポイント - worksタウンに統合 */}
+      <div class="point-bubble point-9 profile-item work-item" data-profile-point="true">
+        <div class="work-image profile-image-thumb"></div>
+        <div class="work-title">Profile</div>
+      </div>
 
       <!-- 空間に吹き出しポイントを追加 -->
-      <div class={`point-bubble point-1 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Hamori">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Hamori</div>
-          </>
-        )}
+      {/* 作品ポイント - 統合後は常に表示 */}
+      <div class="point-bubble point-1 work-item" data-work-name="Hamori">
+        <div class="work-image"></div>
+        <div class="work-title">Hamori</div>
       </div>
-      <div class={`point-bubble point-2 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="MasiMasi">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">MasiMasi</div>
-          </>
-        )}
+      <div class="point-bubble point-2 work-item" data-work-name="MasiMasi">
+        <div class="work-image"></div>
+        <div class="work-title">MasiMasi</div>
       </div>
-      <div class={`point-bubble point-3 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Atta!">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Atta!</div>
-          </>
-        )}
+      <div class="point-bubble point-3 work-item" data-work-name="Atta!">
+        <div class="work-image"></div>
+        <div class="work-title">Atta!</div>
       </div>
-      <div class={`point-bubble point-4 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="CIT portal">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">CIT portal</div>
-          </>
-        )}
+      <div class="point-bubble point-4 work-item" data-work-name="CIT portal">
+        <div class="work-image"></div>
+        <div class="work-title">CIT portal</div>
       </div>
-      <div class={`point-bubble point-5 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="市民の木">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">市民の木</div>
-          </>
-        )}
+      <div class="point-bubble point-5 work-item" data-work-name="市民の木">
+        <div class="work-image"></div>
+        <div class="work-title">市民の木</div>
       </div>
-      <div class={`point-bubble point-6 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Invidi">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Invidi</div>
-          </>
-        )}
+      <div class="point-bubble point-6 work-item" data-work-name="Invidi">
+        <div class="work-image"></div>
+        <div class="work-title">Invidi</div>
       </div>
-      <div class={`point-bubble point-7 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Ittow">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Ittow</div>
-          </>
-        )}
+      <div class="point-bubble point-7 work-item" data-work-name="Ittow">
+        <div class="work-image"></div>
+        <div class="work-title">Ittow</div>
       </div>
-      <div class={`point-bubble point-8 ${currentTown === 'works' ? 'work-item' : ''}`} data-work-name="Wink">
-        {currentTown === 'works' && (
-          <>
-            <div class="work-image"></div>
-            <div class="work-title">Wink</div>
-          </>
-        )}
+      <div class="point-bubble point-8 work-item" data-work-name="Wink">
+        <div class="work-image"></div>
+        <div class="work-title">Wink</div>
       </div>
 
-      {/* Blogsタウン用のポイント */}
-      {currentTown === 'blogs' && (
-        <>
-          <div class={`point-bubble point-1 blog-item`} data-blog-name="ブログはじめました">
-            <div class="work-image" style="background-image: url(https://picsum.photos/id/40/200)"></div>
-            <div class="work-title">ブログはじめました</div>
-          </div>
-          <div class={`point-bubble point-2 blog-item`} data-blog-name="UIデザインのコツ">
-            <div class="work-image" style="background-image: url(https://picsum.photos/id/41/200)"></div>
-            <div class="work-title">UIデザインのコツ</div>
-          </div>
-          <div class={`point-bubble point-3 blog-item`} data-blog-name="最近読んだ本">
-            <div class="work-image" style="background-image: url(https://picsum.photos/id/42/200)"></div>
-            <div class="work-title">最近読んだ本</div>
-          </div>
-        </>
-      )}
     </div>
     
     <!-- 人を配置する -->
@@ -234,41 +137,25 @@ const blogNames: string[] = [
       </button>
     </div>
     
-    {currentTown === 'works' && (
-      <div class="company-list">
-        <h3>company list</h3>
-        <ul>
-          {workNames.map(name => (
-            <li class="company-item" data-work-name={name} onclick={`
-              zoomToPoint('${name}');
-              setTimeout(() => {
-                showWorkPopup('${name}');
-              }, 600);
-            `}>
-              {name} Co.
-            </li>
-          ))}
-        </ul>
-      </div>
-    )}
-    
-    <!-- タウン名リスト -->
-    <div class="town-list">
+    {/* ナビゲーションリスト - worksタウンに統合後は常に表示 */}
+    <div class="company-list">
+      <h3>Portfolio</h3>
       <ul>
-        <li class={currentTown === 'profile' ? 'active' : ''}>
-          <span class="bullet">{currentTown === 'profile' ? '•' : ''}</span> 
-          <a href="/profile">Profile town</a>
+        {/* プロフィールを最初に追加 */}
+        <li class="company-item" data-profile-point="true">
+          Profile
         </li>
-        <li class={currentTown === 'works' ? 'active' : ''}>
-          <span class={currentTown === 'works' ? 'bullet' : 'placeholder'}>{currentTown === 'works' ? '•' : ''}</span>
-          <a href="/works">Works town</a>
-        </li>
-        <li class={currentTown === 'blogs' ? 'active' : ''}>
-          <span class={currentTown === 'blogs' ? 'bullet' : 'placeholder'}>{currentTown === 'blogs' ? '•' : ''}</span>
-          <a href="/blogs">Blogs town</a>
-        </li>
+        {/* 作品リスト */}
+        {workNames.map(name => (
+          <li class="company-item" data-work-name={name}>
+            {name} Co.
+          </li>
+        ))}
       </ul>
     </div>
+    
+    <!-- タウン名リスト - 統合後は削除または簡略化 -->
+    {/* タウンリストは統合により不要になったため削除 */}
   </div>
 </div>
 
@@ -388,68 +275,23 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   document.querySelector('#theme-toggle')?.classList.add('dark-active');
 }
 
-// インデックスページにアクセスした場合、プロファイルページにリダイレクト
-if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-  window.location.href = '/profile';
+// 表示モード切替（ポートフォリオ表示へ）
+document.querySelector('#viewModeToggle')?.addEventListener('click', function() {
+  window.location.href = '/portfolio';
+});
+
+// 統合後はリダイレクト不要（index.astroが直接worksタウンを表示）
+// 後方互換性のため、古いURLからアクセスした場合はリダイレクト
+if (window.location.pathname === '/profile' || window.location.pathname === '/blogs') {
+  // 統合後はworksタウンにリダイレクト（将来的に削除可能）
+  // window.location.href = '/';
 }
 </script>
 
 <!-- メインスクリプト -->
-<script is:inline>
-  // 作品データをクライアントサイドで使用可能にする
-  const worksData = {
-    descriptions: {
-      'Hamori': '複数人での飲食店決めを楽しくスムーズにするアプリ。みんなの好みを集計して最適な候補を提案します。',
-      'MasiMasi': 'オンラインで簡単に募金ができる寄付プラットフォーム。支援したい団体や活動を選んでスピーディに支援できます。',
-      'Atta!': '新たな視点を提供する発見系メディア。多様な意見と視点に触れることで、新しい気づきや学びを得られます。',
-      'CIT portal': '千葉工業大学の学生向けポータルサイト。授業情報や学内イベントなどをまとめて確認できます。',
-      '市民の木': '地域の課題解決を市民が主体となって行うプラットフォーム。住民同士のコミュニケーションと協力を促進します。',
-      'Invidi': '個人の思考や興味を整理・共有するための知識管理ツール。アイデアの整理からコラボレーションまでサポートします。',
-      'Ittow': 'スキマ時間の学習アプリ',
-      'Wink': '積読防止スマートリンク管理アプリ'
-    },
-    types: {
-      'Hamori': 'モバイルアプリ',
-      'MasiMasi': 'ウェブサービス',
-      'Atta!': 'オンラインメディア',
-      'CIT portal': '学生ポータル',
-      '市民の木': 'コミュニティプラットフォーム',
-      'Invidi': '知識管理ツール',
-      'Ittow': 'モバイルアプリ',
-      'Wink': 'モバイルアプリ'
-    },
-    scopes: {
-      'Hamori': 'チーム制作',
-      'MasiMasi': 'チーム制作',
-      'Atta!': '企業案件',
-      'CIT portal': '大学プロジェクト',
-      '市民の木': '自治体連携',
-      'Invidi': '個人制作',
-      'Ittow': '個人制作',
-      'Wink': '個人制作'
-    },
-    durations: {
-      'Hamori': '3ヶ月',
-      'MasiMasi': '2ヶ月',
-      'Atta!': '4ヶ月',
-      'CIT portal': '6ヶ月',
-      '市民の木': '3ヶ月',
-      'Invidi': '1ヶ月',
-      'Ittow': '2週間',
-      'Wink': '1ヶ月半'
-    },
-    positions: {
-      'Hamori': { x: 60, y: 65 },
-      'MasiMasi': { x: 75, y: 35 },
-      'Atta!': { x: 35, y: 40 },
-      'CIT portal': { x: 45, y: 75 },
-      '市民の木': { x: 24, y: 64 },
-      'Invidi': { x: 58, y: 45 },
-      'Ittow': { x: 55, y: 90 },
-      'Wink': { x: 40, y: 60 }
-    },
-    names: ['Hamori', 'MasiMasi', 'Atta!', 'CIT portal', '市民の木', 'Invidi', 'Ittow', 'Wink']
-  };
+<script define:vars={{ profileData, worksData }}>
+  // データはAstroのdefine:varsでサーバーサイドから渡される
+  // これにより、データの一元管理が可能になり、重複を解消
   
   // DOM要素
   let cityView = null;
@@ -503,6 +345,9 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     
     // 吹き出しポイントのセットアップ
     setupPointBubbles();
+    
+    // ナビゲーションリストのセットアップ
+    setupNavigationList();
     
     // 初期位置を設定
     updatePosition();
@@ -974,11 +819,44 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     }
   }
 
-  // ポイントをクリックしたときの処理を追加
+  // ナビゲーションリストのセットアップ
+  function setupNavigationList() {
+    const navItems = document.querySelectorAll('.company-item');
+    
+    navItems.forEach(item => {
+      // プロフィール項目の処理
+      if (item.hasAttribute('data-profile-point')) {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          zoomToPoint('profile');
+          setTimeout(() => {
+            showProfilePopup();
+          }, 600);
+        });
+        return;
+      }
+      
+      // 作品項目の処理
+      const workName = item.getAttribute('data-work-name');
+      if (workName) {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          zoomToPoint(workName);
+          setTimeout(() => {
+            showWorkPopup(workName);
+          }, 600);
+        });
+      }
+    });
+  }
+
+  // ポイントをクリックしたときの処理を追加（統合版）
   function setupPointBubbles() {
     const points = document.querySelectorAll('.point-bubble');
     const activeTownElement = document.querySelector('.town-list li.active a');
-    const currentTown = activeTownElement?.textContent?.trim().toLowerCase() || 'profile';
+    const currentTown = activeTownElement?.textContent?.trim().toLowerCase() || 'works';
     
     console.log('setupPointBubbles called, found', points.length, 'points');
     console.log('Current town:', currentTown);
@@ -988,7 +866,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       point.setAttribute('id', `point-${index + 1}`);
       point.classList.add('interactive');
       
-      // プロフィールポイントの特別処理
+      // プロフィールポイントの特別処理（worksタウンでも有効）
       if (point.hasAttribute('data-profile-point')) {
         point.addEventListener('click', (e) => {
           e.stopPropagation();
@@ -996,28 +874,34 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
           if (profilePopup?.classList.contains('active')) {
             hideProfilePopup();
           } else {
-            showProfilePopup();
+            // ズームしてからポップアップを表示
+            zoomToPoint('profile');
+            setTimeout(() => {
+              showProfilePopup();
+            }, 600);
           }
         });
         return; // この後の処理をスキップ
       }
       
-      // Works townの場合は作品情報を表示
-      if (currentTown.includes('works')) {
+      // Works townの場合は作品情報を表示（統合後は基本的にworks）
+      if (currentTown.includes('works') || !currentTown.includes('blogs')) {
         const workName = point.getAttribute('data-work-name') || '';
-        console.log('Setting up click event for work:', workName);
-        
-        point.addEventListener('click', (e) => {
-          e.stopPropagation();
-          console.log('Point clicked:', workName);
-          // まずズームして、その後ポップアップを表示
-          zoomToPoint(workName);
-          setTimeout(() => {
-            showWorkPopup(workName);
-          }, 600);
-        });
+        if (workName) {
+          console.log('Setting up click event for work:', workName);
+          
+          point.addEventListener('click', (e) => {
+            e.stopPropagation();
+            console.log('Point clicked:', workName);
+            // まずズームして、その後ポップアップを表示
+            zoomToPoint(workName);
+            setTimeout(() => {
+              showWorkPopup(workName);
+            }, 600);
+          });
+        }
       }
-      // Blogs townの場合はブログ情報を表示
+      // Blogs townの場合はブログ情報を表示（後方互換性のため残す）
       else if (currentTown.includes('blogs')) {
         const blogName = point.getAttribute('data-blog-name') || '';
         if (blogName) {
@@ -1030,7 +914,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
           });
         }
       } else {
-        // それ以外のタウンでは建物情報と同じデータを利用
+        // それ以外のタウンでは建物情報と同じデータを利用（後方互換性）
         point.addEventListener('click', (e) => {
           e.stopPropagation();
           showBuildingInfo(`building-${index + 1}`);
@@ -1039,16 +923,50 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     });
   }
 
-  // プロフィールポップアップ表示関数
+  // プロフィールポップアップ表示関数（統合版 - 作品ポップアップと同じ仕様）
   function showProfilePopup() {
     const profilePopup = document.getElementById('profilePopup');
-    if (profilePopup && !profilePopup.classList.contains('active')) {
-      profilePopup.style.display = 'flex';
-      setTimeout(() => {
-        profilePopup.classList.add('active');
-      }, 10);
-      zoomToPoint('profile');
+    if (!profilePopup) {
+      console.error('プロフィールポップアップ要素が見つかりません');
+      return;
     }
+    
+    // 作品ポップアップが開いている場合は閉じる（作品ポイント同士の切り替えと同じ仕様）
+    const workPopup = document.getElementById('workPopup');
+    if (workPopup && workPopup.classList.contains('active')) {
+      workPopup.classList.remove('active');
+      setTimeout(() => {
+        workPopup.style.display = 'none';
+      }, 300);
+    }
+    
+    // 既にプロフィールポップアップが表示されている場合は何もしない（内容更新のみ）
+    if (profilePopup.classList.contains('active')) {
+      return;
+    }
+    
+    // プロフィールデータを設定
+    const popupTitle = document.getElementById('profilePopupTitle');
+    const popupDescription = document.getElementById('profilePopupDescription');
+    const popupImage = profilePopup.querySelector('.profile-image-large');
+    const popupMeta = profilePopup.querySelectorAll('.popup-meta span');
+    
+    if (popupTitle) popupTitle.textContent = profileData.name;
+    if (popupDescription) popupDescription.textContent = profileData.description;
+    if (popupImage) popupImage.src = profileData.image;
+    if (popupMeta.length > 0) {
+      popupMeta.forEach((span, index) => {
+        if (profileData.meta[index]) {
+          span.textContent = profileData.meta[index];
+        }
+      });
+    }
+    
+    // ポップアップを表示（ズームは呼び出し元で行うため、ここでは行わない）
+    profilePopup.style.display = 'flex';
+    setTimeout(() => {
+      profilePopup.classList.add('active');
+    }, 10);
   }
 
   // プロフィールポップアップ非表示関数
@@ -1113,17 +1031,16 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   }
 
   // ポイントにズームする機能だけを提供する関数（モーダルは表示しない）
-  function zoomToPoint(workName) {
-    console.log('zoomToPoint called with:', workName);
-    if (!workName) return;
+  function zoomToPoint(pointName) {
+    console.log('zoomToPoint called with:', pointName);
+    if (!pointName) return;
     
-    // 現在のタウンを取得
+    // 現在のタウンを取得（統合後は基本的にworks）
     const activeTownElement = document.querySelector('.town-list li.active a');
-    const currentTownText = activeTownElement?.textContent?.trim().toLowerCase() || 'profile';
-    // town-{name} クラスからcurrentTownを抽出、一致しなければprofileをデフォルトとする
+    const currentTownText = activeTownElement?.textContent?.trim().toLowerCase() || 'works';
     const currentTown = currentTownText.includes('profile') ? 'profile' : 
                         currentTownText.includes('works') ? 'works' : 
-                        currentTownText.includes('blogs') ? 'blogs' : 'profile';
+                        currentTownText.includes('blogs') ? 'blogs' : 'works';
     
     console.log('Current town:', currentTown);
     console.log('pointOffsetMap:', pointOffsetMap);
@@ -1133,14 +1050,16 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       title.classList.remove('title-visible');
     });
     
-    // 対応するポイントの位置を取得 (該当タウンにないならprofileの位置を使用)
-    const townMap = pointOffsetMap[currentTown] || pointOffsetMap['profile'];
-    const pos = townMap[workName];
-    console.log('Position for', workName, ':', pos);
+    // 対応するポイントの位置を取得
+    // worksタウンに統合したので、worksから取得を優先
+    const townMap = pointOffsetMap['works'] || pointOffsetMap[currentTown] || pointOffsetMap['profile'];
+    const pos = townMap[pointName];
+    console.log('Position for', pointName, ':', pos);
+    
     if (pos && cityGrid) {
       // ズーム状態をセット
       isZoomed = true;
-      zoomedPointName = workName;
+      zoomedPointName = pointName;
       
       // ズーム中クラスを追加
       document.body.classList.add('is-zoomed');
@@ -1154,7 +1073,11 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       cityGrid.style.transform = `rotateX(55deg) scale(2) translate(${-camX}%, ${-camY}%)`;
       
       // 対応するポイント要素を見つけて、そのwork-titleを表示
-      const pointElement = document.querySelector(`.point-bubble[data-work-name="${workName}"]`);
+      // プロフィールポイントの場合はdata-profile-pointで検索
+      const pointElement = pointName === 'profile' 
+        ? document.querySelector('.point-bubble[data-profile-point="true"]')
+        : document.querySelector(`.point-bubble[data-work-name="${pointName}"]`);
+      
       if (pointElement) {
         const workTitle = pointElement.querySelector('.work-title');
         if (workTitle) {
@@ -1163,7 +1086,7 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
           
           // 5秒後に非表示にする
           setTimeout(() => {
-            if (isZoomed && zoomedPointName === workName) {
+            if (isZoomed && zoomedPointName === pointName) {
               workTitle.classList.remove('title-visible');
             }
           }, 5000);
@@ -1196,6 +1119,15 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       return;
     }
     
+    // プロフィールポップアップが開いている場合は閉じる（作品ポイント同士の切り替えと同じ仕様）
+    const profilePopup = document.getElementById('profilePopup');
+    if (profilePopup && profilePopup.classList.contains('active')) {
+      profilePopup.classList.remove('active');
+      setTimeout(() => {
+        profilePopup.style.display = 'none';
+      }, 300);
+    }
+    
     // ポイントの位置を取得してポップアップを配置
     const pointElement = document.querySelector(`.point-bubble[data-work-name="${workName}"]`);
     if (pointElement) {
@@ -1223,31 +1155,36 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     const workScopes = worksData.scopes;
     const workDurations = worksData.durations;
     
-    // ポップアップの内容を設定
+    // 既存の作品ポップアップが開いている場合は、閉じずに内容だけを更新（作品ポイント同士の切り替えの仕様）
+    const wasActive = popup.classList.contains('active');
+    
+    // ポップアップの内容を更新（常に実行）
     popupTitle.textContent = `${workName} Co.`;
     popupType.textContent = workTypes[workName] || 'プロジェクト';
     popupScope.textContent = workScopes[workName] || '個人制作';
     popupDuration.textContent = workDurations[workName] || '制作期間不明';
     popupDescription.textContent = workDescriptions[workName] || 'この作品の詳細情報は準備中です。';
     
-    // イメージプレースホルダーを設定
-    if (workName) {
-      const imagePath = `/assets/images/works/${workName.toLowerCase().replace(/\s+/g, '').replace(/[!]/g, '')}_pop.png`;
+    // イメージプレースホルダーを設定（データファイルから画像パスを取得）
+    if (workName && worksData.images && worksData.images[workName]) {
+      const imagePath = worksData.images[workName];
       popupImageContainer.innerHTML = `<img src="${imagePath}" alt="${workName}" class="work-image-hamori">`;
     } else {
       popupImageContainer.innerHTML = `<div class="project-image-placeholder">プロジェクト画像</div>`;
     }
     
-    // ポップアップを表示
-    popup.style.display = 'flex';
-    
-    // アニメーションのためにタイムアウトを設定
-    setTimeout(() => {
-      popup.classList.add('active');
-    }, 10);
-    
-    // イベントリスナーのセットアップ
-    setupPopupEvents();
+    // 既に開いている場合は閉じずに内容だけ更新、開いていない場合は表示
+    if (!wasActive) {
+      // ポップアップを表示
+      popup.style.display = 'flex';
+      // アニメーションのためにタイムアウトを設定
+      setTimeout(() => {
+        popup.classList.add('active');
+      }, 10);
+      // イベントリスナーのセットアップ
+      setupPopupEvents();
+    }
+    // 既に開いている場合は、内容が更新されただけで何もしない（ポップアップは開いたまま）
   }
 
   // タウンを切り替える機能
@@ -1488,11 +1425,15 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     });
   }
 
-  // 作品ごとのポイント位置マップ（%）- タウン別
+  // 作品ごとのポイント位置マップ（%）- worksタウンに統合
   const pointOffsetMap = {
-    'works': worksData.positions,
+    'works': {
+      ...worksData.positions,
+      'profile': profileData.position // プロフィールポイントの位置をworksタウンに追加
+    },
+    // 後方互換性のため残す（将来的に削除可能）
     'profile': {
-      'profile': { x: 50, y: 80 } // プロフィールポイントの位置（カード下部中央）
+      'profile': profileData.position
     },
     'blogs': {
       'ブログはじめました': { x: 40, y: 30 },
@@ -1549,8 +1490,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
               isEventLocked = false;
             }, 600);
         } else if (foundItemType === 'profile') {
-            showProfilePopup(); // zoomToPointは内部で呼ばれる
+            // 作品ポイントと同じ処理フロー：まずズーム、その後ポップアップ
+            zoomToPoint(foundItemName);
             setTimeout(() => {
+              if (isZoomed && zoomedPointName === foundItemName) showProfilePopup();
               isEventLocked = false;
             }, 600);
         } else if (foundItemType === 'blog') {
@@ -2485,10 +2428,10 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   .town-works .point-6 { left: 58%; top: 45%; animation-delay: 2s; } /* Invidi */
   .town-works .point-7 { left: 55%; top: 90%; animation-delay: 2.4s; }/* Ittow */
   .town-works .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }/* Wink */
-  .town-works .point-9 { left: 60%; top: 15%; animation-delay: 3.2s; }
-  .town-works .point-10 { left: 35%; top: 95%; animation-delay: 3.6s; }
-  .town-works .point-11 { left: 68%; top: 85%; animation-delay: 4s; }
-  .town-works .point-12 { left: 50%; top: 50%; animation-delay: 4.4s; }
+  .town-works .point-9 { left: 50%; top: 80%; animation-delay: 3.2s; }/* Profile */
+  .town-works .point-10 { left: 60%; top: 15%; animation-delay: 3.6s; }
+  .town-works .point-11 { left: 35%; top: 95%; animation-delay: 4s; }
+  .town-works .point-12 { left: 68%; top: 85%; animation-delay: 4.4s; }
 
   /* Blogsタウン用のポイント位置 */
   .town-blogs .point-1 { left: 40%; top: 20%; animation-delay: 0s; }
@@ -2655,6 +2598,14 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
     transform: translateX(-50%) translateY(-5px);
   }
 
+  /* ポイントホバー時にタイトルを表示（すべてのポイントに対応） */
+  .point-bubble:hover .work-title {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+    z-index: 1000;
+  }
+
+  /* 後方互換性のため残す */
   .work-item:hover .work-title {
     opacity: 1;
     transform: translateX(-50%) translateY(-5px);
@@ -2674,6 +2625,8 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   .point-6 .work-image { background-image: url('/assets/images/works/invidi_pop.png'); }
   .point-7 .work-image { background-image: url('/assets/images/works/ittow_pop.png'); }
   .point-8 .work-image { background-image: url('/assets/images/works/wink_pop.png'); }
+  /* プロフィールポイントの画像 */
+  .point-9 .work-image.profile-image-thumb { background-image: url('/assets/images/profile/profile.png'); }
 
   .work-type {
     display: inline-block;
@@ -2777,14 +2730,60 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
   .city-header{
     display: flex;
     align-items: center;
-    /* justify-content: center; */
-    padding: 16px 24px;
-    /* background-color: transparent; */
+    justify-content: space-between;
+    padding: 20px 32px;
+    background-color: transparent;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     z-index: 100;
+    min-height: 72px;
+    box-sizing: border-box;
+  }
+
+  .view-mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background-color: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 20px;
+    color: var(--text-color);
+    font-size: 0.8125rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  html.dark-theme .view-mode-toggle {
+    background-color: rgba(30, 30, 35, 0.6);
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+
+  .view-mode-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-color: rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  html.dark-theme .view-mode-toggle:hover {
+    background-color: rgba(40, 40, 45, 0.8);
+    border-color: rgba(255, 255, 255, 0.12);
+  }
+
+  .view-mode-toggle svg {
+    opacity: 0.7;
+    transition: opacity 0.3s ease;
+  }
+
+  .view-mode-toggle:hover svg {
+    opacity: 1;
   }
 
   /* 会社リストスタイル */

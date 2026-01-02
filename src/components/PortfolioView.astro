@@ -1,0 +1,930 @@
+---
+// ポートフォリオ表示コンポーネント
+// ミニマルで洗練されたデザイン
+import { worksData } from '../data/worksData.js';
+import { profileData } from '../data/profileData.js';
+
+const workNames: string[] = worksData.names;
+---
+
+<div class="portfolio-view" id="portfolioView">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-main">
+        <div class="hero-badge">Portfolio 2024</div>
+        <h1 class="hero-name">{profileData.name}</h1>
+        <p class="hero-role">{profileData.nameEn}</p>
+        <p class="hero-title">UI/UX デザイナー / フロントエンド開発者</p>
+        
+        <div class="hero-bio-wrapper">
+          <p class="hero-bio">{profileData.bio}</p>
+          <p class="hero-description">{profileData.description}</p>
+        </div>
+        
+        <div class="hero-actions">
+          <a href="#works" class="hero-cta primary">作品を見る</a>
+          <button class="hero-cta secondary" onclick="window.location.href='/'">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            3D空間で見る
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Works Section -->
+  <section class="works-section" id="works">
+    <div class="section-container">
+      <h2 class="section-title">Works</h2>
+      
+      <div class="works-grid">
+        {workNames.map((workName) => {
+          const workImage = worksData.images[workName as keyof typeof worksData.images] || '';
+          
+          return (
+            <article class="work-card" data-work-name={workName}>
+              <div class="work-card-image">
+                <img src={workImage} alt={workName} loading="lazy" />
+              </div>
+              <h3 class="work-card-title">{workName}</h3>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section" id="about">
+    <div class="about-container">
+      <div class="about-grid">
+        <div class="about-image">
+          <img src={profileData.image} alt={profileData.name} loading="lazy" />
+        </div>
+        <div class="about-content">
+          <h2 class="section-title">About</h2>
+          <div class="about-text">
+            <p>{profileData.description}</p>
+            <p>{profileData.bio}</p>
+            <p>千葉工業大学大学院でデザイン科を専攻し、UI/UXデザインとフロントエンド開発を中心に学んでいます。使いやすさと美しさを両立させたデジタル体験の創造を追求しています。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Expertise Section -->
+  <section class="expertise-section">
+    <div class="expertise-container">
+      <h2 class="section-title">Expertise</h2>
+      <div class="expertise-grid">
+        <div class="expertise-item">
+          <h3 class="expertise-name">UI/UXデザイン</h3>
+          <p class="expertise-description">ユーザー中心のデザインプロセスを通じて、直感的で使いやすいインターフェースを設計します。</p>
+        </div>
+        <div class="expertise-item">
+          <h3 class="expertise-name">フロントエンド開発</h3>
+          <p class="expertise-description">React、Astro、TypeScriptを使用し、パフォーマンスとアクセシビリティを重視した実装を行います。</p>
+        </div>
+        <div class="expertise-item">
+          <h3 class="expertise-name">プロトタイピング</h3>
+          <p class="expertise-description">Figmaを用いた高度なプロトタイピングで、アイデアを素早く形にし、検証します。</p>
+        </div>
+        <div class="expertise-item">
+          <h3 class="expertise-name">デザインシステム</h3>
+          <p class="expertise-description">一貫性のあるデザインシステムを構築し、効率的な開発とメンテナンスをサポートします。</p>
+        </div>
+      </div>
+      <div class="tools-section">
+        <h3 class="tools-title">使用ツール</h3>
+        <div class="tools-list">
+          <span class="tool-tag">Figma</span>
+          <span class="tool-tag">React</span>
+          <span class="tool-tag">TypeScript</span>
+          <span class="tool-tag">Astro</span>
+          <span class="tool-tag">CSS/SCSS</span>
+          <span class="tool-tag">Git</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience Section -->
+  <section class="experience-section">
+    <div class="experience-container">
+      <h2 class="section-title">Experience</h2>
+      <div class="experience-list">
+        <div class="experience-item">
+          <div class="experience-period">2023 - Present</div>
+          <div class="experience-content">
+            <h3 class="experience-title">千葉工業大学大学院</h3>
+            <p class="experience-role">デザイン科専攻 修士課程</p>
+            <p class="experience-description">UI/UXデザインとフロントエンド開発を中心に研究・制作活動を行っています。</p>
+          </div>
+        </div>
+        <div class="experience-item">
+          <div class="experience-period">2019 - 2023</div>
+          <div class="experience-content">
+            <h3 class="experience-title">千葉工業大学</h3>
+            <p class="experience-role">デザイン科学部</p>
+            <p class="experience-description">デザインの基礎から応用まで、幅広い知識と技術を習得しました。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="contact-section" id="contact">
+    <div class="contact-container">
+      <h2 class="section-title">Contact</h2>
+      <p class="contact-description">プロジェクトのご相談や、お仕事のご依頼はお気軽にご連絡ください。</p>
+      <div class="contact-links">
+        <a href="mailto:your.email@example.com" class="contact-link">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">your.email@example.com</span>
+        </a>
+        <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" class="contact-link">
+          <span class="contact-label">Twitter</span>
+          <span class="contact-value">@yourhandle</span>
+        </a>
+        <a href="https://github.com/yourhandle" target="_blank" rel="noopener noreferrer" class="contact-link">
+          <span class="contact-label">GitHub</span>
+          <span class="contact-value">github.com/yourhandle</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="portfolio-footer">
+    <div class="footer-container">
+      <p class="footer-text">© 2024 Tatsuya Aihara. All rights reserved.</p>
+      <button class="footer-3d-link" onclick="window.location.href='/'">
+        <span>Explore 3D City</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+  </footer>
+</div>
+
+<style>
+  .portfolio-view {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #faf8f5;
+    color: #2a2520;
+  }
+
+  html.dark-theme .portfolio-view {
+    background-color: #1a1816;
+    color: #e8e6e3;
+  }
+
+  /* Hero Section */
+  .hero-section {
+    position: relative;
+    min-height: 75vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 32px 60px;
+  }
+
+  @media (max-width: 768px) {
+    .hero-section {
+      min-height: 80vh;
+      padding: 80px 20px 40px;
+    }
+  }
+
+  .hero-container {
+    max-width: 680px;
+    width: 100%;
+  }
+
+  .hero-main {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .hero-badge {
+    font-size: 0.6875rem;
+    font-weight: 300;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0.35;
+    padding: 6px 16px;
+    border: 1px solid rgba(42, 37, 32, 0.08);
+    border-radius: 32px;
+    background-color: rgba(42, 37, 32, 0.02);
+  }
+
+  html.dark-theme .hero-badge {
+    border-color: rgba(232, 230, 227, 0.08);
+    background-color: rgba(232, 230, 227, 0.02);
+  }
+
+  .hero-name {
+    font-size: 3.5rem;
+    line-height: 1.15;
+    font-weight: 200;
+    letter-spacing: -0.04em;
+    margin: 12px 0 0;
+  }
+
+  @media (max-width: 768px) {
+    .hero-name {
+      font-size: 2.25rem;
+    }
+  }
+
+  .hero-role {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    font-weight: 300;
+    letter-spacing: 0.08em;
+    opacity: 0.4;
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .hero-title {
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    font-weight: 300;
+    opacity: 0.7;
+    margin: 4px 0 0;
+  }
+
+  .hero-bio-wrapper {
+    margin-top: 24px;
+    padding: 24px 32px;
+    border-radius: 16px;
+    background-color: rgba(42, 37, 32, 0.02);
+    border: 1px solid rgba(42, 37, 32, 0.06);
+    max-width: 560px;
+  }
+
+  html.dark-theme .hero-bio-wrapper {
+    background-color: rgba(232, 230, 227, 0.02);
+    border-color: rgba(232, 230, 227, 0.06);
+  }
+
+  @media (max-width: 768px) {
+    .hero-bio-wrapper {
+      padding: 20px 24px;
+    }
+  }
+
+  .hero-bio {
+    font-size: 0.8125rem;
+    line-height: 1.65;
+    font-weight: 300;
+    opacity: 0.5;
+    margin: 0 0 12px;
+  }
+
+  .hero-description {
+    font-size: 0.875rem;
+    line-height: 1.75;
+    font-weight: 300;
+    opacity: 0.65;
+    margin: 0;
+  }
+
+  .hero-actions {
+    margin-top: 32px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .hero-actions {
+      flex-direction: column;
+      width: 100%;
+    }
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 24px;
+    font-size: 0.8125rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    border-radius: 32px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  @media (max-width: 768px) {
+    .hero-cta {
+      width: 100%;
+      padding: 12px 24px;
+    }
+  }
+
+  .hero-cta.primary {
+    background-color: rgba(42, 37, 32, 0.92);
+    color: #faf8f5;
+    border-color: rgba(42, 37, 32, 0.92);
+  }
+
+  html.dark-theme .hero-cta.primary {
+    background-color: rgba(232, 230, 227, 0.92);
+    color: #1a1816;
+  }
+
+  .hero-cta.primary:hover {
+    background-color: rgba(42, 37, 32, 1);
+    border-color: rgba(42, 37, 32, 1);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(42, 37, 32, 0.15);
+  }
+
+  html.dark-theme .hero-cta.primary:hover {
+    background-color: rgba(232, 230, 227, 1);
+  }
+
+  .hero-cta.secondary {
+    background-color: transparent;
+    color: inherit;
+    border-color: rgba(42, 37, 32, 0.12);
+  }
+
+  html.dark-theme .hero-cta.secondary {
+    border-color: rgba(232, 230, 227, 0.12);
+  }
+
+  .hero-cta.secondary:hover {
+    background-color: rgba(42, 37, 32, 0.04);
+    border-color: rgba(42, 37, 32, 0.18);
+    transform: translateY(-1px);
+  }
+
+  html.dark-theme .hero-cta.secondary:hover {
+    background-color: rgba(232, 230, 227, 0.04);
+    border-color: rgba(232, 230, 227, 0.18);
+  }
+
+  .hero-cta svg {
+    width: 12px;
+    height: 12px;
+    opacity: 0.7;
+  }
+
+  /* Works Section */
+  .works-section {
+    padding: 140px 40px;
+  }
+
+  @media (max-width: 768px) {
+    .works-section {
+      padding: 100px 24px;
+    }
+  }
+
+  .section-container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 200;
+    letter-spacing: -0.02em;
+    margin: 0 0 56px 0;
+    text-align: center;
+    opacity: 0.85;
+  }
+
+  @media (max-width: 768px) {
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 40px;
+    }
+  }
+
+  .works-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 56px 48px;
+  }
+
+  @media (max-width: 768px) {
+    .works-grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+  }
+
+  .work-card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 12px;
+    margin: -12px;
+    border-radius: 12px;
+  }
+
+  .work-card:hover {
+    background-color: rgba(42, 37, 32, 0.02);
+  }
+
+  html.dark-theme .work-card:hover {
+    background-color: rgba(232, 230, 227, 0.02);
+  }
+
+  .work-card-image {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background-color: #f5f3f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+  }
+
+  html.dark-theme .work-card-image {
+    background-color: #252220;
+  }
+
+  .work-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+
+  .work-card-title {
+    font-size: 0.9375rem;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    margin: 0;
+    opacity: 0.8;
+  }
+
+  /* About Section */
+  .about-section {
+    padding: 120px 32px;
+  }
+
+  @media (max-width: 768px) {
+    .about-section {
+      padding: 80px 20px;
+    }
+  }
+
+  .about-container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  @media (max-width: 1024px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+  }
+
+  .about-image {
+    aspect-ratio: 3/4;
+    overflow: hidden;
+    background-color: #f5f3f0;
+    position: sticky;
+    top: 100px;
+    border-radius: 16px;
+  }
+
+  @media (max-width: 1024px) {
+    .about-image {
+      aspect-ratio: 1;
+      max-width: 400px;
+      margin: 0 auto;
+      position: static;
+    }
+  }
+
+  html.dark-theme .about-image {
+    background-color: #252220;
+  }
+
+  .about-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .about-content {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .about-text {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .about-text p {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    font-weight: 300;
+    opacity: 0.65;
+    margin: 0;
+    letter-spacing: 0.005em;
+  }
+
+  /* Expertise Section */
+  .expertise-section {
+    padding: 120px 32px;
+    background-color: rgba(42, 37, 32, 0.02);
+  }
+
+  html.dark-theme .expertise-section {
+    background-color: rgba(232, 230, 227, 0.02);
+  }
+
+  @media (max-width: 768px) {
+    .expertise-section {
+      padding: 80px 20px;
+    }
+  }
+
+  .expertise-container {
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .expertise-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 48px 56px;
+    margin-top: 60px;
+  }
+
+  @media (max-width: 768px) {
+    .expertise-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  .expertise-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .expertise-name {
+    font-size: 1rem;
+    font-weight: 300;
+    letter-spacing: -0.01em;
+    margin: 0;
+    opacity: 0.85;
+  }
+
+  .expertise-description {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    font-weight: 300;
+    opacity: 0.6;
+    margin: 0;
+    letter-spacing: 0.005em;
+  }
+
+  .tools-section {
+    margin-top: 60px;
+    padding-top: 60px;
+    border-top: 1px solid rgba(42, 37, 32, 0.06);
+  }
+
+  html.dark-theme .tools-section {
+    border-top-color: rgba(232, 230, 227, 0.06);
+  }
+
+  .tools-title {
+    font-size: 0.8125rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.4;
+    margin: 0 0 24px 0;
+    text-align: center;
+  }
+
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .tool-tag {
+    font-size: 0.8125rem;
+    font-weight: 300;
+    padding: 8px 20px;
+    border: 1px solid rgba(42, 37, 32, 0.08);
+    border-radius: 32px;
+    letter-spacing: 0.02em;
+    transition: all 0.3s ease;
+  }
+
+  html.dark-theme .tool-tag {
+    border-color: rgba(232, 230, 227, 0.08);
+  }
+
+  .tool-tag:hover {
+    border-color: rgba(42, 37, 32, 0.15);
+    opacity: 0.8;
+  }
+
+  html.dark-theme .tool-tag:hover {
+    border-color: rgba(232, 230, 227, 0.15);
+  }
+
+  /* Experience Section */
+  .experience-section {
+    padding: 120px 32px;
+  }
+
+  @media (max-width: 768px) {
+    .experience-section {
+      padding: 80px 20px;
+    }
+  }
+
+  .experience-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .experience-list {
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    margin-top: 80px;
+  }
+
+  .experience-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 60px;
+  }
+
+  @media (max-width: 768px) {
+    .experience-item {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+  }
+
+  .experience-period {
+    font-size: 0.875rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    opacity: 0.5;
+    text-transform: uppercase;
+  }
+
+  .experience-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .experience-title {
+    font-size: 1.25rem;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .experience-role {
+    font-size: 0.9375rem;
+    font-weight: 300;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .experience-description {
+    font-size: 0.875rem;
+    line-height: 1.7;
+    font-weight: 300;
+    opacity: 0.6;
+    margin: 0;
+    letter-spacing: 0.005em;
+  }
+
+  /* Contact Section */
+  .contact-section {
+    padding: 120px 32px;
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  html.dark-theme .contact-section {
+    background-color: rgba(255, 255, 255, 0.02);
+  }
+
+  @media (max-width: 768px) {
+    .contact-section {
+      padding: 80px 20px;
+    }
+  }
+
+  .contact-container {
+    max-width: 720px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .contact-description {
+    font-size: 0.9375rem;
+    line-height: 1.75;
+    font-weight: 300;
+    opacity: 0.6;
+    margin: 32px 0 48px;
+    letter-spacing: 0.005em;
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .contact-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 28px;
+    border: 1px solid rgba(42, 37, 32, 0.08);
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.3s ease;
+  }
+
+  html.dark-theme .contact-link {
+    border-color: rgba(232, 230, 227, 0.08);
+  }
+
+  .contact-link:hover {
+    border-color: rgba(42, 37, 32, 0.15);
+    opacity: 0.8;
+  }
+
+  html.dark-theme .contact-link:hover {
+    border-color: rgba(232, 230, 227, 0.15);
+  }
+
+  .contact-label {
+    font-size: 0.8125rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.5;
+  }
+
+  .contact-value {
+    font-size: 0.9375rem;
+    font-weight: 300;
+    opacity: 0.8;
+  }
+
+  /* Footer */
+  .portfolio-footer {
+    padding: 48px 32px;
+    border-top: 1px solid rgba(42, 37, 32, 0.06);
+  }
+
+  html.dark-theme .portfolio-footer {
+    border-top-color: rgba(232, 230, 227, 0.06);
+  }
+
+  @media (max-width: 768px) {
+    .portfolio-footer {
+      padding: 40px 20px;
+    }
+  }
+
+  .footer-container {
+    max-width: 1080px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .footer-container {
+      flex-direction: column;
+      gap: 20px;
+    }
+  }
+
+  .footer-text {
+    font-size: 0.8125rem;
+    font-weight: 300;
+    opacity: 0.4;
+    margin: 0;
+    letter-spacing: 0.02em;
+  }
+
+  .footer-3d-link {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 20px;
+    background-color: transparent;
+    border: 1px solid rgba(42, 37, 32, 0.08);
+    border-radius: 32px;
+    font-size: 0.8125rem;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: inherit;
+  }
+
+  html.dark-theme .footer-3d-link {
+    border-color: rgba(232, 230, 227, 0.08);
+  }
+
+  .footer-3d-link:hover {
+    border-color: rgba(42, 37, 32, 0.15);
+    opacity: 0.8;
+  }
+
+  html.dark-theme .footer-3d-link:hover {
+    border-color: rgba(232, 230, 227, 0.15);
+  }
+
+  .footer-3d-link svg {
+    opacity: 0.6;
+  }
+</style>
+
+<script>
+  // 作品カードのクリックイベント
+  document.querySelectorAll('.work-card').forEach(card => {
+    const workName = card.getAttribute('data-work-name');
+    if (!workName) return;
+    
+    // カード全体のクリック
+    card.addEventListener('click', () => {
+      // 3Dモードに遷移して該当作品を表示
+      window.location.href = `/?work=${encodeURIComponent(workName)}`;
+    });
+    
+    // ボタンのクリック（イベント伝播を止める）
+    const button = card.querySelector('.work-card-button');
+    if (button) {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.location.href = `/?work=${encodeURIComponent(workName)}`;
+      });
+    }
+  });
+
+  // URLパラメータから作品名を取得して3Dモードで表示
+  const urlParams = new URLSearchParams(window.location.search);
+  const workParam = urlParams.get('work');
+  if (workParam && typeof workParam === 'string') {
+    // 3Dモードにリダイレクト
+    window.location.href = '/';
+  }
+</script>
+
+

@@ -1,0 +1,21 @@
+---
+// ポートフォリオ表示ページ
+import Layout from '../layouts/Layout.astro';
+import PortfolioHeader from '../components/PortfolioHeader.astro';
+import PortfolioView from '../components/PortfolioView.astro';
+---
+
+<Layout title="Portfolio - Tatsuya Aihara">
+  <PortfolioHeader />
+  <PortfolioView />
+</Layout>
+
+<style is:global>
+  html, body {
+    overflow: visible !important;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    height: auto !important;
+  }
+</style>
+
