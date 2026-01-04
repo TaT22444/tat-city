@@ -23,17 +23,41 @@ const blogNames: string[] = [
 
 <CityStyles />
 <div class="city">
-  <header class="city-header">
-    <h1 class="city-title">tatsuya city</h1>
-    <button class="view-mode-toggle" id="viewModeToggle" aria-label="Toggle to portfolio view">
-      <span>Portfolio View</span>
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <rect x="3" y="3" width="7" height="7"></rect>
-        <rect x="14" y="3" width="7" height="7"></rect>
-        <rect x="14" y="14" width="7" height="7"></rect>
-        <rect x="3" y="14" width="7" height="7"></rect>
-      </svg>
-    </button>
+  <header class="portfolio-header">
+    <div class="header-container">
+      <div class="header-logo">
+        <p class="logo-text">TaT Archive / 2025 ~ 2026</p>
+      </div>
+      
+      <div class="header-actions">
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Twitter">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Instagram">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
+            </svg>
+          </a>
+        </div>
+        
+        <button class="view-toggle-btn" id="viewModeToggle" aria-label="Toggle to portfolio view" onclick="window.location.href='/portfolio'">
+          <div class="toggle-icons">
+            <svg class="icon-grid" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="icon-3d active" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
+              <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
   </header>
   <div class="city-view town-works" id="cityView">
     <div class="city-grid" id="cityGrid">
@@ -44,41 +68,41 @@ const blogNames: string[] = [
       <div class="point-bubble point-9 profile-item work-item" data-profile-point="true">
         <div class="work-image profile-image-thumb"></div>
         <div class="work-title">Profile</div>
-      </div>
+          </div>
 
       <!-- 空間に吹き出しポイントを追加 -->
       {/* 作品ポイント - 統合後は常に表示 */}
       <div class="point-bubble point-1 work-item" data-work-name="Hamori">
-        <div class="work-image"></div>
-        <div class="work-title">Hamori</div>
+            <div class="work-image"></div>
+            <div class="work-title">Hamori</div>
       </div>
       <div class="point-bubble point-2 work-item" data-work-name="MasiMasi">
-        <div class="work-image"></div>
-        <div class="work-title">MasiMasi</div>
+            <div class="work-image"></div>
+            <div class="work-title">MasiMasi</div>
       </div>
       <div class="point-bubble point-3 work-item" data-work-name="Atta!">
-        <div class="work-image"></div>
-        <div class="work-title">Atta!</div>
+            <div class="work-image"></div>
+            <div class="work-title">Atta!</div>
       </div>
       <div class="point-bubble point-4 work-item" data-work-name="CIT portal">
-        <div class="work-image"></div>
-        <div class="work-title">CIT portal</div>
+            <div class="work-image"></div>
+            <div class="work-title">CIT portal</div>
       </div>
       <div class="point-bubble point-5 work-item" data-work-name="市民の木">
-        <div class="work-image"></div>
-        <div class="work-title">市民の木</div>
+            <div class="work-image"></div>
+            <div class="work-title">市民の木</div>
       </div>
       <div class="point-bubble point-6 work-item" data-work-name="Invidi">
-        <div class="work-image"></div>
-        <div class="work-title">Invidi</div>
+            <div class="work-image"></div>
+            <div class="work-title">Invidi</div>
       </div>
       <div class="point-bubble point-7 work-item" data-work-name="Ittow">
-        <div class="work-image"></div>
-        <div class="work-title">Ittow</div>
+            <div class="work-image"></div>
+            <div class="work-title">Ittow</div>
       </div>
       <div class="point-bubble point-8 work-item" data-work-name="Wink">
-        <div class="work-image"></div>
-        <div class="work-title">Wink</div>
+            <div class="work-image"></div>
+            <div class="work-title">Wink</div>
       </div>
 
     </div>
@@ -138,21 +162,21 @@ const blogNames: string[] = [
     </div>
     
     {/* ナビゲーションリスト - worksタウンに統合後は常に表示 */}
-    <div class="company-list">
+      <div class="company-list">
       <h3>Portfolio</h3>
-      <ul>
+        <ul>
         {/* プロフィールを最初に追加 */}
         <li class="company-item" data-profile-point="true">
           Profile
         </li>
         {/* 作品リスト */}
-        {workNames.map(name => (
+          {workNames.map(name => (
           <li class="company-item" data-work-name={name}>
-            {name} Co.
-          </li>
-        ))}
-      </ul>
-    </div>
+              {name} Co.
+            </li>
+          ))}
+        </ul>
+      </div>
     
     <!-- タウン名リスト - 統合後は削除または簡略化 -->
     {/* タウンリストは統合により不要になったため削除 */}
@@ -275,9 +299,20 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   document.querySelector('#theme-toggle')?.classList.add('dark-active');
 }
 
-// 表示モード切替（ポートフォリオ表示へ）
-document.querySelector('#viewModeToggle')?.addEventListener('click', function() {
-  window.location.href = '/portfolio';
+// 表示モード切替はonclick属性で処理
+
+// Header scroll effect
+document.addEventListener('DOMContentLoaded', () => {
+  const header = document.querySelector('.portfolio-header');
+  if (header) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+  }
 });
 
 // 統合後はリダイレクト不要（index.astroが直接worksタウンを表示）
@@ -877,7 +912,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
             // ズームしてからポップアップを表示
             zoomToPoint('profile');
             setTimeout(() => {
-              showProfilePopup();
+            showProfilePopup();
             }, 600);
           }
         });
@@ -889,17 +924,17 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         const workName = point.getAttribute('data-work-name') || '';
         if (workName) {
           console.log('Setting up click event for work:', workName);
-          
-          point.addEventListener('click', (e) => {
-            e.stopPropagation();
+        
+        point.addEventListener('click', (e) => {
+          e.stopPropagation();
             console.log('Point clicked:', workName);
-            // まずズームして、その後ポップアップを表示
-            zoomToPoint(workName);
-            setTimeout(() => {
-              showWorkPopup(workName);
-            }, 600);
-          });
-        }
+          // まずズームして、その後ポップアップを表示
+          zoomToPoint(workName);
+          setTimeout(() => {
+            showWorkPopup(workName);
+          }, 600);
+        });
+      }
       }
       // Blogs townの場合はブログ情報を表示（後方互換性のため残す）
       else if (currentTown.includes('blogs')) {
@@ -963,10 +998,10 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     }
     
     // ポップアップを表示（ズームは呼び出し元で行うため、ここでは行わない）
-    profilePopup.style.display = 'flex';
-    setTimeout(() => {
-      profilePopup.classList.add('active');
-    }, 10);
+      profilePopup.style.display = 'flex';
+      setTimeout(() => {
+        profilePopup.classList.add('active');
+      }, 10);
   }
 
   // プロフィールポップアップ非表示関数
@@ -1160,8 +1195,10 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     
     // ポップアップの内容を更新（常に実行）
     popupTitle.textContent = `${workName} Co.`;
-    popupType.textContent = workTypes[workName] || 'プロジェクト';
-    popupScope.textContent = workScopes[workName] || '個人制作';
+    const types = workTypes[workName];
+    popupType.textContent = Array.isArray(types) ? types.join(' / ') : (types || 'プロジェクト');
+    const scopes = workScopes[workName];
+    popupScope.textContent = Array.isArray(scopes) ? scopes.join(' / ') : (scopes || '個人制作');
     popupDuration.textContent = workDurations[workName] || '制作期間不明';
     popupDescription.textContent = workDescriptions[workName] || 'この作品の詳細情報は準備中です。';
     
@@ -1175,14 +1212,14 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     
     // 既に開いている場合は閉じずに内容だけ更新、開いていない場合は表示
     if (!wasActive) {
-      // ポップアップを表示
-      popup.style.display = 'flex';
-      // アニメーションのためにタイムアウトを設定
-      setTimeout(() => {
-        popup.classList.add('active');
-      }, 10);
-      // イベントリスナーのセットアップ
-      setupPopupEvents();
+    // ポップアップを表示
+    popup.style.display = 'flex';
+    // アニメーションのためにタイムアウトを設定
+    setTimeout(() => {
+      popup.classList.add('active');
+    }, 10);
+    // イベントリスナーのセットアップ
+    setupPopupEvents();
     }
     // 既に開いている場合は、内容が更新されただけで何もしない（ポップアップは開いたまま）
   }
@@ -2727,63 +2764,166 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     }
   }
 
-  .city-header{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px 32px;
-    background-color: transparent;
+  /* ========================================
+     Header (PortfolioViewと同じスタイル)
+     ======================================== */
+  .portfolio-header {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    z-index: 100;
-    min-height: 72px;
-    box-sizing: border-box;
+    right: 0;
+    z-index: 1000;
+    padding: 0;
+    margin: 0;
+    transition: backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
   }
 
-  .view-mode-toggle {
+  .portfolio-header.scrolled {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
+  }
+
+  html.dark-theme .portfolio-header.scrolled {
+    background-color: rgba(30, 30, 35, 0.8);
+  }
+
+  .header-container {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    padding: 16px 40px 8px;
+    position: sticky;
+    top: 0;
+  }
+
+  .logo-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-color, #333);
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  html.dark-theme .logo-text {
+    color: var(--text-color, #e0e0e0);
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .social-links {
+    display: flex;
     gap: 8px;
-    padding: 10px 18px;
-    background-color: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    border-radius: 20px;
-    color: var(--text-color);
-    font-size: 0.8125rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
+  }
+
+  .social-link {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid rgba(226, 226, 226, 0.8);
+    background: #ffffff;
+    color: var(--text-color, #333);
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
+  }
+
+  html.dark-theme .social-link {
+    background: rgba(30, 30, 35, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-color, #e0e0e0);
+  }
+
+  .social-link:hover {
+    background: #f5f5f5;
+  }
+
+  html.dark-theme .social-link:hover {
+    background: rgba(40, 40, 45, 0.9);
+  }
+
+  .view-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    background: #ffffff;
+    border: 1px solid #cdcdcd;
+    border-radius: 24px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s;
   }
 
-  html.dark-theme .view-mode-toggle {
-    background-color: rgba(30, 30, 35, 0.6);
-    border-color: rgba(255, 255, 255, 0.08);
+  html.dark-theme .view-toggle-btn {
+    background: rgba(30, 30, 35, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
   }
 
-  .view-mode-toggle:hover {
-    background-color: rgba(255, 255, 255, 0.8);
-    border-color: rgba(0, 0, 0, 0.12);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  .view-toggle-btn:hover {
+    background: #f5f5f5;
   }
 
-  html.dark-theme .view-mode-toggle:hover {
-    background-color: rgba(40, 40, 45, 0.8);
-    border-color: rgba(255, 255, 255, 0.12);
+  html.dark-theme .view-toggle-btn:hover {
+    background: rgba(40, 40, 45, 0.9);
   }
 
-  .view-mode-toggle svg {
-    opacity: 0.7;
-    transition: opacity 0.3s ease;
+  .toggle-icons {
+    display: flex;
+    gap: 2px;
   }
 
-  .view-mode-toggle:hover svg {
-    opacity: 1;
+  .toggle-icons svg {
+    width: 16px;
+    height: 16px;
+    padding: 8px;
+    border-radius: 16px;
+    transition: all 0.2s;
+  }
+
+  .toggle-icons .icon-grid.active {
+    background: #ffffff;
+    border: 1px solid #e2e2e2;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
+  }
+
+  html.dark-theme .toggle-icons .icon-grid.active {
+    background: rgba(50, 50, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .toggle-icons .icon-3d.active {
+    background: #ffffff;
+    border: 1px solid #e2e2e2;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
+  }
+
+  html.dark-theme .toggle-icons .icon-3d.active {
+    background: rgba(50, 50, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .toggle-icons .icon-3d {
+    color: #808080;
+  }
+
+  /* Header Responsive */
+  @media (max-width: 768px) {
+    .header-container {
+      padding: 20px 24px 8px;
+      flex-wrap: wrap;
+    }
+
+    .logo-text {
+      font-size: 16px;
+    }
   }
 
   /* 会社リストスタイル */

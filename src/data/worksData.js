@@ -12,27 +12,27 @@ export const worksData = {
     'Wink': '積読防止スマートリンク管理アプリ'
   },
   
-  // 作品のメタ情報
+  // 作品のメタ情報（複数指定可能）
   types: {
-    'Hamori': 'モバイルアプリ',
-    'MasiMasi': 'ウェブサービス',
-    'Atta!': 'オンラインメディア',
-    'CIT portal': '学生ポータル',
-    '市民の木': 'コミュニティプラットフォーム',
-    'Invidi': '知識管理ツール',
-    'Ittow': 'モバイルアプリ',
-    'Wink': 'モバイルアプリ'
+    'Hamori': ['アプリデザイン', 'UI/UX'],
+    'MasiMasi': ['アプリデザイン', 'UI/UX', 'GMODA 入選'],
+    'Atta!': ['アプリデザイン', 'UI/UX'],
+    'CIT portal': ['大学ポータルサイト', '卒業研究'],
+    '市民の木': ['コミュニティプラットフォーム'],
+    'Invidi': ['ノーコードアプリ', 'UI/UX'],
+    'Ittow': ['iOSアプリ', 'UI/UX'],
+    'Wink': ['iOSアプリ', 'UI/UX']
   },
   
   scopes: {
-    'Hamori': 'チーム制作',
-    'MasiMasi': 'チーム制作',
-    'Atta!': '企業案件',
-    'CIT portal': '大学プロジェクト',
-    '市民の木': '自治体連携',
-    'Invidi': '個人制作',
-    'Ittow': '個人制作',
-    'Wink': '個人制作'
+    'Hamori': ['個人制作'],
+    'MasiMasi': ['個人制作'],
+    'Atta!': ['個人制作'],
+    'CIT portal': ['個人制作'],
+    '市民の木': ['授業課題(4人)'],
+    'Invidi': ['個人制作'],
+    'Ittow': ['個人制作'],
+    'Wink': ['個人制作']
   },
   
   durations: {
@@ -60,7 +60,7 @@ export const worksData = {
   
   // 画像パス（ポップアップ表示用）
   images: {
-    'Hamori': '/assets/images/works/hamori_pop.png',
+    'Hamori': '/assets/images/works/Hamori-thumb.png',
     'MasiMasi': '/assets/images/works/masimasi_pop.png',
     'Atta!': '/assets/images/works/atta_pop.png',
     'CIT portal': '/assets/images/works/citportal_pop.png',
@@ -68,6 +68,36 @@ export const worksData = {
     'Invidi': '/assets/images/works/invidi_pop.png',
     'Ittow': '/assets/images/works/ittow_pop.png',
     'Wink': '/assets/images/works/wink_pop.png'
+  },
+  
+  // リリースバッジの表示設定
+  released: {
+    'Hamori': false,
+    'MasiMasi': false,
+    'Atta!': false,
+    'CIT portal': false,
+    '市民の木': false,
+    'Invidi': false,
+    'Ittow': true,
+    'Wink': true
+  },
+  
+  // リリース先リンク（複数指定可能）
+  releaseLinks: {
+    'Hamori': [],
+    'MasiMasi': [
+      { label: '紹介動画', url: 'https://youtube.com/shorts/9nqDZs9zTos?si=2LtgxgFOpb22sQmj' }
+    ],
+    'Atta!': [],
+    'CIT portal': [
+      { label: 'デモサイト', url: 'https://cit-portal.netlify.app/' }
+    ],
+    '市民の木': [],
+    'Invidi': [],
+    'Ittow': [
+      { label: 'App Store', url: 'https://x.gd/ittow_ios' }
+    ],
+    'Wink': []
   },
   
   // 作品名リスト

@@ -13,7 +13,7 @@ export const profileData = {
   image: '/assets/images/profile/profile.png',
   
   // メタ情報（ポップアップ表示用）
-  meta: ['デザイナー', 'エンジニア', '千葉工業大学大学院']
+  meta: ['UI/UXデザイナー', '千葉工業大学大学院']
   
   // SNSリンク（現在未使用のためコメントアウト）
   // sns: [

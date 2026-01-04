@@ -1,37 +1,176 @@
 ---
-// ポートフォリオ表示コンポーネント
-// ミニマルで洗練されたデザイン
+// 新しいポートフォリオビューデザイン - Figmaデザイン準拠
 import { worksData } from '../data/worksData.js';
 import { profileData } from '../data/profileData.js';
 
+// src/assetsから画像をインポート（最適化される）
+const workImages = import.meta.glob('../assets/images/works/*.png', { eager: true, import: 'default' }) as Record<string, { src: string }>;
+
+// 画像のファイル名とworksDataのキーをマッピング
+const getWorkImage = (workName: string): string => {
+  // worksDataの画像パスからファイル名を取得
+  const originalPath = worksData.images[workName as keyof typeof worksData.images] || '';
+  const fileName = originalPath.split('/').pop()?.toLowerCase() || '';
+  
+  // import.meta.globで取得した画像から該当するものを検索
+  for (const [path, image] of Object.entries(workImages)) {
+    const pathFileName = path.split('/').pop()?.toLowerCase() || '';
+    
+    // ファイル名が一致するかチェック（大文字小文字を無視）
+    if (pathFileName === fileName || pathFileName.includes(fileName.replace('.png', '')) || fileName.includes(pathFileName.replace('.png', ''))) {
+      return image.src;
+    }
+    
+    // worksDataのキー名とファイル名が部分的に一致するかチェック
+    const workNameLower = workName.toLowerCase();
+    if (pathFileName.includes(workNameLower) || workNameLower.includes(pathFileName.replace('_pop.png', '').replace('-thumb.png', '').replace('.png', ''))) {
+      return image.src;
+    }
+  }
+  
+  // 見つからない場合は元のパスを返す（フォールバック）
+  return originalPath;
+};
+
 const workNames: string[] = worksData.names;
+
+// Heroセクション用のフィーチャー作品（初期表示はIttow）
+const initialWorkIndex = workNames.indexOf('Ittow');
+const initialWorkName = workNames[initialWorkIndex >= 0 ? initialWorkIndex : 0];
+const featuredWork = {
+  name: initialWorkName,
+  title: initialWorkName,
+  description: worksData.descriptions[initialWorkName as keyof typeof worksData.descriptions] || '',
+  backgroundImage: '/assets/hero-ittow-backgroundImage.png' // 全作品で同じ背景画像を使用
+};
 ---
 
-<div class="portfolio-view" id="portfolioView">
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-container">
-      <div class="hero-main">
-        <div class="hero-badge">Portfolio 2024</div>
-        <h1 class="hero-name">{profileData.name}</h1>
-        <p class="hero-role">{profileData.nameEn}</p>
-        <p class="hero-title">UI/UX デザイナー / フロントエンド開発者</p>
-        
-        <div class="hero-bio-wrapper">
-          <p class="hero-bio">{profileData.bio}</p>
-          <p class="hero-description">{profileData.description}</p>
+<div class="portfolio-view-new" id="portfolioView">
+  <!-- Header -->
+  <header class="portfolio-header">
+    <div class="header-container">
+      <div class="header-logo">
+        <p class="logo-text">TaT Archive / 2025 ~ 2026</p>
+      </div>
+      
+      <nav class="header-nav">
+        <a href="#about" class="nav-link">about</a>
+        <a href="#works" class="nav-link">works</a>
+        <a href="#contact" class="nav-link">contact</a>
+      </nav>
+      
+      <div class="header-actions">
+        <div class="social-links">
+          <a href="#" class="social-link" aria-label="Twitter">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Instagram">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
+            </svg>
+          </a>
         </div>
         
-        <div class="hero-actions">
-          <a href="#works" class="hero-cta primary">作品を見る</a>
-          <button class="hero-cta secondary" onclick="window.location.href='/'">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        <button class="view-toggle-btn" id="viewToggleBtn" onclick="window.location.href='/'">
+          <div class="toggle-icons">
+            <svg class="icon-grid active" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            3D空間で見る
-          </button>
+            <svg class="icon-3d" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
+              <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
+            </svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section (Carousel) -->
+  <section class="hero-section">
+    <div class="hero-background">
+      <img src={featuredWork.backgroundImage} alt={featuredWork.name} class="hero-bg-image" />
+    </div>
+    
+    <div class="hero-content">
+
+      <div class="hero-card">
+        <p class="hero-work-category" id="heroWorkCategory">
+          {(Array.isArray(worksData.types[featuredWork.name as keyof typeof worksData.types]) 
+            ? worksData.types[featuredWork.name as keyof typeof worksData.types].join(' / ')
+            : worksData.types[featuredWork.name as keyof typeof worksData.types])}
+        </p>
+        <h1 class="hero-work-title" id="heroWorkTitle">{featuredWork.title}</h1>
+        <p class="hero-work-description" id="heroWorkDescription">{featuredWork.description}</p>
+
+        <!-- Navigation Arrows -->
+        <button class="hero-nav-arrow prev" aria-label="Previous">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.24219 9.99719L12.0597 14.8147L12.9434 13.9309L9.00969 9.99719L12.9434 6.06469L12.0597 5.17969L7.24219 9.99719Z" fill="currentColor"/>
+          </svg>
+        </button>
+        <button class="hero-nav-arrow next" aria-label="Next">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12.7579 9.99719L7.94039 14.8147L7.05664 13.9309L10.9904 9.99719L7.05664 6.06469L7.94039 5.17969L12.7579 9.99719Z" fill="currentColor"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="hero-cta-buttons">
+        <a href="#works" class="hero-cta-btn">
+          <span>作品一覧へ</span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 12L8 4M8 12L4 8M8 12L12 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#" class="hero-cta-btn" id="heroReleaseBtn" target="_blank" rel="noopener noreferrer" style="display: none;">
+          <span id="heroReleaseBtnLabel"></span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 4L8 12M8 4L12 8M8 4L4 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" transform="rotate(45 8 8)"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+    
+    <!-- Pagination Indicator -->
+    <div class="hero-pagination" id="heroPagination">
+      {workNames.map((workName, index) => {
+        const isActive = index === (initialWorkIndex >= 0 ? initialWorkIndex : 0);
+        const workImage = getWorkImage(workName);
+        return (
+          <span 
+            class={`page-dot ${isActive ? 'active' : ''}`}
+            data-index={index}
+            data-work-name={workName}
+            data-work-image={workImage}
+          ></span>
+        );
+      })}
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section class="about-section" id="about">
+    <div class="section-container-small">
+      <div class="section-header">
+        <h2 class="section-title">About</h2>
+        <div class="section-underline"></div>
+      </div>
+      
+      <div class="about-content">
+        <div class="about-name">
+          <p class="name-jp">{profileData.name}</p>
+          <p class="name-en">{profileData.nameEn}</p>
+        </div>
+        <p class="about-role">UI/UX(デジタルプロダクト)デザイナー / 千葉工業大学大学院デザイン科学専攻修士一年</p>
+        <div class="about-text">
+          <p>大学から大学院にかけて、UI/UXを軸に課題解決のための広義のデザインを学んできました。現在は大学院で「AIと人間のインタラクション（HCI）」を研究しています。</p>
+          <p>また、個人では、スマホアプリやWebサービス、Webサイトの企画からデザイン、実装まで行っています。</p>
+          <p>最近、iPadとモニターとスマホケースが壊れました。</p>
         </div>
       </div>
     </div>
@@ -40,18 +179,33 @@ const workNames: string[] = worksData.names;
   <!-- Works Section -->
   <section class="works-section" id="works">
     <div class="section-container">
-      <h2 class="section-title">Works</h2>
+      <div class="section-header">
+        <h2 class="section-title">Works</h2>
+        <div class="section-underline"></div>
+      </div>
       
       <div class="works-grid">
-        {workNames.map((workName) => {
-          const workImage = worksData.images[workName as keyof typeof worksData.images] || '';
+        {workNames.slice(0, 6).map((workName) => {
+          const workImage = getWorkImage(workName);
+          const workDescription = worksData.descriptions[workName as keyof typeof worksData.descriptions] || '';
+          
+          const isReleased = worksData.released[workName as keyof typeof worksData.released] || false;
           
           return (
-            <article class="work-card" data-work-name={workName}>
-              <div class="work-card-image">
-                <img src={workImage} alt={workName} loading="lazy" />
+            <article class="work-card">
+              <div class="work-thumbnail">
+                <img src={workImage} alt={workName} class="work-image" />
+                {isReleased && <span class="work-badge">リリース</span>}
               </div>
-              <h3 class="work-card-title">{workName}</h3>
+              <div class="work-info">
+                <p class="work-category">
+                  {(Array.isArray(worksData.types[workName as keyof typeof worksData.types])
+                    ? worksData.types[workName as keyof typeof worksData.types].join(' / ')
+                    : worksData.types[workName as keyof typeof worksData.types])}
+                </p>
+                <h3 class="work-name">{workName}</h3>
+                <p class="work-description">{workDescription}</p>
+              </div>
             </article>
           );
         })}
@@ -59,81 +213,36 @@ const workNames: string[] = worksData.names;
     </div>
   </section>
 
-  <!-- About Section -->
-  <section class="about-section" id="about">
-    <div class="about-container">
-      <div class="about-grid">
-        <div class="about-image">
-          <img src={profileData.image} alt={profileData.name} loading="lazy" />
-        </div>
-        <div class="about-content">
-          <h2 class="section-title">About</h2>
-          <div class="about-text">
-            <p>{profileData.description}</p>
-            <p>{profileData.bio}</p>
-            <p>千葉工業大学大学院でデザイン科を専攻し、UI/UXデザインとフロントエンド開発を中心に学んでいます。使いやすさと美しさを両立させたデジタル体験の創造を追求しています。</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
   <!-- Expertise Section -->
-  <section class="expertise-section">
-    <div class="expertise-container">
-      <h2 class="section-title">Expertise</h2>
-      <div class="expertise-grid">
-        <div class="expertise-item">
-          <h3 class="expertise-name">UI/UXデザイン</h3>
-          <p class="expertise-description">ユーザー中心のデザインプロセスを通じて、直感的で使いやすいインターフェースを設計します。</p>
-        </div>
-        <div class="expertise-item">
-          <h3 class="expertise-name">フロントエンド開発</h3>
-          <p class="expertise-description">React、Astro、TypeScriptを使用し、パフォーマンスとアクセシビリティを重視した実装を行います。</p>
-        </div>
-        <div class="expertise-item">
-          <h3 class="expertise-name">プロトタイピング</h3>
-          <p class="expertise-description">Figmaを用いた高度なプロトタイピングで、アイデアを素早く形にし、検証します。</p>
-        </div>
-        <div class="expertise-item">
-          <h3 class="expertise-name">デザインシステム</h3>
-          <p class="expertise-description">一貫性のあるデザインシステムを構築し、効率的な開発とメンテナンスをサポートします。</p>
-        </div>
+  <section class="expertise-section" id="expertise">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Expertise</h2>
+        <div class="section-underline"></div>
       </div>
-      <div class="tools-section">
-        <h3 class="tools-title">使用ツール</h3>
-        <div class="tools-list">
-          <span class="tool-tag">Figma</span>
-          <span class="tool-tag">React</span>
-          <span class="tool-tag">TypeScript</span>
-          <span class="tool-tag">Astro</span>
-          <span class="tool-tag">CSS/SCSS</span>
-          <span class="tool-tag">Git</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Experience Section -->
-  <section class="experience-section">
-    <div class="experience-container">
-      <h2 class="section-title">Experience</h2>
-      <div class="experience-list">
-        <div class="experience-item">
-          <div class="experience-period">2023 - Present</div>
-          <div class="experience-content">
-            <h3 class="experience-title">千葉工業大学大学院</h3>
-            <p class="experience-role">デザイン科専攻 修士課程</p>
-            <p class="experience-description">UI/UXデザインとフロントエンド開発を中心に研究・制作活動を行っています。</p>
+      
+      <div class="expertise-content">
+        
+        <div class="expertise-grid">
+          <div class="expertise-item">
+            <h3 class="expertise-name">Webサイト制作</h3>
+            <p class="expertise-desc">ユーザーに何を伝えたいか、何をして欲しいか、何を感じて欲しいか、見た目だけでなく体験を意識した情報設計、コンテンツ制作を行い、「わかりやすさ」と「ブランドの世界観」の表現を心がけています。</p>
+          </div>
+          <div class="expertise-item">
+            <h3 class="expertise-name">スマホ・Webアプリ開発</h3>
+            <p class="expertise-desc">自分が欲しい・作りたいと思ったアプリアイデアを、AIとの対話を通してMVPのアイデア、戦略、実装方針といった仕様書にまとめ、FigmaでUI設計を行いながら詳細な機能や仕様を検討し、AIエージェントを活用して実装を進めています。</p>
+          </div>
+          <div class="expertise-item">
+            <h3 class="expertise-name">アプリデザイン</h3>
+            <p class="expertise-desc">ユーザーの行動や心理を理解し、直感的で使いやすいインターフェースを設計します。情報アーキテクチャの構築から、ワイヤーフレーム、プロトタイプ、ビジュアルデザインまで、一貫したデザインシステムを意識しながら、ユーザー体験を最適化することを重視しています。</p>
           </div>
         </div>
-        <div class="experience-item">
-          <div class="experience-period">2019 - 2023</div>
-          <div class="experience-content">
-            <h3 class="experience-title">千葉工業大学</h3>
-            <p class="experience-role">デザイン科学部</p>
-            <p class="experience-description">デザインの基礎から応用まで、幅広い知識と技術を習得しました。</p>
-          </div>
+        
+        <div class="expertise-divider"></div>
+        
+        <div class="expertise-tools">
+          <p class="tools-label">使用ツール・言語</p>
+          <p class="tools-list">Figma, HTML/CSS, Astro, TypeScript, React, ReactNative(Expo), Electron, Firebase, Github, Netlify, microCMS, Illustrator, Photoshop</p>
         </div>
       </div>
     </div>
@@ -141,790 +250,1197 @@ const workNames: string[] = worksData.names;
 
   <!-- Contact Section -->
   <section class="contact-section" id="contact">
-    <div class="contact-container">
-      <h2 class="section-title">Contact</h2>
-      <p class="contact-description">プロジェクトのご相談や、お仕事のご依頼はお気軽にご連絡ください。</p>
-      <div class="contact-links">
-        <a href="mailto:your.email@example.com" class="contact-link">
-          <span class="contact-label">Email</span>
-          <span class="contact-value">your.email@example.com</span>
-        </a>
-        <a href="https://twitter.com/yourhandle" target="_blank" rel="noopener noreferrer" class="contact-link">
-          <span class="contact-label">Twitter</span>
-          <span class="contact-value">@yourhandle</span>
-        </a>
-        <a href="https://github.com/yourhandle" target="_blank" rel="noopener noreferrer" class="contact-link">
-          <span class="contact-label">GitHub</span>
-          <span class="contact-value">github.com/yourhandle</span>
-        </a>
+    <div class="section-container-small">
+      <div class="section-header">
+        <h2 class="section-title">Contact</h2>
+        <div class="section-underline"></div>
       </div>
     </div>
   </section>
-
-  <!-- Footer -->
-  <footer class="portfolio-footer">
-    <div class="footer-container">
-      <p class="footer-text">© 2024 Tatsuya Aihara. All rights reserved.</p>
-      <button class="footer-3d-link" onclick="window.location.href='/'">
-        <span>Explore 3D City</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </button>
-    </div>
-  </footer>
 </div>
 
-<style>
-  .portfolio-view {
-    width: 100%;
-    min-height: 100vh;
-    background-color: #faf8f5;
-    color: #2a2520;
+<script define:vars={{ worksData, workNames }}>
+  // Hero Carousel functionality
+  // Find initial work index (Ittow or first work)
+  const initialWorkName = 'Ittow';
+  let currentWorkIndex = workNames.indexOf(initialWorkName);
+  if (currentWorkIndex < 0) {
+    currentWorkIndex = 0;
   }
-
-  html.dark-theme .portfolio-view {
-    background-color: #1a1816;
-    color: #e8e6e3;
+  
+  let isAnimating = false;
+  let autoPlayInterval = null;
+  const AUTO_PLAY_INTERVAL = 5000; // 5秒間隔で自動切り替え
+  
+  // 自動再生を開始する関数
+  function startAutoPlay() {
+    // 既存のタイマーをクリア
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+    }
+    
+    // 新しいタイマーを設定
+    autoPlayInterval = setInterval(() => {
+      // アニメーション中でない場合のみ自動切り替え
+      if (!isAnimating) {
+        goToNextWork();
+      }
+    }, AUTO_PLAY_INTERVAL);
   }
-
-  /* Hero Section */
-  .hero-section {
-    position: relative;
-    min-height: 75vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 100px 32px 60px;
+  
+  // 自動再生を停止する関数
+  function stopAutoPlay() {
+    if (autoPlayInterval) {
+      clearInterval(autoPlayInterval);
+      autoPlayInterval = null;
+    }
   }
-
-  @media (max-width: 768px) {
-    .hero-section {
-      min-height: 80vh;
-      padding: 80px 20px 40px;
+  
+  // 自動再生をリセットする関数（手動操作時に呼び出す）
+  function resetAutoPlay() {
+    stopAutoPlay();
+    startAutoPlay();
+  }
+  
+  function updateHeroContent(index, skipAnimation = false) {
+    if (isAnimating && !skipAnimation) return;
+    
+    const workName = workNames[index];
+    if (!workName) return;
+    
+    const titleElement = document.getElementById('heroWorkTitle');
+    const descriptionElement = document.getElementById('heroWorkDescription');
+    const categoryElement = document.getElementById('heroWorkCategory');
+    const heroCard = document.querySelector('.hero-card');
+    const paginationDots = document.querySelectorAll('.page-dot');
+    
+    // Skip animation for initial load
+    if (skipAnimation) {
+      if (titleElement) {
+        titleElement.textContent = workName;
+      }
+      if (descriptionElement) {
+        descriptionElement.textContent = worksData.descriptions[workName] || '';
+      }
+      if (categoryElement) {
+        const types = worksData.types[workName];
+        categoryElement.textContent = Array.isArray(types) ? types.join(' / ') : (types || '');
+      }
+      
+      // Update release button
+      const releaseBtn = document.getElementById('heroReleaseBtn');
+      const releaseBtnLabel = document.getElementById('heroReleaseBtnLabel');
+      const releaseLinks = worksData.releaseLinks[workName] || [];
+      const firstReleaseLink = releaseLinks[0];
+      
+      if (releaseBtn && releaseBtnLabel) {
+        if (firstReleaseLink) {
+          releaseBtn.href = firstReleaseLink.url;
+          releaseBtnLabel.textContent = firstReleaseLink.label;
+          releaseBtn.style.display = 'flex';
+        } else {
+          releaseBtn.style.display = 'none';
+        }
+      }
+      
+      paginationDots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.add('active');
+          // アクティブなドットに背景画像を設定
+          const workImage = dot.getAttribute('data-work-image');
+          if (workImage) {
+            dot.style.backgroundImage = `url(${workImage})`;
+          }
+        } else {
+          dot.classList.remove('active');
+          // 非アクティブなドットの背景画像をクリア
+          dot.style.backgroundImage = '';
+        }
+      });
+      currentWorkIndex = index;
+      return;
+    }
+    
+    // Animation: Fade out text and background
+    const heroBackground = document.querySelector('.hero-background');
+    
+    if (!skipAnimation) {
+      isAnimating = true;
+      
+      // Fade out text elements
+      if (titleElement) {
+        titleElement.classList.add('hero-text-fade-out');
+      }
+      if (descriptionElement) {
+        descriptionElement.classList.add('hero-text-fade-out');
+      }
+      if (categoryElement) {
+        categoryElement.classList.add('hero-text-fade-out');
+      }
+      if (heroBackground) {
+        heroBackground.classList.add('hero-bg-fade-out');
+      }
+      
+      // Disable navigation buttons during animation
+      const prevButton = document.querySelector('.hero-nav-arrow.prev');
+      const nextButton = document.querySelector('.hero-nav-arrow.next');
+      const paginationDots = document.querySelectorAll('.page-dot');
+      
+      if (prevButton) prevButton.classList.add('disabled');
+      if (nextButton) nextButton.classList.add('disabled');
+      paginationDots.forEach(dot => dot.style.pointerEvents = 'none');
+    }
+    
+    // Wait for fade out to complete, then update content and fade in
+    const updateContent = () => {
+      // Update content
+      if (titleElement) {
+        titleElement.textContent = workName;
+      }
+      if (descriptionElement) {
+        descriptionElement.textContent = worksData.descriptions[workName] || '';
+      }
+      if (categoryElement) {
+        const types = worksData.types[workName];
+        categoryElement.textContent = Array.isArray(types) ? types.join(' / ') : (types || '');
+      }
+      
+      // Update release button
+      const releaseBtn = document.getElementById('heroReleaseBtn');
+      const releaseBtnLabel = document.getElementById('heroReleaseBtnLabel');
+      const releaseLinks = worksData.releaseLinks[workName] || [];
+      const firstReleaseLink = releaseLinks[0];
+      
+      if (releaseBtn && releaseBtnLabel) {
+        if (firstReleaseLink) {
+          releaseBtn.href = firstReleaseLink.url;
+          releaseBtnLabel.textContent = firstReleaseLink.label;
+          releaseBtn.style.display = 'flex';
+        } else {
+          releaseBtn.style.display = 'none';
+        }
+      }
+      
+      // Update pagination dots
+      paginationDots.forEach((dot, i) => {
+        if (i === index) {
+          dot.classList.add('active');
+          // アクティブなドットに背景画像を設定
+          const workImage = dot.getAttribute('data-work-image');
+          if (workImage) {
+            dot.style.backgroundImage = `url(${workImage})`;
+          }
+        } else {
+          dot.classList.remove('active');
+          // 非アクティブなドットの背景画像をクリア
+          dot.style.backgroundImage = '';
+        }
+      });
+      
+      currentWorkIndex = index;
+      
+      // Remove fade out class and add fade in class
+      if (!skipAnimation) {
+        // Remove fade out classes
+        if (titleElement) {
+          titleElement.classList.remove('hero-text-fade-out');
+        }
+        if (descriptionElement) {
+          descriptionElement.classList.remove('hero-text-fade-out');
+        }
+        if (categoryElement) {
+          categoryElement.classList.remove('hero-text-fade-out');
+        }
+        if (heroBackground) {
+          heroBackground.classList.remove('hero-bg-fade-out');
+        }
+        
+        // Add fade in classes
+        if (titleElement) {
+          titleElement.classList.add('hero-text-fade-in');
+        }
+        if (descriptionElement) {
+          descriptionElement.classList.add('hero-text-fade-in');
+        }
+        if (categoryElement) {
+          categoryElement.classList.add('hero-text-fade-in');
+        }
+        if (heroBackground) {
+          heroBackground.classList.add('hero-bg-fade-in');
+        }
+        
+        // Remove fade in classes after animation completes
+        setTimeout(() => {
+          if (titleElement) {
+            titleElement.classList.remove('hero-text-fade-in');
+          }
+          if (descriptionElement) {
+            descriptionElement.classList.remove('hero-text-fade-in');
+          }
+          if (categoryElement) {
+            categoryElement.classList.remove('hero-text-fade-in');
+          }
+          if (heroBackground) {
+            heroBackground.classList.remove('hero-bg-fade-in');
+          }
+          isAnimating = false;
+          
+          // Re-enable navigation buttons
+          const prevButton = document.querySelector('.hero-nav-arrow.prev');
+          const nextButton = document.querySelector('.hero-nav-arrow.next');
+          const paginationDots = document.querySelectorAll('.page-dot');
+          
+          if (prevButton) prevButton.classList.remove('disabled');
+          if (nextButton) nextButton.classList.remove('disabled');
+          paginationDots.forEach(dot => dot.style.pointerEvents = 'auto');
+        }, 600);
+      } else {
+        isAnimating = false;
+      }
+    };
+    
+    if (skipAnimation) {
+      updateContent();
+    } else {
+      setTimeout(updateContent, 300); // Half of animation duration
+    }
+  }
+  
+  function goToNextWork() {
+    const nextIndex = (currentWorkIndex + 1) % workNames.length;
+    updateHeroContent(nextIndex);
+    resetAutoPlay(); // 手動操作時に自動再生をリセット
+  }
+  
+  function goToPrevWork() {
+    const prevIndex = (currentWorkIndex - 1 + workNames.length) % workNames.length;
+    updateHeroContent(prevIndex);
+    resetAutoPlay(); // 手動操作時に自動再生をリセット
+  }
+  
+  function goToWork(index) {
+    if (index >= 0 && index < workNames.length) {
+      updateHeroContent(index);
+      resetAutoPlay(); // 手動操作時に自動再生をリセット
     }
   }
 
-  .hero-container {
-    max-width: 680px;
-    width: 100%;
+  // Smooth scroll for navigation links
+  document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav-link');
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = link.getAttribute('href')?.substring(1);
+        if (!targetId) return;
+        
+        const targetElement = document.getElementById(targetId);
+        if (targetElement) {
+          const headerHeight = 80;
+          const targetPosition = targetElement.offsetTop - headerHeight;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Header scroll effect
+    const header = document.querySelector('.portfolio-header');
+    if (header) {
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      });
+    }
+
+    // Hero carousel navigation
+    const prevButton = document.querySelector('.hero-nav-arrow.prev');
+    const nextButton = document.querySelector('.hero-nav-arrow.next');
+    const paginationDots = document.querySelectorAll('.page-dot');
+    
+    if (prevButton) {
+      prevButton.addEventListener('click', goToPrevWork);
+    }
+    
+    if (nextButton) {
+      nextButton.addEventListener('click', goToNextWork);
+    }
+    
+    // Pagination dots click events and hover effects
+    paginationDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => goToWork(index));
+      
+      // ホバー時にサムネイル画像を表示
+      dot.addEventListener('mouseenter', () => {
+        if (!dot.classList.contains('active')) {
+          const workImage = dot.getAttribute('data-work-image');
+          if (workImage) {
+            dot.style.backgroundImage = `url(${workImage})`;
+          }
+        }
+      });
+      
+      // ホバー解除時に背景画像をクリア（アクティブでない場合のみ）
+      dot.addEventListener('mouseleave', () => {
+        if (!dot.classList.contains('active')) {
+          dot.style.backgroundImage = '';
+        }
+      });
+    });
+    
+    // 初期表示時のリリース先ボタンを設定
+    updateHeroContent(currentWorkIndex, true);
+    
+    // 自動再生を開始
+    startAutoPlay();
+    
+    // ページが非表示になったら自動再生を停止、表示されたら再開
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        stopAutoPlay();
+      } else {
+        startAutoPlay();
+      }
+    });
+    
+    // ページを離れる前に自動再生を停止（クリーンアップ）
+    window.addEventListener('beforeunload', () => {
+      stopAutoPlay();
+    });
+  });
+</script>
+
+<style>
+  /* ========================================
+     CSS Variables & Base
+     ======================================== */
+  :root {
+    --font-primary: 'Hiragino Kaku Gothic Pro', 'Hiragino Sans', sans-serif;
+    --color-white: #ffffff;
+    --color-black: #191919;
+    --color-text-primary: #343434;
+    --color-text-secondary: #808080;
+    --color-text-tertiary: #707070;
+    --color-border: #c6c6c6;
+    --color-border-light: #e2e2e2;
+    --color-background-gray: #fafafa;
+    --color-badge-green: #20b946;
+    --spacing-unit: 8px;
   }
 
-  .hero-main {
-    text-align: center;
+  .portfolio-view-new {
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--color-white);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    line-height: 1.4;
+  }
+
+  /* ========================================
+     Header
+     ======================================== */
+  .portfolio-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    padding: 0;
+    margin: 0;
+    transition: backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
+  }
+
+  .portfolio-header.scrolled {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
+  }
+
+  .header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 40px 8px;
+    position: sticky;
+    top: 0;
+  }
+
+  .logo-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-black);
+    margin: 0;
+    letter-spacing: 0.01em;
+  }
+
+  .header-nav {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 40px;
+  }
+
+  .nav-link {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--color-black);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-link:hover {
+    opacity: 0.6;
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .social-links {
+    display: flex;
+    gap: 8px;
+  }
+
+  .social-link {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid var(--color-border-light);
+    background: var(--color-white);
+    color: var(--color-black);
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .social-link:hover {
+    background: #f5f5f5;
+  }
+
+  .view-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 4px;
+    background: var(--color-white);
+    border: 1px solid #cdcdcd;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .toggle-icons {
+    display: flex;
+    gap: 2px;
+  }
+
+  .toggle-icons svg {
+    width: 16px;
+    height: 16px;
+    padding: 8px;
+    border-radius: 16px;
+    transition: all 0.2s;
+  }
+
+  .toggle-icons .icon-grid.active {
+    background: var(--color-white);
+    border: 1px solid var(--color-border-light);
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
+  }
+
+  .toggle-icons .icon-3d {
+    color: var(--color-text-secondary);
+  }
+
+  /* ========================================
+     Hero Section
+     ======================================== */
+  .hero-section {
+    position: sticky;
+    top: 0;
+    min-height: 675px;
+    width: 100%;
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    overflow: hidden;
+    background: var(--color-white);
+    z-index: 1;
+  }
+
+  .hero-background {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 200%;
+    max-width: 2200px;
+    height: auto;
+    opacity: 1;
+    pointer-events: none;
+    z-index: 1;
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-bg-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    max-width: 800px;
+    padding-top: 20dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 32px;
   }
 
-  .hero-badge {
-    font-size: 0.6875rem;
-    font-weight: 300;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    opacity: 0.35;
-    padding: 6px 16px;
-    border: 1px solid rgba(42, 37, 32, 0.08);
-    border-radius: 32px;
-    background-color: rgba(42, 37, 32, 0.02);
-  }
-
-  html.dark-theme .hero-badge {
-    border-color: rgba(232, 230, 227, 0.08);
-    background-color: rgba(232, 230, 227, 0.02);
-  }
-
-  .hero-name {
-    font-size: 3.5rem;
-    line-height: 1.15;
-    font-weight: 200;
-    letter-spacing: -0.04em;
-    margin: 12px 0 0;
-  }
-
-  @media (max-width: 768px) {
-    .hero-name {
-      font-size: 2.25rem;
-    }
-  }
-
-  .hero-role {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    opacity: 0.4;
-    margin: 0;
-    text-transform: uppercase;
-  }
-
-  .hero-title {
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    font-weight: 300;
-    opacity: 0.7;
-    margin: 4px 0 0;
-  }
-
-  .hero-bio-wrapper {
-    margin-top: 24px;
+  .hero-card {
+    width: 100%;
     padding: 24px 32px;
-    border-radius: 16px;
-    background-color: rgba(42, 37, 32, 0.02);
-    border: 1px solid rgba(42, 37, 32, 0.06);
-    max-width: 560px;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-white);
+    border-radius: 24px;
+    box-shadow: 0 0 64px rgba(25, 25, 25, 0.10);
+    text-align: center;
   }
 
-  html.dark-theme .hero-bio-wrapper {
-    background-color: rgba(232, 230, 227, 0.02);
-    border-color: rgba(232, 230, 227, 0.06);
+  /* Text fade animations */
+  .hero-work-title,
+  .hero-work-description,
+  .hero-work-category {
+    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  @media (max-width: 768px) {
-    .hero-bio-wrapper {
-      padding: 20px 24px;
+  .hero-text-fade-out {
+    opacity: 0;
+  }
+
+  .hero-text-fade-in {
+    opacity: 1;
+    animation: heroTextFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  @keyframes heroTextFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
     }
   }
 
-  .hero-bio {
-    font-size: 0.8125rem;
-    line-height: 1.65;
-    font-weight: 300;
-    opacity: 0.5;
-    margin: 0 0 12px;
+  /* Background fade animations */
+  .hero-bg-fade-out {
+    opacity: 0;
   }
 
-  .hero-description {
-    font-size: 0.875rem;
-    line-height: 1.75;
+  .hero-bg-fade-in {
+    opacity: 1;
+    animation: heroBgFadeIn 1s cubic-bezier(1, 0.2, 1);
+  }
+
+  @keyframes heroBgFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .hero-work-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 16px;
+    letter-spacing: -0.01em;
+    padding: 0 60px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hero-work-category {
+    font-size: 10px;
     font-weight: 300;
-    opacity: 0.65;
+    color: var(--color-text-secondary);
+    margin: 0 0 8px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .hero-work-description {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--color-black);
     margin: 0;
+    padding: 0 60px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
-  .hero-actions {
-    margin-top: 32px;
+  .hero-cta-buttons {
     display: flex;
-    gap: 12px;
-    align-items: center;
+    gap: 8px;
   }
 
-  @media (max-width: 768px) {
-    .hero-actions {
-      flex-direction: column;
-      width: 100%;
-    }
-  }
-
-  .hero-cta {
-    display: inline-flex;
+  .hero-cta-btn {
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
-    padding: 10px 24px;
-    font-size: 0.8125rem;
+    gap: 8px;
+    padding: 12px 24px;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    font-size: 10px;
     font-weight: 300;
-    letter-spacing: 0.02em;
-    border-radius: 32px;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    color: var(--color-black);
     text-decoration: none;
-    border: 1px solid transparent;
+    transition: all 0.1s;
+    white-space: nowrap;
   }
 
-  @media (max-width: 768px) {
-    .hero-cta {
-      width: 100%;
-      padding: 12px 24px;
-    }
+  .hero-cta-btn:hover {
+    background: #f5f5f5;
   }
 
-  .hero-cta.primary {
-    background-color: rgba(42, 37, 32, 0.92);
-    color: #faf8f5;
-    border-color: rgba(42, 37, 32, 0.92);
+  /* リリース先ボタンの特別なスタイル */
+  #heroReleaseBtn {
+    background: var(--color-black);
+    border: 1px solid var(--color-border-light);
+    color: var(--color-white);
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
   }
 
-  html.dark-theme .hero-cta.primary {
-    background-color: rgba(232, 230, 227, 0.92);
-    color: #1a1816;
+  #heroReleaseBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
   }
 
-  .hero-cta.primary:hover {
-    background-color: rgba(42, 37, 32, 1);
-    border-color: rgba(42, 37, 32, 1);
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(42, 37, 32, 0.15);
+  #heroReleaseBtn:hover::before {
+    left: 100%;
   }
 
-  html.dark-theme .hero-cta.primary:hover {
-    background-color: rgba(232, 230, 227, 1);
+  #heroReleaseBtn:hover {
+    background: var(--color-white);
+    border-color: var(--color-border-light);
+    color: var(--color-black);
   }
 
-  .hero-cta.secondary {
-    background-color: transparent;
-    color: inherit;
-    border-color: rgba(42, 37, 32, 0.12);
+  #heroReleaseBtn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
-  html.dark-theme .hero-cta.secondary {
-    border-color: rgba(232, 230, 227, 0.12);
+  .hero-cta-btn svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
   }
 
-  .hero-cta.secondary:hover {
-    background-color: rgba(42, 37, 32, 0.04);
-    border-color: rgba(42, 37, 32, 0.18);
-    transform: translateY(-1px);
+  .hero-pagination {
+    position: absolute;
+    bottom: 3%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    z-index: 20;
   }
 
-  html.dark-theme .hero-cta.secondary:hover {
-    background-color: rgba(232, 230, 227, 0.04);
-    border-color: rgba(232, 230, 227, 0.18);
+  .page-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #bababa;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    flex-shrink: 0;
+    align-self: center;
   }
 
-  .hero-cta svg {
-    width: 12px;
-    height: 12px;
-    opacity: 0.7;
+  .page-dot:hover:not(.active) {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid var(--color-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transform: scale(1);
   }
 
-  /* Works Section */
-  .works-section {
-    padding: 140px 40px;
+  .page-dot.active {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid var(--color-white);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    align-self: center;
   }
 
-  @media (max-width: 768px) {
-    .works-section {
-      padding: 100px 24px;
-    }
+  .page-dot.active:hover {
+    transform: scale(1.1);
   }
 
+  .hero-nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-white);
+    border: 1px solid var(--color-border);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
+    z-index: 20;
+  }
+
+  .hero-nav-arrow.prev {
+    left: 4%;
+  }
+
+  .hero-nav-arrow.next {
+    right: 4%;
+  }
+
+  .hero-nav-arrow:hover:not(.disabled) {
+    background: #f5f5f5;
+  }
+
+  .hero-nav-arrow.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  /* ========================================
+     Section Common
+     ======================================== */
   .section-container {
-    max-width: 1080px;
+    max-width: 1296px;
     margin: 0 auto;
+    padding: 120px 108px;
+  }
+
+  .section-container-small {
+    max-width: 1296px;
+    margin: 0 auto;
+    padding: 120px 108px;
+  }
+
+  .section-header {
+    margin-bottom: 40px;
   }
 
   .section-title {
-    font-size: 1.5rem;
-    font-weight: 200;
-    letter-spacing: -0.02em;
-    margin: 0 0 56px 0;
-    text-align: center;
-    opacity: 0.85;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 8px;
+    letter-spacing: 0.01em;
+    text-transform: capitalize;
   }
 
-  @media (max-width: 768px) {
-    .section-title {
-      font-size: 1.25rem;
-      margin-bottom: 40px;
-    }
+  .section-underline {
+    width: 24px;
+    height: 1px;
+    background: var(--color-text-primary);
   }
 
-  .works-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 56px 48px;
-  }
-
-  @media (max-width: 768px) {
-    .works-grid {
-      grid-template-columns: 1fr;
-      gap: 48px;
-    }
-  }
-
-  .work-card {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 12px;
-    margin: -12px;
-    border-radius: 12px;
-  }
-
-  .work-card:hover {
-    background-color: rgba(42, 37, 32, 0.02);
-  }
-
-  html.dark-theme .work-card:hover {
-    background-color: rgba(232, 230, 227, 0.02);
-  }
-
-  .work-card-image {
-    position: relative;
-    aspect-ratio: 16 / 9;
-    overflow: hidden;
-    background-color: #f5f3f0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-  }
-
-  html.dark-theme .work-card-image {
-    background-color: #252220;
-  }
-
-  .work-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-  }
-
-  .work-card-title {
-    font-size: 0.9375rem;
-    font-weight: 300;
-    letter-spacing: -0.01em;
-    margin: 0;
-    opacity: 0.8;
-  }
-
-  /* About Section */
+  /* ========================================
+     About Section
+     ======================================== */
   .about-section {
-    padding: 120px 32px;
-  }
-
-  @media (max-width: 768px) {
-    .about-section {
-      padding: 80px 20px;
-    }
-  }
-
-  .about-container {
-    max-width: 1080px;
-    margin: 0 auto;
-  }
-
-  .about-grid {
-    display: grid;
-    grid-template-columns: 1fr 1.5fr;
-    gap: 80px;
-    align-items: start;
-  }
-
-  @media (max-width: 1024px) {
-    .about-grid {
-      grid-template-columns: 1fr;
-      gap: 48px;
-    }
-  }
-
-  .about-image {
-    aspect-ratio: 3/4;
-    overflow: hidden;
-    background-color: #f5f3f0;
-    position: sticky;
-    top: 100px;
-    border-radius: 16px;
-  }
-
-  @media (max-width: 1024px) {
-    .about-image {
-      aspect-ratio: 1;
-      max-width: 400px;
-      margin: 0 auto;
-      position: static;
-    }
-  }
-
-  html.dark-theme .about-image {
-    background-color: #252220;
-  }
-
-  .about-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+    position: relative;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
 
   .about-content {
     display: flex;
     flex-direction: column;
-    gap: 40px;
+    gap: 16px;
+  }
+
+  .about-name {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+  }
+
+  .name-jp {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  .name-en {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
+
+  .about-role {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.6;
   }
 
   .about-text {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+    max-width: 840px;
+    margin-top: 24px;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--color-text-primary);
   }
 
   .about-text p {
-    font-size: 0.9375rem;
-    line-height: 1.75;
+    margin: 0 0 1em;
+  }
+
+  .about-text p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ========================================
+     Works Section
+     ======================================== */
+  .works-section {
+    position: relative;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .works-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 64px 40px;
+  }
+
+  .work-card {
+    /* width: calc(100% - 32px); */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    /* padding: 16px;
+    border-radius: 2px;
+    border: 1px solid var(--color-border-light); */
+  }
+
+  .work-thumbnail {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-light);
+    box-shadow: 0 0 120px rgba(0, 0, 0, 0.15);
+  }
+
+  .work-image {
+    width: 100%;
+    object-fit: cover;
+    z-index: 2;
+  }
+
+  .work-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 8px 12px;
+    background: var(--color-white);
+    border: 1px solid var(--color-badge-green);
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--color-badge-green);
+    z-index: 10;
+  }
+
+  .work-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .work-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .work-tag {
+    font-size: 12px;
     font-weight: 300;
-    opacity: 0.65;
+    color: var(--color-text-tertiary);
+  }
+
+  .work-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 4px 0 0;
+  }
+
+  .work-category {
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--color-text-tertiary);
     margin: 0;
-    letter-spacing: 0.005em;
   }
 
-  /* Expertise Section */
+  .work-description {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--color-text-tertiary);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ========================================
+     Expertise Section
+     ======================================== */
   .expertise-section {
-    padding: 120px 32px;
-    background-color: rgba(42, 37, 32, 0.02);
+    position: relative;
+    z-index: 10;
+    background: var(--color-background-gray);
   }
 
-  html.dark-theme .expertise-section {
-    background-color: rgba(232, 230, 227, 0.02);
+  .expertise-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
   }
 
-  @media (max-width: 768px) {
-    .expertise-section {
-      padding: 80px 20px;
-    }
-  }
-
-  .expertise-container {
-    max-width: 1080px;
-    margin: 0 auto;
+  .expertise-keywords {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--color-text-tertiary);
+    margin: 0;
   }
 
   .expertise-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 48px 56px;
-    margin-top: 60px;
-  }
-
-  @media (max-width: 768px) {
-    .expertise-grid {
-      grid-template-columns: 1fr;
-      gap: 40px;
-    }
+    display: flex;
+    gap: 43px;
   }
 
   .expertise-item {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .expertise-name {
-    font-size: 1rem;
-    font-weight: 300;
-    letter-spacing: -0.01em;
-    margin: 0;
-    opacity: 0.85;
-  }
-
-  .expertise-description {
-    font-size: 0.875rem;
-    line-height: 1.7;
-    font-weight: 300;
-    opacity: 0.6;
-    margin: 0;
-    letter-spacing: 0.005em;
-  }
-
-  .tools-section {
-    margin-top: 60px;
-    padding-top: 60px;
-    border-top: 1px solid rgba(42, 37, 32, 0.06);
-  }
-
-  html.dark-theme .tools-section {
-    border-top-color: rgba(232, 230, 227, 0.06);
-  }
-
-  .tools-title {
-    font-size: 0.8125rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    opacity: 0.4;
-    margin: 0 0 24px 0;
-    text-align: center;
-  }
-
-  .tools-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-  }
-
-  .tool-tag {
-    font-size: 0.8125rem;
-    font-weight: 300;
-    padding: 8px 20px;
-    border: 1px solid rgba(42, 37, 32, 0.08);
-    border-radius: 32px;
-    letter-spacing: 0.02em;
-    transition: all 0.3s ease;
-  }
-
-  html.dark-theme .tool-tag {
-    border-color: rgba(232, 230, 227, 0.08);
-  }
-
-  .tool-tag:hover {
-    border-color: rgba(42, 37, 32, 0.15);
-    opacity: 0.8;
-  }
-
-  html.dark-theme .tool-tag:hover {
-    border-color: rgba(232, 230, 227, 0.15);
-  }
-
-  /* Experience Section */
-  .experience-section {
-    padding: 120px 32px;
-  }
-
-  @media (max-width: 768px) {
-    .experience-section {
-      padding: 80px 20px;
-    }
-  }
-
-  .experience-container {
-    max-width: 900px;
-    margin: 0 auto;
-  }
-
-  .experience-list {
-    display: flex;
-    flex-direction: column;
-    gap: 60px;
-    margin-top: 80px;
-  }
-
-  .experience-item {
-    display: grid;
-    grid-template-columns: 200px 1fr;
-    gap: 60px;
-  }
-
-  @media (max-width: 768px) {
-    .experience-item {
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-  }
-
-  .experience-period {
-    font-size: 0.875rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    opacity: 0.5;
-    text-transform: uppercase;
-  }
-
-  .experience-content {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-
-  .experience-title {
-    font-size: 1.25rem;
-    font-weight: 300;
-    letter-spacing: -0.02em;
-    margin: 0;
-    opacity: 0.9;
-  }
-
-  .experience-role {
-    font-size: 0.9375rem;
-    font-weight: 300;
-    opacity: 0.6;
-    margin: 0;
-  }
-
-  .experience-description {
-    font-size: 0.875rem;
-    line-height: 1.7;
-    font-weight: 300;
-    opacity: 0.6;
-    margin: 0;
-    letter-spacing: 0.005em;
-  }
-
-  /* Contact Section */
-  .contact-section {
-    padding: 120px 32px;
-    background-color: rgba(0, 0, 0, 0.02);
-  }
-
-  html.dark-theme .contact-section {
-    background-color: rgba(255, 255, 255, 0.02);
-  }
-
-  @media (max-width: 768px) {
-    .contact-section {
-      padding: 80px 20px;
-    }
-  }
-
-  .contact-container {
-    max-width: 720px;
-    margin: 0 auto;
-    text-align: center;
-  }
-
-  .contact-description {
-    font-size: 0.9375rem;
-    line-height: 1.75;
-    font-weight: 300;
-    opacity: 0.6;
-    margin: 32px 0 48px;
-    letter-spacing: 0.005em;
-  }
-
-  .contact-links {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 16px;
-    max-width: 480px;
-    margin: 0 auto;
   }
 
-  .contact-link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 28px;
-    border: 1px solid rgba(42, 37, 32, 0.08);
-    border-radius: 16px;
-    text-decoration: none;
-    color: inherit;
-    transition: all 0.3s ease;
-  }
-
-  html.dark-theme .contact-link {
-    border-color: rgba(232, 230, 227, 0.08);
-  }
-
-  .contact-link:hover {
-    border-color: rgba(42, 37, 32, 0.15);
-    opacity: 0.8;
-  }
-
-  html.dark-theme .contact-link:hover {
-    border-color: rgba(232, 230, 227, 0.15);
-  }
-
-  .contact-label {
-    font-size: 0.8125rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    opacity: 0.5;
-  }
-
-  .contact-value {
-    font-size: 0.9375rem;
-    font-weight: 300;
-    opacity: 0.8;
-  }
-
-  /* Footer */
-  .portfolio-footer {
-    padding: 48px 32px;
-    border-top: 1px solid rgba(42, 37, 32, 0.06);
-  }
-
-  html.dark-theme .portfolio-footer {
-    border-top-color: rgba(232, 230, 227, 0.06);
-  }
-
-  @media (max-width: 768px) {
-    .portfolio-footer {
-      padding: 40px 20px;
-    }
-  }
-
-  .footer-container {
-    max-width: 1080px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  @media (max-width: 768px) {
-    .footer-container {
-      flex-direction: column;
-      gap: 20px;
-    }
-  }
-
-  .footer-text {
-    font-size: 0.8125rem;
-    font-weight: 300;
-    opacity: 0.4;
+  .expertise-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
     margin: 0;
-    letter-spacing: 0.02em;
   }
 
-  .footer-3d-link {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 20px;
-    background-color: transparent;
-    border: 1px solid rgba(42, 37, 32, 0.08);
-    border-radius: 32px;
-    font-size: 0.8125rem;
+  .expertise-desc {
+    font-size: 14px;
     font-weight: 300;
-    letter-spacing: 0.02em;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    color: inherit;
+    color: var(--color-black);
+    line-height: 1.6;
+    margin: 0;
   }
 
-  html.dark-theme .footer-3d-link {
-    border-color: rgba(232, 230, 227, 0.08);
+  .expertise-divider {
+    width: 64px;
+    height: 1px;
+    background: #d9d9d9;
   }
 
-  .footer-3d-link:hover {
-    border-color: rgba(42, 37, 32, 0.15);
-    opacity: 0.8;
+  .expertise-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 
-  html.dark-theme .footer-3d-link:hover {
-    border-color: rgba(232, 230, 227, 0.15);
+  .tools-label {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--color-text-tertiary);
+    margin: 0;
   }
 
-  .footer-3d-link svg {
-    opacity: 0.6;
+  .tools-list {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+
+  /* ========================================
+     Contact Section
+     ======================================== */
+  .contact-section {
+    position: relative;
+    z-index: 10;
+    background: var(--color-white);
+  }
+
+  /* ========================================
+     Responsive
+     ======================================== */
+  @media (max-width: 1200px) {
+    .section-container,
+    .section-container-small {
+      padding: 100px 60px;
+    }
+
+    .works-grid {
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 60px 30px;
+    }
+
+    .expertise-grid {
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .expertise-item {
+      gap: 24px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header-container {
+      padding: 20px 24px 8px;
+      flex-wrap: wrap;
+    }
+
+    .logo-text {
+      font-size: 16px;
+    }
+
+    .header-nav {
+      width: 100%;
+      position: static;
+      transform: none;
+      justify-content: center;
+      margin-top: 12px;
+      gap: 24px;
+    }
+
+    .nav-link {
+      font-size: 12px;
+    }
+
+    .hero-section {
+      min-height: 500px;
+      padding: 120px 24px 60px;
+    }
+
+    .hero-content {
+      width: 100%;
+    }
+
+    .hero-work-title {
+      font-size: 32px;
+      padding: 0;
+    }
+
+    .hero-work-description {
+      padding: 0;
+    }
+
+    .hero-cta-buttons {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .hero-cta-btn {
+      width: 100%;
+    }
+
+    .hero-nav-arrow {
+      display: none;
+    }
+
+    .section-container,
+    .section-container-small {
+      padding: 80px 24px;
+    }
+
+    .about-name {
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .works-grid {
+      gap: 32px;
+      grid-template-columns: 1fr;
+    }
+
+    .work-card {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .expertise-grid {
+      flex-direction: column;
+      gap: 32px;
+    }
   }
 </style>
-
-<script>
-  // 作品カードのクリックイベント
-  document.querySelectorAll('.work-card').forEach(card => {
-    const workName = card.getAttribute('data-work-name');
-    if (!workName) return;
-    
-    // カード全体のクリック
-    card.addEventListener('click', () => {
-      // 3Dモードに遷移して該当作品を表示
-      window.location.href = `/?work=${encodeURIComponent(workName)}`;
-    });
-    
-    // ボタンのクリック（イベント伝播を止める）
-    const button = card.querySelector('.work-card-button');
-    if (button) {
-      button.addEventListener('click', (e) => {
-        e.stopPropagation();
-        window.location.href = `/?work=${encodeURIComponent(workName)}`;
-      });
-    }
-  });
-
-  // URLパラメータから作品名を取得して3Dモードで表示
-  const urlParams = new URLSearchParams(window.location.search);
-  const workParam = urlParams.get('work');
-  if (workParam && typeof workParam === 'string') {
-    // 3Dモードにリダイレクト
-    window.location.href = '/';
-  }
-</script>
-
-
