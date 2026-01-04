@@ -5248,15 +5248,6 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     background-color: #6366F1;
   }
 
-  /* モバイル対応 */
-  @media (max-width: 768px) {
-    .work-popup {
-      left: 10px;
-      right: 10px;
-      width: calc(100% - 20px);
-      max-width: 320px;
-    }
-  }
 
   /* 広告ポイントのスタイル */
   .point-bubble.ad-item {
@@ -5436,6 +5427,82 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       right: 10px;
       width: calc(100% - 20px);
       max-width: 320px;
+    }
+  }
+
+  /* モバイル対応 */
+  @media (max-width: 768px) {
+    .work-popup {
+      left: 10px;
+      right: 10px;
+      width: calc(100% - 20px);
+      max-width: 320px;
+    }
+    
+    /* ポイントのサイズを小さく */
+    .point-bubble {
+      width: 28px;
+      height: 28px;
+    }
+    
+    .point-bubble::before {
+      width: 8px;
+      height: 8px;
+    }
+    
+    .point-bubble::after {
+      width: 48px;
+      height: 48px;
+    }
+    
+    .point-bubble:not(.work-item)::before {
+      width: 6px;
+      height: 6px;
+    }
+    
+    .point-bubble:not(.work-item)::after {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .point-bubble.work-item {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .point-bubble.work-item::before {
+      width: 5px;
+      height: 5px;
+    }
+    
+    .point-bubble.work-item::after {
+      width: 32px;
+      height: 32px;
+    }
+    
+    .point-bubble.ad-item {
+      width: 40px;
+      height: 40px;
+    }
+    
+    .point-bubble.ad-item::before {
+      width: 6px;
+      height: 6px;
+    }
+    
+    .point-bubble.ad-item::after {
+      width: 32px;
+      height: 32px;
+    }
+    
+    /* 広告アイコンのフォントサイズも小さく */
+    .ad-icon {
+      font-size: 18px;
+    }
+    
+    /* 広告ポイントのボーダーサイズも調整 */
+    .point-bubble.ad-item {
+      border-width: 1.5px;
     }
   }
 
