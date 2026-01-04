@@ -1,4 +1,14 @@
 // 作品データを外部ファイルで管理
+// src/assetsから画像をインポート（最適化される）
+import hamoriImage from '../assets/images/works/Hamori-thumb.png';
+import masimasiImage from '../assets/images/works/masimasi_pop.png';
+import attaImage from '../assets/images/works/atta_pop.png';
+import citportalImage from '../assets/images/works/citportal_pop.png';
+import shiminNoKiImage from '../assets/images/works/市民の木_pop.png';
+import invidiImage from '../assets/images/works/invidi_pop.png';
+import ittowImage from '../assets/images/works/works-ittow-thumb.png';
+import winkImage from '../assets/images/works/wink_pop.png';
+
 export const worksData = {
   // 作品の詳細情報
   descriptions: {
@@ -58,16 +68,16 @@ export const worksData = {
     'Wink': { x: 40, y: 60 }
   },
   
-  // 画像パス（ポップアップ表示用）
+  // 画像パス（最適化された画像オブジェクト）
   images: {
-    'Hamori': '/assets/images/works/Hamori-thumb.png',
-    'MasiMasi': '/assets/images/works/masimasi_pop.png',
-    'Atta!': '/assets/images/works/atta_pop.png',
-    'CIT portal': '/assets/images/works/citportal_pop.png',
-    '市民の木': '/assets/images/works/市民の木_pop.png',
-    'Invidi': '/assets/images/works/invidi_pop.png',
-    'Ittow': '/assets/images/works/works-ittow-thumb.png',
-    'Wink': '/assets/images/works/wink_pop.png'
+    'Hamori': hamoriImage,
+    'MasiMasi': masimasiImage,
+    'Atta!': attaImage,
+    'CIT portal': citportalImage,
+    '市民の木': shiminNoKiImage,
+    'Invidi': invidiImage,
+    'Ittow': ittowImage,
+    'Wink': winkImage
   },
   
   // リリースバッジの表示設定

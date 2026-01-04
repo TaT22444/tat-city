@@ -1,4 +1,7 @@
 // プロフィールデータを外部ファイルで管理
+// src/assetsから画像をインポート（最適化される）
+import profileImage from '../assets/images/profile/profile.png';
+
 export const profileData = {
   // 基本情報
   name: '相原立弥',
@@ -9,8 +12,8 @@ export const profileData = {
   // プロフィールポイントの位置（worksタウン内）
   position: { x: 50, y: 80 },
   
-  // 画像パス
-  image: '/assets/images/profile/profile.png',
+  // 画像（最適化された画像オブジェクト）
+  image: profileImage,
   
   // メタ情報（ポップアップ表示用）
   meta: ['UI/UXデザイナー', '千葉工業大学大学院']

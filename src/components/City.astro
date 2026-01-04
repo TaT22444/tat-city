@@ -43,7 +43,7 @@ const blogNames: string[] = [
               <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
                 </svg>
               </a>
-        </div>
+          </div>
         
         <button class="view-toggle-btn" id="viewModeToggle" aria-label="Toggle to portfolio view" onclick="window.location.href='/portfolio'">
           <div class="toggle-icons">
@@ -54,10 +54,10 @@ const blogNames: string[] = [
               <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
               <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
             </svg>
-          </div>
+      </div>
         </button>
-        </div>
-    </div>
+      </div>
+      </div>
   </header>
   <div class="city-view town-works" id="cityView">
     <div class="city-grid" id="cityGrid">
@@ -66,44 +66,35 @@ const blogNames: string[] = [
       
       {/* プロフィールポイント - worksタウンに統合 */}
       <div class="point-bubble point-9 profile-item work-item" data-profile-point="true">
-        <div class="work-image profile-image-thumb"></div>
+        <div 
+          class="work-image profile-image-thumb"
+          style={typeof profileData.image === 'object' && 'src' in profileData.image 
+            ? `background-image: url(${profileData.image.src});` 
+            : `background-image: url(${profileData.image});`}
+        ></div>
         <div class="work-title">Profile</div>
-          </div>
+      </div>
 
       <!-- 空間に吹き出しポイントを追加 -->
       {/* 作品ポイント - 統合後は常に表示 */}
-      <div class="point-bubble point-1 work-item" data-work-name="Hamori">
-            <div class="work-image"></div>
-            <div class="work-title">Hamori</div>
+      {workNames.map((workName, index) => {
+        const workImage = worksData.images[workName as keyof typeof worksData.images];
+        const imageSrc = (workImage && typeof workImage === 'object' && 'src' in workImage) 
+          ? workImage.src 
+          : (typeof workImage === 'string' ? workImage : '');
+        return (
+          <div 
+            class={`point-bubble point-${index + 1} work-item`} 
+            data-work-name={workName}
+          >
+            <div 
+              class="work-image" 
+              style={imageSrc ? `background-image: url(${imageSrc});` : ''}
+            ></div>
+            <div class="work-title">{workName}</div>
       </div>
-      <div class="point-bubble point-2 work-item" data-work-name="MasiMasi">
-            <div class="work-image"></div>
-            <div class="work-title">MasiMasi</div>
-      </div>
-      <div class="point-bubble point-3 work-item" data-work-name="Atta!">
-            <div class="work-image"></div>
-            <div class="work-title">Atta!</div>
-      </div>
-      <div class="point-bubble point-4 work-item" data-work-name="CIT portal">
-            <div class="work-image"></div>
-            <div class="work-title">CIT portal</div>
-      </div>
-      <div class="point-bubble point-5 work-item" data-work-name="市民の木">
-            <div class="work-image"></div>
-            <div class="work-title">市民の木</div>
-      </div>
-      <div class="point-bubble point-6 work-item" data-work-name="Invidi">
-            <div class="work-image"></div>
-            <div class="work-title">Invidi</div>
-      </div>
-      <div class="point-bubble point-7 work-item" data-work-name="Ittow">
-            <div class="work-image"></div>
-            <div class="work-title">Ittow</div>
-      </div>
-      <div class="point-bubble point-8 work-item" data-work-name="Wink">
-            <div class="work-image"></div>
-            <div class="work-title">Wink</div>
-      </div>
+        );
+      })}
       
       {/* 広告ポイント */}
       <div class="point-bubble point-10 ad-item" data-ad-point="true">
@@ -248,7 +239,7 @@ const blogNames: string[] = [
     </button>
   </div>
   <div class="popup-image-container">
-    <img src="/assets/images/profile/profile.png" alt="相原立弥" class="profile-image-large">
+    <img src={typeof profileData.image === 'object' && 'src' in profileData.image ? profileData.image.src : profileData.image} alt="相原立弥" class="profile-image-large">
   </div>
   <div class="popup-body">
     <div class="popup-meta">
@@ -379,22 +370,6 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   let buildingModal = null;
   let modalTitle = null;
   let modalContent = null;
-
-  // 建物データ
-  {/* const buildingData = [
-    { id: 'building-1', name: 'セントラルタワー', type: 'megastructure', description: '都市の中心に位置する最も高い超高層ビル。多くの企業のオフィスや高級住居があります。' },
-    { id: 'building-2', name: 'テクノロジーセンター', type: 'tall', description: '最先端技術の研究開発が行われるハイテクビル。革新的な発明の源泉です。' },
-    { id: 'building-3', name: 'ルイン・プラザ', type: 'ruins', description: '過去の栄光を偲ばせる廃墟ビル。かつては賑わいのあった商業施設でした。' },
-    { id: 'building-4', name: 'メガストラクチャーX', type: 'megastructure', description: '自己完結型の巨大複合施設。住居、仕事、娯楽のすべてを内包しています。' },
-    { id: 'building-5', name: 'コーポレートビル', type: 'standard', description: '中小企業のオフィスが集まるビジネスの中心地。多くのスタートアップ企業が入居しています。' },
-    { id: 'building-6', name: 'マイクロアパートメント', type: 'small', description: '小型だが効率的に設計された住居ビル。若い世代に人気があります。' },
-    { id: 'building-7', name: 'グランドタワー', type: 'tall', description: '洗練されたデザインの高層オフィスビル。ガラスとスチールの美しい外観が特徴です。' },
-    { id: 'building-8', name: 'ミッドタウンビル', type: 'standard', description: '伝統的な様式を持つ中層ビル。長い歴史を持つ老舗企業が多く入居しています。' },
-    { id: 'building-9', name: '崩壊コンプレックス', type: 'ruins', description: '地震で崩壊した古い複合施設。都市の歴史的悲劇を物語る遺構です。' },
-    { id: 'building-10', name: 'ネオ・コロッサス', type: 'megastructure', description: '未来的デザインの新世代メガストラクチャー。自家発電システムを備えた環境配慮型建築です。' },
-    { id: 'building-11', name: 'コンパクトモール', type: 'standard', description: '効率的レイアウトの商業施設。日常の買い物に便利なショップが揃っています。' },
-    { id: 'building-12', name: 'ミニハウジング', type: 'small', description: '小さいながらも機能的な住居ビル。最小限の空間で最大限の快適さを提供します。' }
-  ]; */}
   
   // 状態変数
   let personX = 50; // 初期X位置（%）
@@ -1059,7 +1034,12 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     
     if (popupTitle) popupTitle.textContent = profileData.name;
     if (popupDescription) popupDescription.textContent = profileData.description;
-    if (popupImage) popupImage.src = profileData.image;
+    if (popupImage) {
+      const imageSrc = (profileData.image && typeof profileData.image === 'object' && 'src' in profileData.image) 
+        ? profileData.image.src 
+        : (typeof profileData.image === 'string' ? profileData.image : '');
+      popupImage.src = imageSrc;
+    }
     if (popupMeta.length > 0) {
       popupMeta.forEach((span, index) => {
         if (profileData.meta[index]) {
@@ -1421,8 +1401,15 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     
     // イメージプレースホルダーを設定（データファイルから画像パスを取得）
     if (workName && worksData.images && worksData.images[workName]) {
-      const imagePath = worksData.images[workName];
+      const image = worksData.images[workName];
+      const imagePath = (image && typeof image === 'object' && 'src' in image) 
+        ? image.src 
+        : (typeof image === 'string' ? image : '');
+      if (imagePath) {
       popupImageContainer.innerHTML = `<img src="${imagePath}" alt="${workName}" class="work-image-hamori">`;
+      } else {
+        popupImageContainer.innerHTML = `<div class="project-image-placeholder">プロジェクト画像</div>`;
+      }
     } else {
       popupImageContainer.innerHTML = `<div class="project-image-placeholder">プロジェクト画像</div>`;
     }
@@ -2881,17 +2868,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     background-color: rgba(50, 50, 70, 0.85);
   }
 
-  /* 各作品のサムネイル画像 */
-  .point-1 .work-image { background-image: url('/assets/images/works/hamori_pop.png'); }
-  .point-2 .work-image { background-image: url('/assets/images/works/masimasi_pop.png'); }
-  .point-3 .work-image { background-image: url('/assets/images/works/atta_pop.png'); }
-  .point-4 .work-image { background-image: url('/assets/images/works/citportal_pop.png'); }
-  .point-5 .work-image { background-image: url('/assets/images/works/市民の木_pop.png'); }
-  .point-6 .work-image { background-image: url('/assets/images/works/invidi_pop.png'); }
-  .point-7 .work-image { background-image: url('/assets/images/works/ittow_pop.png'); }
-  .point-8 .work-image { background-image: url('/assets/images/works/wink_pop.png'); }
-  /* プロフィールポイントの画像 */
-  .point-9 .work-image.profile-image-thumb { background-image: url('/assets/images/profile/profile.png'); }
+  /* 各作品のサムネイル画像はインラインスタイルで設定（worksDataから取得） */
+  /* プロフィールポイントの画像もインラインスタイルで設定（profileDataから取得） */
 
   .work-type {
     display: inline-block;
