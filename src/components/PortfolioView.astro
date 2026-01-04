@@ -3,32 +3,42 @@
 import { worksData } from '../data/worksData.js';
 import { profileData } from '../data/profileData.js';
 
-// src/assetsから画像をインポート（最適化される）
-const workImages = import.meta.glob('../assets/images/works/*.png', { eager: true, import: 'default' }) as Record<string, { src: string }>;
+// src/assetsから画像を個別にインポート（最適化される）
+// 日本語ファイル名の問題を回避するため、個別にインポート
+import hamoriImage from '../assets/images/works/hamori_pop.png';
+import masimasiImage from '../assets/images/works/masimasi_pop.png';
+import attaImage from '../assets/images/works/atta_pop.png';
+import citportalImage from '../assets/images/works/citportal_pop.png';
+import shiminNoKiImage from '../assets/images/works/市民の木_pop.png';
+import invidiImage from '../assets/images/works/invidi_pop.png';
+import ittowImage from '../assets/images/works/works-ittow-thumb.png';
+import winkImage from '../assets/images/works/wink_pop.png';
+
+// Hero背景画像をインポート（最適化される）
+import heroBackgroundImage from '../assets/hero-ittow-backgroundImage.png';
+
+// 画像のマッピング（worksDataのキー名とインポートした画像を対応付け）
+const workImagesMap: Record<string, { src: string }> = {
+  'Hamori': hamoriImage,
+  'MasiMasi': masimasiImage,
+  'Atta!': attaImage,
+  'CIT portal': citportalImage,
+  '市民の木': shiminNoKiImage,
+  'Invidi': invidiImage,
+  'Ittow': ittowImage,
+  'Wink': winkImage,
+};
 
 // 画像のファイル名とworksDataのキーをマッピング
 const getWorkImage = (workName: string): string => {
-  // worksDataの画像パスからファイル名を取得
-  const originalPath = worksData.images[workName as keyof typeof worksData.images] || '';
-  const fileName = originalPath.split('/').pop()?.toLowerCase() || '';
-  
-  // import.meta.globで取得した画像から該当するものを検索
-  for (const [path, image] of Object.entries(workImages)) {
-    const pathFileName = path.split('/').pop()?.toLowerCase() || '';
-    
-    // ファイル名が一致するかチェック（大文字小文字を無視）
-    if (pathFileName === fileName || pathFileName.includes(fileName.replace('.png', '')) || fileName.includes(pathFileName.replace('.png', ''))) {
-      return image.src;
-    }
-    
-    // worksDataのキー名とファイル名が部分的に一致するかチェック
-    const workNameLower = workName.toLowerCase();
-    if (pathFileName.includes(workNameLower) || workNameLower.includes(pathFileName.replace('_pop.png', '').replace('-thumb.png', '').replace('.png', ''))) {
-      return image.src;
-    }
+  // マッピングから直接取得
+  const image = workImagesMap[workName];
+  if (image) {
+    return image.src;
   }
   
   // 見つからない場合は元のパスを返す（フォールバック）
+  const originalPath = worksData.images[workName as keyof typeof worksData.images] || '';
   return originalPath;
 };
 
@@ -41,7 +51,7 @@ const featuredWork = {
   name: initialWorkName,
   title: initialWorkName,
   description: worksData.descriptions[initialWorkName as keyof typeof worksData.descriptions] || '',
-  backgroundImage: '/assets/hero-ittow-backgroundImage.png' // 全作品で同じ背景画像を使用
+  backgroundImage: heroBackgroundImage.src // 全作品で同じ背景画像を使用（最適化された画像）
 };
 ---
 
@@ -93,7 +103,13 @@ const featuredWork = {
   <!-- Hero Section (Carousel) -->
   <section class="hero-section">
     <div class="hero-background">
-      <img src={featuredWork.backgroundImage} alt={featuredWork.name} class="hero-bg-image" />
+      <img 
+        src={featuredWork.backgroundImage} 
+        alt={featuredWork.name} 
+        class="hero-bg-image"
+        fetchpriority="high"
+        loading="eager"
+      />
     </div>
     
     <div class="hero-content">
@@ -185,7 +201,7 @@ const featuredWork = {
       </div>
       
       <div class="works-grid">
-        {workNames.slice(0, 6).map((workName) => {
+        {workNames.map((workName) => {
           const workImage = getWorkImage(workName);
           const workDescription = worksData.descriptions[workName as keyof typeof worksData.descriptions] || '';
           
@@ -194,7 +210,13 @@ const featuredWork = {
           return (
             <article class="work-card">
               <div class="work-thumbnail">
-                <img src={workImage} alt={workName} class="work-image" />
+                <img 
+                  src={workImage} 
+                  alt={workName} 
+                  class="work-image"
+                  loading="lazy"
+                  fetchpriority="low"
+                />
                 {isReleased && <span class="work-badge">リリース</span>}
               </div>
               <div class="work-info">

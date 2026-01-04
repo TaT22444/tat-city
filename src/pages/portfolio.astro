@@ -2,9 +2,15 @@
 // ポートフォリオ表示ページ - 新デザイン
 import Layout from '../layouts/Layout.astro';
 import PortfolioView from '../components/PortfolioView.astro';
+import { Fragment } from 'astro/jsx-runtime';
+// Hero背景画像をインポート（プリロード用）
+import heroBackgroundImage from '../assets/hero-ittow-backgroundImage.png';
 ---
 
 <Layout title="Portfolio - Tatsuya Aihara">
+  <Fragment slot="head">
+    <link rel="preload" as="image" href={heroBackgroundImage.src} fetchpriority="high" />
+  </Fragment>
   <PortfolioView />
 </Layout>
 

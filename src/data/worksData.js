@@ -66,7 +66,7 @@ export const worksData = {
     'CIT portal': '/assets/images/works/citportal_pop.png',
     '市民の木': '/assets/images/works/市民の木_pop.png',
     'Invidi': '/assets/images/works/invidi_pop.png',
-    'Ittow': '/assets/images/works/ittow_pop.png',
+    'Ittow': '/assets/images/works/works-ittow-thumb.png',
     'Wink': '/assets/images/works/wink_pop.png'
   },
   
