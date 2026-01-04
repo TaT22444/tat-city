@@ -535,7 +535,118 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   
   // 各作品・プロフィールのコイン獲得数を管理
   const worksCoinGains = {}; // { workName: count }
-  const profileCoinGains = 0; // プロフィールのコイン獲得数
+  let profileCoinGains = 0; // プロフィールのコイン獲得数
+  
+  // Firebase初期化
+  let db = null; // Firestoreインスタンス
+  let firebaseInitialized = false;
+  
+  // Firebase初期化関数
+  async function initializeFirebase() {
+    if (firebaseInitialized) return;
+    
+    try {
+      // Firebase SDKを動的に読み込む（v8のCDNバージョンを使用）
+      if (typeof firebase === 'undefined') {
+        // CDNからFirebase SDKを読み込む
+        await new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js';
+          script.onload = () => {
+            const script2 = document.createElement('script');
+            script2.src = 'https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js';
+            script2.onload = resolve;
+            script2.onerror = reject;
+            document.head.appendChild(script2);
+          };
+          script.onerror = reject;
+          document.head.appendChild(script);
+        });
+      }
+      
+      // Firebase設定
+      const firebaseConfig = {
+        apiKey: "AIzaSyDpMOJJQwMooAMQKZgXKTsWpvYQHatqdZc",
+        authDomain: "p-log-352de.firebaseapp.com",
+        projectId: "p-log-352de",
+        storageBucket: "p-log-352de.firebasestorage.app",
+        messagingSenderId: "129028799360",
+        appId: "1:129028799360:web:85110ed2f420a381471f65",
+        measurementId: "G-DZS7QJZ0X7"
+      };
+      
+      // Firebase初期化
+      if (!firebase.apps || firebase.apps.length === 0) {
+        firebase.initializeApp(firebaseConfig);
+      }
+      db = firebase.firestore();
+      firebaseInitialized = true;
+      console.log('Firebase initialized successfully');
+      
+      // コイン獲得数を読み込む
+      await loadCoinGains();
+    } catch (error) {
+      console.error('Firebase initialization error:', error);
+    }
+  }
+  
+  // Firestoreからコイン獲得数を読み込む
+  async function loadCoinGains() {
+    if (!db) return;
+    
+    try {
+      // 作品のコイン獲得数を読み込む
+      const worksDoc = await db.collection('coinGains').doc('works').get();
+      if (worksDoc.exists) {
+        const data = worksDoc.data();
+        Object.keys(data).forEach(workName => {
+          worksCoinGains[workName] = data[workName] || 0;
+        });
+        // 全ての作品の表示を更新
+        worksData.names.forEach(workName => {
+          updateWorkCoinDisplay(workName);
+        });
+      }
+      
+      // プロフィールのコイン獲得数を読み込む
+      const profileDoc = await db.collection('coinGains').doc('profile').get();
+      if (profileDoc.exists) {
+        profileCoinGains = profileDoc.data().count || 0;
+        updateProfileCoinDisplay();
+      }
+      
+      console.log('Coin gains loaded from Firestore');
+    } catch (error) {
+      console.error('Error loading coin gains:', error);
+    }
+  }
+  
+  // Firestoreにコイン獲得数を保存する
+  async function saveCoinGains(type, workName = null) {
+    if (!db) {
+      console.warn('Firestore not initialized, skipping save');
+      throw new Error('Firestore not initialized');
+    }
+    
+    try {
+      if (type === 'work' && workName) {
+        // 作品のコイン獲得数を更新（merge: trueで既存データを保持）
+        await db.collection('coinGains').doc('works').set({
+          [workName]: worksCoinGains[workName] || 0
+        }, { merge: true });
+      } else if (type === 'profile') {
+        // プロフィールのコイン獲得数を更新
+        await db.collection('coinGains').doc('profile').set({
+          count: profileCoinGains
+        }, { merge: true });
+      }
+      console.log(`Coin gains saved to Firestore: ${type} ${workName || ''}`);
+      return true; // 成功を返す
+    } catch (error) {
+      console.error('Error saving coin gains:', error);
+      throw error; // エラーを再スロー
+    }
+  }
   
   // タッチ操作用の変数（仮想ジョイスティック風）
   let touchStartX = 0;
@@ -580,6 +691,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     
     // コイン数を初期表示
     updateCoinCounter();
+    
+    // Firebase初期化（非同期）
+    initializeFirebase();
     
     // コイン応援ボタンの初期状態を設定
     updateCoinGiveButton('work');
@@ -642,6 +756,13 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
           moreBtn.addEventListener('click', () => {
             // 詳細ページに遷移するなどの処理
             console.log('詳細ページに遷移: プロフィール');
+          });
+        }
+        
+        // コイン応援ボタンのイベントリスナー
+        if (coinGiveBtn) {
+          coinGiveBtn.addEventListener('click', () => {
+            supportWithCoin('profile');
           });
         }
         
@@ -2207,30 +2328,106 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     }
   }
   
-  // コイン応援機能
-  function supportWithCoin(type, workName = null) {
+  // コイン応援ボタンのローディング状態を設定する関数
+  function setCoinGiveButtonLoading(type, isLoading, workName = null) {
+    const popup = type === 'work' ? document.getElementById('workPopup') : document.getElementById('profilePopup');
+    if (!popup) return;
+    
+    const button = popup.querySelector('.popup-coin-give-btn');
+    if (!button) return;
+    
+    if (isLoading) {
+      button.disabled = true;
+      button.classList.add('loading');
+      // ボタン内のテキストを非表示
+      const buttonTexts = button.querySelectorAll('.popup-coin-give-btn-text');
+      buttonTexts.forEach(text => {
+        text.style.display = 'none';
+      });
+      // アイコンも非表示
+      const buttonIcon = button.querySelector('.popup-coin-give-btn-icon');
+      if (buttonIcon) {
+        buttonIcon.style.display = 'none';
+      }
+      // ローディングスピナーを追加（まだない場合）
+      if (!button.querySelector('.loading-spinner')) {
+        const spinner = document.createElement('div');
+        spinner.className = 'loading-spinner';
+        button.appendChild(spinner);
+      }
+    } else {
+      button.classList.remove('loading');
+      // ローディングスピナーを削除
+      const spinner = button.querySelector('.loading-spinner');
+      if (spinner) {
+        spinner.remove();
+      }
+      // テキストを再表示
+      const buttonTexts = button.querySelectorAll('.popup-coin-give-btn-text');
+      buttonTexts.forEach(text => {
+        text.style.display = '';
+      });
+      // アイコンも再表示
+      const buttonIcon = button.querySelector('.popup-coin-give-btn-icon');
+      if (buttonIcon) {
+        buttonIcon.style.display = '';
+      }
+      // ボタンの有効/無効状態を更新
+      updateCoinGiveButton(type, workName);
+    }
+  }
+  
+    // コイン応援機能
+  async function supportWithCoin(type, workName = null) {
     // 所持コインが1未満の場合は処理しない
     if (coinCount < 1) {
       return;
     }
     
-    // コインを1つ減らす
-    coinCount--;
-    updateCoinCounter();
+    // ローディング状態を開始
+    setCoinGiveButtonLoading(type, true, workName);
     
-    // コイン獲得数を増やす
-    if (type === 'work' && workName) {
-      worksCoinGains[workName] = (worksCoinGains[workName] || 0) + 1;
-      updateWorkCoinDisplay(workName);
-    } else if (type === 'profile') {
-      profileCoinGains++;
-      updateProfileCoinDisplay();
+    try {
+      // コインを1つ減らす（UIを先に更新）
+      coinCount--;
+      updateCoinCounter();
+      
+      // コイン獲得数を増やす（ローカル状態を更新）
+      if (type === 'work' && workName) {
+        worksCoinGains[workName] = (worksCoinGains[workName] || 0) + 1;
+        updateWorkCoinDisplay(workName);
+      } else if (type === 'profile') {
+        profileCoinGains++;
+        updateProfileCoinDisplay();
+      }
+      
+      // Firestoreに保存（成功するまで待つ）
+      await saveCoinGains(type, workName);
+      
+      // 保存が成功したら、コインが画面に溢れるアニメーションを開始
+      createCoinBurstAnimation(type === 'work' ? document.getElementById('workPopup') : document.getElementById('profilePopup'));
+      
+      console.log(`コインで応援しました！ ${type === 'work' ? workName : 'Profile'}`);
+    } catch (error) {
+      // エラーが発生した場合、変更を元に戻す
+      console.error('コイン送信に失敗しました:', error);
+      coinCount++; // コインを戻す
+      updateCoinCounter();
+      
+      if (type === 'work' && workName) {
+        worksCoinGains[workName] = Math.max(0, (worksCoinGains[workName] || 0) - 1);
+        updateWorkCoinDisplay(workName);
+      } else if (type === 'profile') {
+        profileCoinGains = Math.max(0, profileCoinGains - 1);
+        updateProfileCoinDisplay();
+      }
+      
+      // エラーメッセージを表示（オプション）
+      alert('コインの送信に失敗しました。ネットワーク接続を確認してください。');
+    } finally {
+      // ローディング状態を解除
+      setCoinGiveButtonLoading(type, false, workName);
     }
-    
-    // コインが画面に溢れるアニメーション
-    createCoinBurstAnimation(type === 'work' ? document.getElementById('workPopup') : document.getElementById('profilePopup'));
-    
-    console.log(`コインで応援しました！ ${type === 'work' ? workName : 'Profile'}`);
   }
   
   // コインが画面に溢れるアニメーション（下から上に上がってくる）
@@ -4964,6 +5161,31 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
     filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  }
+  
+  /* ローディングスピナー */
+  .popup-coin-give-btn.loading {
+    pointer-events: none;
+    opacity: 0.7;
+  }
+  
+  .popup-coin-give-btn .loading-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    border-top-color: var(--text-color, #333);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  
+  html.dark-theme .popup-coin-give-btn .loading-spinner {
+    border-top-color: var(--text-color, #e0e0e0);
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   /* ダークテーマ対応 */
