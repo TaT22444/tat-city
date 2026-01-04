@@ -971,6 +971,12 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         touchCurrentX = e.touches[0].clientX;
         touchCurrentY = e.touches[0].clientY;
         
+        // 画面全体のタッチ操作でもジョイスティックのスティックを動かす（モバイルサイズのみ）
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile && window.updateJoystickPosition) {
+          window.updateJoystickPosition(touchCurrentX, touchCurrentY);
+        }
+        
         const diffX = touchCurrentX - touchStartX;
         const diffY = touchCurrentY - touchStartY;
         const distance = Math.sqrt(diffX * diffX + diffY * diffY);
@@ -983,6 +989,10 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
           if (touchAnimationFrameId) {
             cancelAnimationFrame(touchAnimationFrameId);
             touchAnimationFrameId = null;
+          }
+          // ジョイスティックもリセット
+          if (isMobile && window.resetJoystick) {
+            window.resetJoystick();
           }
           return;
         }
@@ -1012,6 +1022,12 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         if (!isTouching) return;
         
         isTouching = false;
+        
+        // モバイルサイズではジョイスティックをリセット
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile && window.resetJoystick) {
+          window.resetJoystick();
+        }
         
         // 最後の移動方向を慣性速度として保存
         if (moveDirectionX !== 0 || moveDirectionY !== 0) {
@@ -1047,6 +1063,11 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
           cancelAnimationFrame(touchAnimationFrameId);
           touchAnimationFrameId = null;
         }
+        // モバイルサイズではジョイスティックもリセット
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile && window.resetJoystick) {
+          window.resetJoystick();
+        }
       });
     }
   }
@@ -1061,13 +1082,16 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     let joystickBaseRect = null;
     // モバイルサイズに応じてジョイスティックの半径を調整
     const isMobile = window.innerWidth <= 768;
-    const JOYSTICK_RADIUS = isMobile ? 30 : 50; // ジョイスティックのベース半径（px）
+    const JOYSTICK_RADIUS = isMobile ? 22 : 28; // ジョイスティックのベース半径（px、サイズを小さく調整）
     
-    const updateJoystickPosition = (clientX, clientY) => {
-      if (!joystickBaseRect) return;
+    // ジョイスティックの位置を更新する関数（グローバルに公開して画面全体のタッチ操作からも呼び出せるようにする）
+    window.updateJoystickPosition = (clientX, clientY) => {
+      if (!joystickBase || !joystickStick) return;
       
-      const baseCenterX = joystickBaseRect.left + joystickBaseRect.width / 2;
-      const baseCenterY = joystickBaseRect.top + joystickBaseRect.height / 2;
+      // ジョイスティックベースの位置を取得（毎回取得して最新の位置を反映）
+      const baseRect = joystickBase.getBoundingClientRect();
+      const baseCenterX = baseRect.left + baseRect.width / 2;
+      const baseCenterY = baseRect.top + baseRect.height / 2;
       
       const diffX = clientX - baseCenterX;
       const diffY = clientY - baseCenterY;
@@ -1118,11 +1142,16 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     };
     
     const resetJoystick = () => {
-      joystickStick.style.transform = 'translate(-50%, -50%)';
-      joystickStick.classList.remove('active');
+      if (joystickStick) {
+        joystickStick.style.transform = 'translate(-50%, -50%)';
+        joystickStick.classList.remove('active');
+      }
       moveDirectionX = 0;
       moveDirectionY = 0;
     };
+    
+    // グローバルにリセット関数も公開
+    window.resetJoystick = resetJoystick;
     
     // ジョイスティックベースでのタッチ開始
     joystickBase.addEventListener('touchstart', function(e) {
@@ -1141,7 +1170,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       inertiaVelocityY = 0;
       isTouching = true;
       
-      updateJoystickPosition(touch.clientX, touch.clientY);
+      if (window.updateJoystickPosition) {
+        window.updateJoystickPosition(touch.clientX, touch.clientY);
+      }
     });
     
     // ジョイスティックベースでのタッチ移動
@@ -1152,7 +1183,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       e.stopPropagation();
       
       const touch = e.touches[0];
-      updateJoystickPosition(touch.clientX, touch.clientY);
+      if (window.updateJoystickPosition) {
+        window.updateJoystickPosition(touch.clientX, touch.clientY);
+      }
     });
     
     // ジョイスティックベースでのタッチ終了
@@ -2819,6 +2852,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     cursor: pointer;
     transition: all 0.2s ease;
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     color: var(--text-color);
     box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
   }
@@ -2910,8 +2944,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   
   /* 仮想ジョイスティックのスタイル */
   .joystick-base {
-    width: 120px;
-    height: 120px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     background-color: rgba(220, 220, 220, 0.6);
     border: 2px solid rgba(150, 150, 150, 0.4);
@@ -2930,8 +2964,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   }
   
   .joystick-stick {
-      width: 50px;
-      height: 50px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.9);
     border: 2px solid rgba(150, 150, 150, 0.5);
@@ -2968,13 +3002,13 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     }
     
     .joystick-base {
-      width: 100px;
-      height: 100px;
+      width: 80px;
+      height: 80px;
     }
     
     .joystick-stick {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
     }
     
     #theme-toggle {
@@ -3030,6 +3064,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     height: 100%;
     background-color: rgba(15, 23, 42, 0.75);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
   }
   
   .modal-content {
@@ -3166,6 +3201,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     background-color: rgba(228, 243, 255, 0.75);
     box-shadow: 0 0 15px rgba(120, 200, 255, 0.5), inset 0 0 10px rgba(180, 230, 255, 0.8);
     backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
     border: 1px solid rgba(255, 255, 255, 0.8);
   }
 
@@ -4210,6 +4246,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     background-color: rgba(255, 255, 255, 0.85);
     border-radius: 32px;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     display: none;
     flex-direction: column;
@@ -4500,6 +4537,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     background-color: rgba(255, 255, 255, 0.85);
     border-radius: 32px;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     display: none;
     flex-direction: column;
@@ -4699,6 +4737,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     visibility: hidden;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.8);
     pointer-events: auto;
   }
@@ -4775,6 +4814,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     visibility: hidden;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.8);
     pointer-events: none; /* ポップアップ自体にはホバーできないように */
   }
@@ -4994,6 +5034,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     background-color: rgba(255, 255, 255, 0.85);
     border-radius: 32px;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     z-index: 1000;
     display: none;
     flex-direction: column;
@@ -5051,6 +5092,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     visibility: hidden;
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.8);
     pointer-events: auto;
     display: none; /* 非表示に変更 */
