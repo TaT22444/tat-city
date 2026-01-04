@@ -177,11 +177,21 @@ const blogNames: string[] = [
     
     <!-- 操作コントロール -->
     <div class="controls">
+      <!-- PC用: WASDボタン -->
+      <div class="controls-desktop">
       <button id="w-btn">W</button>
       <div class="controls-row">
         <button id="a-btn">A</button>
         <button id="s-btn">S</button>
         <button id="d-btn">D</button>
+        </div>
+      </div>
+      
+      <!-- モバイル用: 仮想ジョイスティック -->
+      <div class="controls-mobile" id="virtualJoystick">
+        <div class="joystick-base" id="joystickBase">
+          <div class="joystick-stick" id="joystickStick"></div>
+        </div>
       </div>
     </div>
     
@@ -469,7 +479,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   // 状態変数
   let personX = 50; // 初期X位置（%）
   let personY = 70; // 初期Y位置（%）
-  const speed = 0.8; // 移動速度
+  const speed = 0.8; // 移動速度（PC用）
+  const touchSpeed = 0.2; // タッチ操作時の移動速度（スマホ用、より遅く）
+  const touchSpeedVertical = 0.15; // 縦方向（特に上方向）の移動速度（さらに遅く）
   let cameraX = 0;
   let cameraY = 0;
   let isMoving = false;
@@ -478,6 +490,22 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   let zoomedPointName = null; // ズーム中のポイント名
   let collidingWork = null; // 衝突中の作品名
   let isEventLocked = false; // イベント発生時の操作ロック
+  
+  // タッチ操作用の変数（仮想ジョイスティック風）
+  let touchStartX = 0;
+  let touchStartY = 0;
+  let touchCurrentX = 0;
+  let touchCurrentY = 0;
+  let isTouching = false;
+  let moveDirectionX = 0; // -1: 左, 0: 停止, 1: 右
+  let moveDirectionY = 0; // -1: 上, 0: 停止, 1: 下
+  let inertiaVelocityX = 0; // 慣性速度X
+  let inertiaVelocityY = 0; // 慣性速度Y
+  let touchAnimationFrameId = null;
+  const TOUCH_THRESHOLD = 20; // タッチ開始とみなす最小距離（px、少し大きくして誤操作を防ぐ）
+  const MAX_TOUCH_DISTANCE = 80; // 最大タッチ距離（px、少し小さくして感度を下げる）
+  const INERTIA_DECAY = 0.92; // 慣性減衰率（少し強くして早く止まるように）
+  const MIN_INERTIA_VELOCITY = 0.01; // 慣性停止の閾値
   
   // DOMが読み込まれた後に実行
   document.addEventListener('DOMContentLoaded', () => {
@@ -510,6 +538,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     // タッチイベント
     setupTouchControls();
     
+    // 仮想ジョイスティックのセットアップ
+    setupVirtualJoystick();
+    
     // モーダル関連のイベント設定
     setupModalEvents();
     
@@ -533,6 +564,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
           
           // ポップアップが閉じられたらズームモードも終了
           exitZoomMode();
+          
+          // ポップアップが閉じられたらisEventLockedを解除
+          isEventLocked = false;
           
           setTimeout(() => {
             profilePopup.style.display = 'none';
@@ -779,26 +813,136 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     });
   }
   
-  // タッチ操作のセットアップ
-  function setupTouchControls() {
-    let touchStartX = 0;
-    let touchStartY = 0;
+  // 継続移動のアニメーションループ
+  function updateContinuousMovement() {
+    if (touchAnimationFrameId) {
+      cancelAnimationFrame(touchAnimationFrameId);
+    }
     
+    const animate = () => {
+      let shouldContinue = false;
+      
+      // ポップアップが表示されている場合は移動を停止
+      const workPopup = document.getElementById('workPopup');
+      const profilePopup = document.getElementById('profilePopup');
+      const adPopup = document.getElementById('adPopup');
+      const isPopupOpen = (workPopup && workPopup.classList.contains('active')) ||
+                         (profilePopup && profilePopup.classList.contains('active')) ||
+                         (adPopup && adPopup.classList.contains('active'));
+      
+      if (isPopupOpen || isEventLocked) {
+        moveDirectionX = 0;
+        moveDirectionY = 0;
+        inertiaVelocityX = 0;
+        inertiaVelocityY = 0;
+        isMoving = false;
+        if (touchAnimationFrameId) {
+          cancelAnimationFrame(touchAnimationFrameId);
+          touchAnimationFrameId = null;
+        }
+        return;
+      }
+      
+      // タッチ中の継続移動（タッチ操作時はより遅い速度を使用）
+      if (isTouching && (moveDirectionX !== 0 || moveDirectionY !== 0)) {
+        const oldX = personX;
+        const oldY = personY;
+        
+        // 縦方向（特に上方向）はさらに遅く
+        const currentSpeedY = moveDirectionY < 0 ? touchSpeedVertical : touchSpeed;
+        const currentSpeedX = touchSpeed;
+        
+        personX = Math.max(10, Math.min(90, personX + moveDirectionX * currentSpeedX));
+        personY = Math.max(10, Math.min(90, personY + moveDirectionY * currentSpeedY));
+        
+        if (oldX !== personX || oldY !== personY) {
+          updatePosition();
+          shouldContinue = true;
+        }
+      }
+      // 慣性移動（タッチを離した後）
+      else if (!isTouching && (Math.abs(inertiaVelocityX) > MIN_INERTIA_VELOCITY || Math.abs(inertiaVelocityY) > MIN_INERTIA_VELOCITY)) {
+        const oldX = personX;
+        const oldY = personY;
+        
+        // 縦方向（特に上方向）はさらに遅く
+        const currentSpeedY = inertiaVelocityY < 0 ? touchSpeedVertical : touchSpeed;
+        const currentSpeedX = touchSpeed;
+        
+        personX = Math.max(10, Math.min(90, personX + inertiaVelocityX * currentSpeedX));
+        personY = Math.max(10, Math.min(90, personY + inertiaVelocityY * currentSpeedY));
+        
+        // 慣性減衰
+        inertiaVelocityX *= INERTIA_DECAY;
+        inertiaVelocityY *= INERTIA_DECAY;
+        
+        if (oldX !== personX || oldY !== personY) {
+          updatePosition();
+          shouldContinue = true;
+        }
+      }
+      
+      if (shouldContinue) {
+        touchAnimationFrameId = requestAnimationFrame(animate);
+      } else {
+        touchAnimationFrameId = null;
+        isMoving = false;
+      }
+    };
+    
+    animate();
+  }
+  
+  // タッチ操作のセットアップ（画面全体でのタッチ操作 - PC/タブレット/モバイル用）
+  function setupTouchControls() {
     if (cityView) {
+      // モバイルサイズでも画面全体のタッチ操作を有効化（ジョイスティックと併用可能）
+      
       cityView.addEventListener('touchstart', function(e) {
         // イベント発生直後は操作をロック
         if (isEventLocked) {
           return;
         }
+        
+        // ポップアップが開いている場合は無効化
+        const workPopup = document.getElementById('workPopup');
+        const profilePopup = document.getElementById('profilePopup');
+        const adPopup = document.getElementById('adPopup');
+        const isPopupOpen = (workPopup && workPopup.classList.contains('active')) ||
+                           (profilePopup && profilePopup.classList.contains('active')) ||
+                           (adPopup && adPopup.classList.contains('active'));
+        if (isPopupOpen) {
+          return;
+        }
+        
+        // ジョイスティックの領域を除外
+        const joystickBase = document.getElementById('joystickBase');
+        if (joystickBase) {
+          const joystickRect = joystickBase.getBoundingClientRect();
+          const touch = e.touches[0];
+          if (touch.clientX >= joystickRect.left && touch.clientX <= joystickRect.right &&
+              touch.clientY >= joystickRect.top && touch.clientY <= joystickRect.bottom) {
+            return; // ジョイスティックの領域内のタッチは無視
+          }
+        }
+        
         // タッチ操作があればズームモードを終了
         if (isZoomed) {
           exitZoomMode();
           return;
         }
         
-        isMoving = true;
+        // 慣性移動を停止
+        inertiaVelocityX = 0;
+        inertiaVelocityY = 0;
+        
+        isTouching = true;
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
+        touchCurrentX = touchStartX;
+        touchCurrentY = touchStartY;
+        moveDirectionX = 0;
+        moveDirectionY = 0;
       });
       
       cityView.addEventListener('touchmove', function(e) {
@@ -806,44 +950,257 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         if (isEventLocked) {
           return;
         }
+        
+        // ポップアップが開いている場合は無効化
+        const workPopup = document.getElementById('workPopup');
+        const profilePopup = document.getElementById('profilePopup');
+        const adPopup = document.getElementById('adPopup');
+        const isPopupOpen = (workPopup && workPopup.classList.contains('active')) ||
+                           (profilePopup && profilePopup.classList.contains('active')) ||
+                           (adPopup && adPopup.classList.contains('active'));
+        if (isPopupOpen) {
+          return;
+        }
+        
         // ズーム中はタッチ操作を無視
         if (isZoomed) return;
         
+        if (!isTouching) return;
+        
         e.preventDefault();
-        const touchX = e.touches[0].clientX;
-        const touchY = e.touches[0].clientY;
+        touchCurrentX = e.touches[0].clientX;
+        touchCurrentY = e.touches[0].clientY;
         
-        const diffX = touchX - touchStartX;
-        const diffY = touchY - touchStartY;
+        const diffX = touchCurrentX - touchStartX;
+        const diffY = touchCurrentY - touchStartY;
+        const distance = Math.sqrt(diffX * diffX + diffY * diffY);
         
-        // 移動量が十分大きい場合のみ処理
-        if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
-          if (Math.abs(diffX) > Math.abs(diffY)) {
-            // 横方向の移動
-            if (diffX > 0) {
-              personX = Math.min(90, personX + speed);
-            } else {
-              personX = Math.max(10, personX - speed);
-            }
-          } else {
-            // 縦方向の移動
-            if (diffY > 0) {
-              personY = Math.min(90, personY + speed);
-            } else {
-              personY = Math.max(10, personY - speed);
-            }
+        // 閾値以下の場合は停止
+        if (distance < TOUCH_THRESHOLD) {
+          moveDirectionX = 0;
+          moveDirectionY = 0;
+          isMoving = false;
+          if (touchAnimationFrameId) {
+            cancelAnimationFrame(touchAnimationFrameId);
+            touchAnimationFrameId = null;
           }
-          
-          touchStartX = touchX;
-          touchStartY = touchY;
-          updatePosition();
+          return;
+        }
+        
+        // 正規化された方向ベクトルを計算（最大距離でクランプ）
+        const normalizedDistance = Math.min(distance, MAX_TOUCH_DISTANCE);
+        const normalizedDiffX = (diffX / distance) * (normalizedDistance / MAX_TOUCH_DISTANCE);
+        const normalizedDiffY = (diffY / distance) * (normalizedDistance / MAX_TOUCH_DISTANCE);
+        
+        // 移動方向を決定（-1, 0, 1）
+        if (Math.abs(normalizedDiffX) > Math.abs(normalizedDiffY)) {
+          moveDirectionX = normalizedDiffX > 0 ? 1 : -1;
+          moveDirectionY = 0;
+          } else {
+          moveDirectionX = 0;
+          moveDirectionY = normalizedDiffY > 0 ? 1 : -1;
+        }
+        
+        // 継続移動を開始
+        if (!touchAnimationFrameId) {
+          isMoving = true;
+          updateContinuousMovement();
         }
       });
       
-      cityView.addEventListener('touchend', function() {
+      cityView.addEventListener('touchend', function(e) {
+        if (!isTouching) return;
+        
+        isTouching = false;
+        
+        // 最後の移動方向を慣性速度として保存
+        if (moveDirectionX !== 0 || moveDirectionY !== 0) {
+          inertiaVelocityX = moveDirectionX;
+          inertiaVelocityY = moveDirectionY;
+          
+          // 継続移動を継続（慣性移動に切り替え）
+          if (!touchAnimationFrameId) {
+            updateContinuousMovement();
+          }
+        } else {
+          // 停止していた場合は完全に停止
+          isMoving = false;
+          if (touchAnimationFrameId) {
+            cancelAnimationFrame(touchAnimationFrameId);
+            touchAnimationFrameId = null;
+          }
+        }
+        
+        moveDirectionX = 0;
+        moveDirectionY = 0;
+      });
+      
+      cityView.addEventListener('touchcancel', function(e) {
+        // タッチがキャンセルされた場合も同様に処理
+        isTouching = false;
+        moveDirectionX = 0;
+        moveDirectionY = 0;
+        inertiaVelocityX = 0;
+        inertiaVelocityY = 0;
         isMoving = false;
+        if (touchAnimationFrameId) {
+          cancelAnimationFrame(touchAnimationFrameId);
+          touchAnimationFrameId = null;
+        }
       });
     }
+  }
+  
+  // 仮想ジョイスティックのセットアップ（モバイル用）
+  function setupVirtualJoystick() {
+    const joystickBase = document.getElementById('joystickBase');
+    const joystickStick = document.getElementById('joystickStick');
+    if (!joystickBase || !joystickStick) return;
+    
+    let joystickActive = false;
+    let joystickBaseRect = null;
+    // モバイルサイズに応じてジョイスティックの半径を調整
+    const isMobile = window.innerWidth <= 768;
+    const JOYSTICK_RADIUS = isMobile ? 30 : 50; // ジョイスティックのベース半径（px）
+    
+    const updateJoystickPosition = (clientX, clientY) => {
+      if (!joystickBaseRect) return;
+      
+      const baseCenterX = joystickBaseRect.left + joystickBaseRect.width / 2;
+      const baseCenterY = joystickBaseRect.top + joystickBaseRect.height / 2;
+      
+      const diffX = clientX - baseCenterX;
+      const diffY = clientY - baseCenterY;
+      const distance = Math.sqrt(diffX * diffX + diffY * diffY);
+      const maxDistance = JOYSTICK_RADIUS;
+      
+      // ベースの範囲内に制限
+      const clampedDistance = Math.min(distance, maxDistance);
+      const angle = Math.atan2(diffY, diffX);
+      
+      const stickX = Math.cos(angle) * clampedDistance;
+      const stickY = Math.sin(angle) * clampedDistance;
+      
+      // スティックの位置を更新
+      joystickStick.style.transform = `translate(calc(-50% + ${stickX}px), calc(-50% + ${stickY}px))`;
+      joystickStick.classList.add('active');
+      
+      // 移動方向を計算（正規化）
+      const normalizedX = clampedDistance > 0 ? diffX / distance : 0;
+      const normalizedY = clampedDistance > 0 ? diffY / distance : 0;
+      
+      // 閾値以下の場合は停止
+      if (clampedDistance < TOUCH_THRESHOLD) {
+        moveDirectionX = 0;
+        moveDirectionY = 0;
+        isMoving = false;
+        if (touchAnimationFrameId) {
+          cancelAnimationFrame(touchAnimationFrameId);
+          touchAnimationFrameId = null;
+        }
+        return;
+      }
+      
+      // 移動方向を決定（-1, 0, 1）
+      if (Math.abs(normalizedX) > Math.abs(normalizedY)) {
+        moveDirectionX = normalizedX > 0 ? 1 : -1;
+        moveDirectionY = 0;
+      } else {
+        moveDirectionX = 0;
+        moveDirectionY = normalizedY > 0 ? 1 : -1;
+      }
+      
+      // 継続移動を開始
+      if (!touchAnimationFrameId) {
+        isMoving = true;
+        updateContinuousMovement();
+      }
+    };
+    
+    const resetJoystick = () => {
+      joystickStick.style.transform = 'translate(-50%, -50%)';
+      joystickStick.classList.remove('active');
+      moveDirectionX = 0;
+      moveDirectionY = 0;
+    };
+    
+    // ジョイスティックベースでのタッチ開始
+    joystickBase.addEventListener('touchstart', function(e) {
+      // ポップアップが開いている場合は無効化
+      if (isEventLocked || isZoomed || isPopupOpen()) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      joystickActive = true;
+      joystickBaseRect = joystickBase.getBoundingClientRect();
+      const touch = e.touches[0];
+      
+      // 慣性移動を停止
+      inertiaVelocityX = 0;
+      inertiaVelocityY = 0;
+      isTouching = true;
+      
+      updateJoystickPosition(touch.clientX, touch.clientY);
+    });
+    
+    // ジョイスティックベースでのタッチ移動
+    joystickBase.addEventListener('touchmove', function(e) {
+      if (!joystickActive || isEventLocked || isZoomed || isPopupOpen()) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const touch = e.touches[0];
+      updateJoystickPosition(touch.clientX, touch.clientY);
+    });
+    
+    // ジョイスティックベースでのタッチ終了
+    joystickBase.addEventListener('touchend', function(e) {
+      if (!joystickActive) return;
+      
+      e.preventDefault();
+      e.stopPropagation();
+      
+      joystickActive = false;
+      isTouching = false;
+      resetJoystick();
+      
+      // 最後の移動方向を慣性速度として保存
+      if (moveDirectionX !== 0 || moveDirectionY !== 0) {
+        inertiaVelocityX = moveDirectionX;
+        inertiaVelocityY = moveDirectionY;
+        
+        // 継続移動を継続（慣性移動に切り替え）
+        if (!touchAnimationFrameId) {
+          updateContinuousMovement();
+        }
+      } else {
+        // 停止していた場合は完全に停止
+        isMoving = false;
+        if (touchAnimationFrameId) {
+          cancelAnimationFrame(touchAnimationFrameId);
+          touchAnimationFrameId = null;
+        }
+      }
+    });
+    
+    joystickBase.addEventListener('touchcancel', function(e) {
+      if (!joystickActive) return;
+      
+      joystickActive = false;
+      isTouching = false;
+      resetJoystick();
+      moveDirectionX = 0;
+      moveDirectionY = 0;
+      inertiaVelocityX = 0;
+      inertiaVelocityY = 0;
+      isMoving = false;
+      if (touchAnimationFrameId) {
+        cancelAnimationFrame(touchAnimationFrameId);
+        touchAnimationFrameId = null;
+      }
+    });
   }
   
   // 歩行アニメーション関数
@@ -1138,12 +1495,19 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       return;
     }
     
-    // 作品ポップアップが開いている場合は閉じる（作品ポイント同士の切り替えと同じ仕様）
+    // 他のポップアップが開いている場合は閉じる（作品、広告ポップアップ）
     const workPopup = document.getElementById('workPopup');
+    const adPopup = document.getElementById('adPopup');
     if (workPopup && workPopup.classList.contains('active')) {
       workPopup.classList.remove('active');
       setTimeout(() => {
         workPopup.style.display = 'none';
+      }, 300);
+    }
+    if (adPopup && adPopup.classList.contains('active')) {
+      adPopup.classList.remove('active');
+      setTimeout(() => {
+        adPopup.style.display = 'none';
       }, 300);
     }
     
@@ -1253,6 +1617,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     if (adPopup && adPopup.classList.contains('active')) {
       adPopup.classList.remove('active');
       exitZoomMode();
+      // ポップアップが閉じられたらisEventLockedを解除
+      isEventLocked = false;
     }
   }
   
@@ -1299,6 +1665,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     // 閉じるボタンクリックイベント
     const closePopup = () => {
       hideAdPopup();
+      // ポップアップが閉じられたらisEventLockedを解除
+      isEventLocked = false;
       setTimeout(() => {
         if (adPopup) {
           adPopup.style.display = 'none';
@@ -1375,6 +1743,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     const closePopup = () => {
       popup.classList.remove('active');
       exitZoomMode();
+      // ポップアップが閉じられたらisEventLockedを解除
+      isEventLocked = false;
       setTimeout(() => {
         popup.style.display = 'none';
       }, 300);
@@ -1477,12 +1847,19 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       return;
     }
     
-    // プロフィールポップアップが開いている場合は閉じる（作品ポイント同士の切り替えと同じ仕様）
+    // 他のポップアップが開いている場合は閉じる（プロフィール、広告ポップアップ）
     const profilePopup = document.getElementById('profilePopup');
+    const adPopup = document.getElementById('adPopup');
     if (profilePopup && profilePopup.classList.contains('active')) {
       profilePopup.classList.remove('active');
       setTimeout(() => {
         profilePopup.style.display = 'none';
+      }, 300);
+    }
+    if (adPopup && adPopup.classList.contains('active')) {
+      adPopup.classList.remove('active');
+      setTimeout(() => {
+        adPopup.style.display = 'none';
       }, 300);
     }
     
@@ -1854,31 +2231,51 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       if (!isZoomed) {
         isEventLocked = true;
         
+        // 移動を即座に停止
+        moveDirectionX = 0;
+        moveDirectionY = 0;
+        inertiaVelocityX = 0;
+        inertiaVelocityY = 0;
+        isMoving = false;
+        isTouching = false;
+        if (touchAnimationFrameId) {
+          cancelAnimationFrame(touchAnimationFrameId);
+          touchAnimationFrameId = null;
+        }
+        
         if (foundItemType === 'work') {
             zoomToPoint(foundItemName);
             setTimeout(() => {
-              if (isZoomed && zoomedPointName === foundItemName) showWorkPopup(foundItemName);
-              isEventLocked = false;
+              if (isZoomed && zoomedPointName === foundItemName) {
+                showWorkPopup(foundItemName);
+                // ポップアップが表示されている間はisEventLockedを維持（ポップアップが閉じられるまで）
+              }
             }, 600);
         } else if (foundItemType === 'profile') {
             // 作品ポイントと同じ処理フロー：まずズーム、その後ポップアップ
             zoomToPoint(foundItemName);
             setTimeout(() => {
-              if (isZoomed && zoomedPointName === foundItemName) showProfilePopup();
-              isEventLocked = false;
+              if (isZoomed && zoomedPointName === foundItemName) {
+                showProfilePopup();
+                // ポップアップが表示されている間はisEventLockedを維持（ポップアップが閉じられるまで）
+              }
             }, 600);
         } else if (foundItemType === 'ad') {
             // 広告ポイントの処理：まずズーム、その後ポップアップ
             zoomToPoint(foundItemName);
             setTimeout(() => {
-              if (isZoomed && zoomedPointName === foundItemName) showAdPopup();
-              isEventLocked = false;
+              if (isZoomed && zoomedPointName === foundItemName) {
+                showAdPopup();
+                // ポップアップが表示されている間はisEventLockedを維持（ポップアップが閉じられるまで）
+              }
             }, 600);
         } else if (foundItemType === 'blog') {
             zoomToPoint(foundItemName);
             setTimeout(() => {
-              if (isZoomed && zoomedPointName === foundItemName) showBlogPopup(foundItemName);
-              isEventLocked = false;
+              if (isZoomed && zoomedPointName === foundItemName) {
+                showBlogPopup(foundItemName);
+                // ポップアップが表示されている間はisEventLockedを維持（ポップアップが閉じられるまで）
+              }
             }, 600);
         }
       }
@@ -1907,6 +2304,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         
         // ポップアップが閉じられたらズームモードも終了
         exitZoomMode();
+        
+        // ポップアップが閉じられたらisEventLockedを解除
+        isEventLocked = false;
         
         setTimeout(() => {
           if (popup) {
@@ -2470,6 +2870,18 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     z-index: 200;
   }
   
+  /* PC用: WASDボタン */
+  .controls-desktop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  /* モバイル用: 仮想ジョイスティック（デフォルトは非表示） */
+  .controls-mobile {
+    display: none;
+  }
+  
   .controls-row {
     display: flex;
   }
@@ -2496,12 +2908,73 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
   }
   
-  /* モバイル向け調整 */
-  @media (max-width: 768px) {
-    .controls button {
+  /* 仮想ジョイスティックのスタイル */
+  .joystick-base {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: rgba(220, 220, 220, 0.6);
+    border: 2px solid rgba(150, 150, 150, 0.4);
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  html.dark-theme .joystick-base {
+    background-color: rgba(60, 60, 60, 0.6);
+    border-color: rgba(100, 100, 100, 0.4);
+  }
+  
+  .joystick-stick {
       width: 50px;
       height: 50px;
-      font-size: 16px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 2px solid rgba(150, 150, 150, 0.5);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+  }
+  
+  html.dark-theme .joystick-stick {
+    background-color: rgba(100, 100, 100, 0.9);
+    border-color: rgba(150, 150, 150, 0.5);
+  }
+  
+  .joystick-stick.active {
+    transition: none;
+  }
+  
+  /* モバイル向け調整 */
+  @media (max-width: 768px) {
+    /* PC用ボタンを非表示 */
+    .controls-desktop {
+      display: none;
+    }
+    
+    /* モバイル用ジョイスティックを表示 */
+    .controls-mobile {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .joystick-base {
+      width: 100px;
+      height: 100px;
+    }
+    
+    .joystick-stick {
+      width: 40px;
+      height: 40px;
     }
     
     #theme-toggle {
@@ -4550,6 +5023,16 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
 
   html.dark-theme .profile-popup .popup-header h3 {
     color: #F9FAFB;
+  }
+  
+  /* モバイル対応 */
+  @media (max-width: 768px) {
+    .profile-popup {
+      left: 10px;
+      right: 10px;
+      width: calc(100% - 20px);
+      max-width: 320px;
+    }
   }
   
   /* 既存のプロフィール画像ポップアップスタイルはそのまま残す */
