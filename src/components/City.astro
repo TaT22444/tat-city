@@ -13,6 +13,8 @@ import { worksData } from '../data/worksData.js';
 import { profileData } from '../data/profileData.js';
 // スタイルコンポーネントをインポート
 import CityStyles from './CityStyles.astro';
+// コイン画像をインポート
+import coinImage from '../assets/object/coin.png';
 
 // Worksタウン用の会社リスト（ポイント名に 'Co.' を付加）
 const workNames: string[] = worksData.names;
@@ -27,7 +29,7 @@ const blogNames: string[] = [
     <div class="header-container">
       <div class="header-logo">
         <p class="logo-text">TaT Archive / 2025 ~ 2026</p>
-          </div>
+      </div>
       
       <div class="header-actions">
         <div class="social-links">
@@ -113,6 +115,13 @@ const blogNames: string[] = [
       </div>
       </nav>
       </div>
+      
+      <!-- コイン数表示UI - headerの下に配置 -->
+      <div class="coin-counter" id="coinCounter">
+        <img src={coinImage.src} alt="コイン" class="coin-icon" />
+        <span class="coin-count-label">所持コイン : </span>
+        <span class="coin-count-text" id="coinCountText">0</span>
+      </div>
   </header>
   <div class="city-view town-works" id="cityView">
     <div class="city-grid" id="cityGrid">
@@ -156,6 +165,9 @@ const blogNames: string[] = [
             <div class="ad-icon">📢</div>
             <div class="work-title">広告</div>
       </div>
+
+      {/* コイン */}
+      <div class="coins-container" id="coinsContainer"></div>
 
     </div>
     
@@ -286,6 +298,19 @@ const blogNames: string[] = [
     </div>
     <p id="popupDescription">Hamoriの簡単な説明文が入ります。Hamoriの簡単な説明文が入ります。Hamoriの簡単な説明文が入ります。Hamoriの簡単な説明文が入ります。</p>
   </div>
+  <div class="popup-coin-container">
+    <div class="popup-coin-worksgain">
+      <img src={coinImage.src} alt="コイン" class="coin-icon">
+      <span class="popup-coin-worksgain-counter">30</span>
+    </div>
+    <div class="popup-coin-give">
+      <button class="popup-coin-give-btn">
+        <span class="popup-coin-give-btn-text">コインで応援</span>
+        <img src={coinImage.src} alt="コイン" class="popup-coin-give-btn-icon">
+        <span class="popup-coin-give-btn-text">-1</span>
+      </button>
+    </div>
+  </div>
   <div class="popup-footer">
     <button class="popup-close-btn">閉じる</button>
     <button class="popup-more-btn">準備中</button>
@@ -312,7 +337,16 @@ const blogNames: string[] = [
       <span>エンジニア</span>
       <span>千葉工業大学大学院</span>
     </div>
-    <p id="profilePopupDescription">UI/UXデザイン、フロントエンド開発を専門とするデザイナー兼エンジニア。使いやすさと美しさを追求した体験設計が得意です。</p>
+    <p id="popupDescription">UI/UXデザイン、フロントエンド開発を専門とするデザイナー兼エンジニア。使いやすさと美しさを追求した体験設計が得意です。</p>
+  </div>
+  <div class="popup-coin-container">
+    <div class="popup-coin-worksgain">
+      <img src={coinImage.src} alt="コイン" class="coin-icon">
+      <span class="popup-coin-worksgain-counter">30</span>
+    </div>
+    <div class="popup-coin-give">
+      <button class="popup-coin-give-btn">コインで応援</button>
+    </div>
   </div>
   <div class="popup-footer">
     <button class="popup-close-btn">閉じる</button>
@@ -464,7 +498,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
 </script>
 
 <!-- メインスクリプト -->
-<script define:vars={{ profileData, worksData }}>
+<script define:vars={{ profileData, worksData, coinImage }}>
   // データはAstroのdefine:varsでサーバーサイドから渡される
   // これにより、データの一元管理が可能になり、重複を解消
   
@@ -490,6 +524,18 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   let zoomedPointName = null; // ズーム中のポイント名
   let collidingWork = null; // 衝突中の作品名
   let isEventLocked = false; // イベント発生時の操作ロック
+  
+  // コイン関連の変数
+  let coinCount = 0; // 所持コイン数
+  const MAX_VISIBLE_COINS = 3; // 一度に表示するコインの最大数
+  const COIN_RESPAWN_DELAY = 10000; // コインが取得されてから新しいコインが出現するまでの時間（ミリ秒）
+  const coins = []; // コインのデータ
+  let coinIdCounter = 0; // コインIDのカウンター（動的生成用）
+  let coinRespawnTimer = null; // コイン補充タイマー
+  
+  // 各作品・プロフィールのコイン獲得数を管理
+  const worksCoinGains = {}; // { workName: count }
+  const profileCoinGains = 0; // プロフィールのコイン獲得数
   
   // タッチ操作用の変数（仮想ジョイスティック風）
   let touchStartX = 0;
@@ -523,11 +569,21 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     // 吹き出しポイントのセットアップ
     setupPointBubbles();
     
+    // コインの配置
+    setupCoins();
+    
     // ナビゲーションリストのセットアップ
     setupNavigationList();
     
     // 初期位置を設定
     updatePosition();
+    
+    // コイン数を初期表示
+    updateCoinCounter();
+    
+    // コイン応援ボタンの初期状態を設定
+    updateCoinGiveButton('work');
+    updateCoinGiveButton('profile');
     
     // キーボード操作
     setupKeyboardControls();
@@ -557,6 +613,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         const closeButton = profilePopup.querySelector('.popup-close-button');
         const closeBtn = profilePopup.querySelector('.popup-close-btn');
         const moreBtn = profilePopup.querySelector('.popup-more-btn');
+        const coinGiveBtn = profilePopup.querySelector('.popup-coin-give-btn');
         
         // 閉じるボタンクリックイベント
         const closePopup = () => {
@@ -634,7 +691,84 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       
       // ポイントとの衝突判定
       checkPointCollision();
+      
+      // コインとの衝突判定
+      checkCoinCollision();
     }
+  }
+  
+  // コインとの衝突判定関数
+  function checkCoinCollision() {
+    if (!person) return;
+    
+    const personRect = person.getBoundingClientRect();
+    const coinElements = document.querySelectorAll('.coin');
+    
+    coinElements.forEach(coinEl => {
+      // 既に取得済みのコインは無視
+      if (coinEl.classList.contains('collected')) return;
+      
+      // 画面に表示されていない要素は無視
+      if (coinEl.offsetParent === null) return;
+      
+      const coinRect = coinEl.getBoundingClientRect();
+      const overlap = !(personRect.right < coinRect.left || 
+                        personRect.left > coinRect.right || 
+                        personRect.bottom < coinRect.top || 
+                        personRect.top > coinRect.bottom);
+      
+      if (overlap) {
+        const coinId = coinEl.getAttribute('data-coin-id');
+        if (coinId) {
+          // コインを取得
+          collectCoin(coinId);
+        }
+      }
+    });
+  }
+  
+  // コインを取得する関数
+  function collectCoin(coinId) {
+    const coin = coins.find(c => c.id === coinId);
+    if (!coin || coin.collected) return;
+    
+    coin.collected = true;
+    coinCount++;
+    
+    // コイン要素を取得してアニメーションを開始
+    const coinElement = document.getElementById(coinId);
+    if (coinElement) {
+      // マリオ風の取得アニメーションを開始
+      coinElement.classList.add('collected');
+      
+      // アニメーション完了後に完全に非表示（0.9秒後）
+      setTimeout(() => {
+        if (coinElement) {
+          coinElement.style.display = 'none';
+        }
+      }, 900);
+    }
+    
+    // 「+1」アニメーションを表示
+    showCoinGainAnimation();
+    
+    // アニメーション表示後にカウントを更新（少し遅延させて視覚的に分かりやすく）
+    setTimeout(() => {
+      updateCoinCounter();
+    }, 300);
+    
+    console.log(`コインを取得しました！ 現在の所持数: ${coinCount}`);
+    
+    // コイン補充タイマーをリセット
+    if (coinRespawnTimer) {
+      clearTimeout(coinRespawnTimer);
+    }
+    
+    // 一定時間後にコインを補充
+    coinRespawnTimer = setTimeout(() => {
+      respawnCoins();
+      coinRespawnTimer = null;
+    }, COIN_RESPAWN_DELAY);
   }
   
   // ズーム状態を解除する関数
@@ -1604,12 +1738,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       }, 300);
     }
     
-    // 既にプロフィールポップアップが表示されている場合は何もしない（内容更新のみ）
-    if (profilePopup.classList.contains('active')) {
-      return;
-    }
-    
-    // プロフィールデータを設定
+    // プロフィールデータを設定（常に更新）
     const popupTitle = document.getElementById('profilePopupTitle');
     const popupDescription = document.getElementById('profilePopupDescription');
     const popupImage = profilePopup.querySelector('.profile-image-large');
@@ -1629,6 +1758,14 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
           span.textContent = profileData.meta[index];
         }
       });
+    }
+    
+    // コイン獲得数を表示（常に更新）
+    updateProfileCoinDisplay();
+    
+    // 既にプロフィールポップアップが表示されている場合は何もしない（内容更新のみ）
+    if (profilePopup.classList.contains('active')) {
+      return;
     }
     
     // ポップアップを表示（ズームは呼び出し元で行うため、ここでは行わない）
@@ -2010,6 +2147,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       popupImageContainer.innerHTML = `<div class="project-image-placeholder">プロジェクト画像</div>`;
     }
     
+    // コイン獲得数を表示（常に更新）
+    updateWorkCoinDisplay(workName);
+    
     // 既に開いている場合は閉じずに内容だけ更新、開いていない場合は表示
     if (!wasActive) {
     // ポップアップを表示
@@ -2022,6 +2162,126 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     setupPopupEvents();
     }
     // 既に開いている場合は、内容が更新されただけで何もしない（ポップアップは開いたまま）
+  }
+  
+  // 作品のコイン獲得数を表示する関数
+  function updateWorkCoinDisplay(workName) {
+    const counter = document.querySelector('#workPopup .popup-coin-worksgain-counter');
+    if (counter) {
+      const gainCount = worksCoinGains[workName] || 0;
+      counter.textContent = gainCount.toString();
+    }
+    // ボタンの有効/無効化を更新
+    updateCoinGiveButton('work', workName);
+  }
+  
+  // プロフィールのコイン獲得数を表示する関数
+  function updateProfileCoinDisplay() {
+    const counter = document.querySelector('#profilePopup .popup-coin-worksgain-counter');
+    if (counter) {
+      counter.textContent = profileCoinGains.toString();
+    }
+    // ボタンの有効/無効化を更新
+    updateCoinGiveButton('profile');
+  }
+  
+  // コイン応援ボタンの有効/無効化を更新する関数
+  function updateCoinGiveButton(type, workName = null) {
+    const popup = type === 'work' ? document.getElementById('workPopup') : document.getElementById('profilePopup');
+    if (!popup) return;
+    
+    const button = popup.querySelector('.popup-coin-give-btn');
+    if (!button) return;
+    
+    // 所持コインが1以上の場合のみ有効
+    if (coinCount >= 1) {
+      button.disabled = false;
+      button.style.opacity = '1';
+      button.style.cursor = 'pointer';
+      button.classList.remove('disabled');
+    } else {
+      button.disabled = true;
+      button.style.opacity = '0.5';
+      button.style.cursor = 'not-allowed';
+      button.classList.add('disabled');
+    }
+  }
+  
+  // コイン応援機能
+  function supportWithCoin(type, workName = null) {
+    // 所持コインが1未満の場合は処理しない
+    if (coinCount < 1) {
+      return;
+    }
+    
+    // コインを1つ減らす
+    coinCount--;
+    updateCoinCounter();
+    
+    // コイン獲得数を増やす
+    if (type === 'work' && workName) {
+      worksCoinGains[workName] = (worksCoinGains[workName] || 0) + 1;
+      updateWorkCoinDisplay(workName);
+    } else if (type === 'profile') {
+      profileCoinGains++;
+      updateProfileCoinDisplay();
+    }
+    
+    // コインが画面に溢れるアニメーション
+    createCoinBurstAnimation(type === 'work' ? document.getElementById('workPopup') : document.getElementById('profilePopup'));
+    
+    console.log(`コインで応援しました！ ${type === 'work' ? workName : 'Profile'}`);
+  }
+  
+  // コインが画面に溢れるアニメーション（下から上に上がってくる）
+  function createCoinBurstAnimation(popupElement) {
+    if (!popupElement) return;
+    
+    // コインの数を決定
+    const coinCount = 15;
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const startY = viewportHeight + 50; // 画面下の外から開始
+    const endY = viewportHeight * 0.6; // 画面の上あたり
+    
+    for (let i = 0; i < coinCount; i++) {
+      setTimeout(() => {
+        const coin = document.createElement('div');
+        coin.className = 'coin-burst';
+        coin.innerHTML = `<img src="${coinImage.src || coinImage}" alt="コイン" class="coin-burst-image">`;
+        
+        // 画面の幅にランダムに配置（左右に少し余白）
+        const startX = viewportWidth * 0 + Math.random() * (viewportWidth * 1);
+        const endX = startX + (Math.random() - 0.5) * 50; // 少し横にずれる
+        
+        // 開始位置を設定
+        coin.style.left = `${startX}px`;
+        coin.style.top = `${startY}px`;
+        
+        // 移動距離を計算（相対的な移動量）
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
+        
+        coin.style.setProperty('--delta-x', `${deltaX}px`);
+        coin.style.setProperty('--delta-y', `${deltaY}px`);
+        
+        document.body.appendChild(coin);
+        
+        // アニメーション開始（次のフレームで実行）
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            coin.classList.add('active');
+          });
+        });
+        
+        // アニメーション完了後に削除
+        setTimeout(() => {
+          if (coin.parentNode) {
+            coin.parentNode.removeChild(coin);
+          }
+        }, 2000);
+      }, i * 30); // 少しずつずらして発射
+    }
   }
 
   // タウンを切り替える機能
@@ -2279,6 +2539,176 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       '最近読んだ本': { x: 30, y: 70 },
     }
   };
+  
+  // 新しいコインを1つ生成する関数
+  function createSingleCoin() {
+    const coinsContainer = document.getElementById('coinsContainer');
+    if (!coinsContainer) {
+      console.error('coinsContainer not found');
+      return null;
+    }
+    
+    // 既存のポイント位置を取得（重複を避けるため）
+    const existingPositions = [];
+    const townMap = pointOffsetMap['works'];
+    Object.values(townMap).forEach(pos => {
+      if (pos && typeof pos === 'object' && 'x' in pos && 'y' in pos) {
+        existingPositions.push({ x: pos.x, y: pos.y });
+      }
+    });
+    
+    // 既に表示されているコインの位置も取得
+    const visibleCoins = document.querySelectorAll('.coin:not(.collected)');
+    visibleCoins.forEach(coinEl => {
+      const left = parseFloat(coinEl.style.left);
+      const top = parseFloat(coinEl.style.top);
+      if (!isNaN(left) && !isNaN(top)) {
+        existingPositions.push({ x: left, y: top });
+      }
+    });
+    
+    let coinX, coinY;
+    let attempts = 0;
+    const MIN_DISTANCE = 8; // 既存のポイントとの最小距離（%）
+    
+    // 既存のポイントと重ならない位置を探す
+    do {
+      coinX = 15 + Math.random() * 70; // 15%～85%の範囲
+      coinY = 15 + Math.random() * 70; // 15%～85%の範囲
+      
+      // 既存のポイントとの距離をチェック
+      const tooClose = existingPositions.some(pos => {
+        const distance = Math.sqrt(Math.pow(coinX - pos.x, 2) + Math.pow(coinY - pos.y, 2));
+        return distance < MIN_DISTANCE;
+      });
+      
+      if (!tooClose) break;
+      attempts++;
+    } while (attempts < 50); // 最大50回試行
+    
+    const coinId = `coin-${coinIdCounter++}`;
+    const coinData = {
+      id: coinId,
+      x: coinX,
+      y: coinY,
+      collected: false
+    };
+    coins.push(coinData);
+    
+    // コイン要素を作成（画像を使用）
+    const coinElement = document.createElement('div');
+    coinElement.className = 'coin coin-spawning';
+    coinElement.id = coinId;
+    coinElement.setAttribute('data-coin-id', coinId);
+    coinElement.style.left = `${coinX}%`;
+    coinElement.style.top = `${coinY}%`;
+    
+    // 回転用のラッパーを作成
+    const coinRotateWrapper = document.createElement('div');
+    coinRotateWrapper.className = 'coin-rotate-wrapper';
+    
+    // コイン画像を追加
+    const coinImg = document.createElement('img');
+    coinImg.src = coinImage.src || coinImage;
+    coinImg.alt = 'コイン';
+    coinImg.className = 'coin-image';
+    coinRotateWrapper.appendChild(coinImg);
+    coinElement.appendChild(coinRotateWrapper);
+    
+    coinsContainer.appendChild(coinElement);
+    
+    // フェードインアニメーションを開始（次のフレームで実行）
+    requestAnimationFrame(() => {
+      // coin-spawningクラスがアニメーションをトリガーする
+      // アニメーション完了後にクラスを削除（オプション）
+      setTimeout(() => {
+        coinElement.classList.remove('coin-spawning');
+      }, 1200); // アニメーション時間と同じ
+    });
+    
+    console.log(`Coin created: ${coinId} at (${coinX}%, ${coinY}%)`);
+    return coinData;
+  }
+  
+  // 表示中のコイン数を取得する関数
+  function getVisibleCoinCount() {
+    const visibleCoins = document.querySelectorAll('.coin:not(.collected)');
+    return visibleCoins.length;
+  }
+  
+  // コインを補充する関数（最大3つになるまで）
+  function respawnCoins() {
+    const visibleCount = getVisibleCoinCount();
+    const needed = MAX_VISIBLE_COINS - visibleCount;
+    
+    if (needed > 0) {
+      console.log(`Respawning ${needed} coin(s)...`);
+      for (let i = 0; i < needed; i++) {
+        createSingleCoin();
+      }
+    }
+  }
+  
+  // コインを配置する関数（初期表示時のみ）
+  function setupCoins() {
+    console.log('setupCoins: Initial coin setup...');
+    
+    // 初期表示は最大3つ
+    for (let i = 0; i < MAX_VISIBLE_COINS; i++) {
+      createSingleCoin();
+    }
+    
+    console.log(`setupCoins complete: ${MAX_VISIBLE_COINS} coins created`);
+  }
+  
+  // 「+1」アニメーションを表示する関数
+  function showCoinGainAnimation() {
+    const coinCounter = document.getElementById('coinCounter');
+    if (!coinCounter) {
+      console.error('coinCounter not found for gain animation');
+      return;
+    }
+    
+    // 「+1」要素を作成
+    const gainElement = document.createElement('div');
+    gainElement.className = 'coin-gain-indicator';
+    gainElement.textContent = '+1';
+    
+    // コインカウンターの位置を取得
+    const counterRect = coinCounter.getBoundingClientRect();
+    gainElement.style.left = `${counterRect.right + 6}px`;
+    gainElement.style.top = `${counterRect.top + counterRect.height / 2}px`;
+    gainElement.style.transform = 'translateY(-50%)';
+    
+    // bodyに追加
+    document.body.appendChild(gainElement);
+    
+    // アニメーション開始（次のフレームで実行して確実に表示）
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        gainElement.classList.add('active');
+        console.log('Coin gain animation started');
+      });
+    });
+    
+    // アニメーション完了後に要素を削除（1秒後）
+    setTimeout(() => {
+      if (gainElement && gainElement.parentNode) {
+        gainElement.parentNode.removeChild(gainElement);
+      }
+    }, 1000);
+  }
+  
+  // コイン数を更新する関数
+  function updateCoinCounter() {
+    const coinCountText = document.getElementById('coinCountText');
+    if (coinCountText) {
+      coinCountText.textContent = coinCount.toString();
+      console.log('Coin counter updated:', coinCount);
+    } else {
+      console.error('coinCountText element not found!');
+    }
+  }
 
   // 衝突判定関数の追加
   // ポイントとの衝突判定を行い、名前を表示する関数
@@ -2386,9 +2816,10 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   // ポップアップのイベントリスナーのセットアップ
   function setupPopupEvents() {
     const popup = document.getElementById('workPopup');
-    const closeButton = document.querySelector('.popup-close-button');
-    const closeBtn = document.querySelector('.popup-close-btn');
-    const moreBtn = document.querySelector('.popup-more-btn');
+    const closeButton = popup?.querySelector('.popup-close-button');
+    const closeBtn = popup?.querySelector('.popup-close-btn');
+    const moreBtn = popup?.querySelector('.popup-more-btn');
+    const coinGiveBtn = popup?.querySelector('.popup-coin-give-btn');
     
     // 閉じるボタンクリックイベント
     const closePopup = () => {
@@ -2436,6 +2867,18 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         if (buildingModal) {
           buildingModal.style.display = 'flex';
           setTimeout(() => buildingModal.classList.add('active'), 10);
+        }
+      });
+    }
+    
+    // コイン応援ボタンのイベントリスナー
+    if (coinGiveBtn) {
+      const newCoinGiveBtn = coinGiveBtn.cloneNode(true);
+      coinGiveBtn.parentNode?.replaceChild(newCoinGiveBtn, coinGiveBtn);
+      newCoinGiveBtn.addEventListener('click', () => {
+        const currentWorkName = document.getElementById('popupTitle')?.textContent?.replace(' Co.', '') || '';
+        if (currentWorkName) {
+          supportWithCoin('work', currentWorkName);
         }
       });
     }
@@ -4402,11 +4845,11 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     letter-spacing: 0.02em;
   }
 
-  #popupDescription {
-    font-size: 0.875rem;
+  :global(#popupDescription) {
+    font-size: 0.775rem;
     line-height: 1.6;
     color: #4B5563;
-    margin: 0;
+    margin: 0 4px 16px;
   }
 
   .popup-footer {
@@ -4450,6 +4893,77 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
 
   .popup-more-btn:active {
     transform: translateY(0);
+  }
+
+  .popup-coin-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.04);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  }
+
+  .popup-coin-worksgain {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .popup-coin-worksgain-counter {
+    font-size: 10px;
+    font-weight: 600;
+    color: #707070;
+  }
+
+  .popup-coin-give-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 144px;
+    height: 40px;
+    background-color: rgba(230, 230, 230, 0.2);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 12px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color, #e0e0e0);
+    cursor: pointer;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+  }
+
+  .popup-coin-give-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .popup-coin-give-btn:not(.disabled):hover {
+    background-color: rgba(240, 240, 240, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .popup-coin-give-btn:not(.disabled):active {
+    transform: translateY(0);
+  }
+
+  .popup-coin-give-btn-text {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-color, #333);
+  }
+
+  .popup-coin-give-btn-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 4px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
   }
 
   /* ダークテーマ対応 */
@@ -5082,6 +5596,281 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   html.dark-theme .profile-card .profile-image {
     border-color: rgba(50, 50, 60, 1);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ========================================
+     Coin System
+     ======================================== */
+  :global(.coins-container) {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+  }
+
+  :global(.coin) {
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    transform: translate(-50%, -50%);
+    z-index: 20;
+    pointer-events: auto;
+    cursor: pointer;
+    animation: coinFloat 2s ease-in-out infinite;
+    transform-style: preserve-3d;
+    transition: opacity 1.2s ease-in;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* コイン生成時のフェードイン */
+  :global(.coin.coin-spawning) {
+    opacity: 0;
+    animation: coinFadeIn 1.2s ease-in forwards, coinFloat 2s ease-in-out 1.2s infinite;
+  }
+
+  /* 回転用ラッパー */
+  :global(.coin-rotate-wrapper) {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* コイン画像 */
+  :global(.coin .coin-image) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  :global(.coin:hover) {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+
+  :global(.coin:hover .coin-image) {
+    filter: drop-shadow(0 4px 8px rgba(255, 215, 0, 0.6)) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  /* マリオ風の取得アニメーション */
+  :global(.coin.collected) {
+    animation: coinCollectMove 0.8s cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+    pointer-events: none;
+  }
+
+  :global(.coin.collected .coin-rotate-wrapper) {
+    animation: coinCollectRotate 0.8s linear forwards;
+  }
+
+  @keyframes coinFloat {
+    0%, 100% {
+      transform: translate(-50%, -50%) translateY(0) rotateY(0deg);
+    }
+    50% {
+      transform: translate(-50%, -50%) translateY(-4px) rotateY(5deg);
+    }
+  }
+
+  /* 回転アニメーション（一定速度、高速） */
+  @keyframes coinCollectRotate {
+    0% {
+      transform: rotateZ(0deg);
+    }
+    80% {
+      transform: rotateZ(360deg);
+    }
+    100% {
+      transform: rotateZ(0);
+    }
+  }
+
+  /* 上下移動アニメーション（緩急あり） */
+  @keyframes coinCollectMove {
+    0% {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(-50px);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(-50px);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) translateY(-40px);
+    }
+  }
+
+  @keyframes coinFadeIn {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+    }
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  :global(html.dark-theme .coin .coin-image) {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) brightness(1.1);
+  }
+
+  /* コイン数表示UI - headerの下に配置（背景色なし） */
+  .coin-counter {
+    position: fixed;
+    top: 60px; /* header-containerの高さ（padding: 16px 40px 8px）を考慮 */
+    left: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    z-index: 1001;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-color, #333);
+    transition: all 0.2s ease;
+  }
+
+  html.dark-theme .coin-counter {
+    color: var(--text-color, #e0e0e0);
+  }
+
+  .coin-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.2));
+  }
+
+  .coin-count-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-color, #e0e0e0);
+    text-align: center;
+  }
+
+  .coin-count-text {
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* コイン取得時の「+1」アニメーション */
+  :global(.coin-gain-indicator) {
+    position: fixed;
+    font-size: 11px;
+    font-weight: 600;
+    color: #000000;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+    pointer-events: none;
+    white-space: nowrap;
+    user-select: none;
+    will-change: transform, opacity;
+  }
+
+  :global(.coin-gain-indicator.active) {
+    animation: coinGainFloat 1s ease-out forwards;
+  }
+
+  @keyframes coinGainFloat {
+    0% {
+      opacity: 0;
+      transform: translateY(-2px) scale(0.8);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-6px) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-10dpx) scale(0.9);
+    }
+  }a
+
+  :global(html.dark-theme .coin-gain-indicator) {
+    color: #ffffff;
+  }
+
+  /* コインが画面に溢れるアニメーション */
+  :global(.coin-burst) {
+    position: fixed;
+    width: 64px;
+    height: 64px;
+    z-index: 10001;
+    pointer-events: none;
+    opacity: 0;
+    transform: translate(-50%, -50%);
+    will-change: transform, opacity;
+  }
+
+  :global(.coin-burst.active) {
+    animation: coinBurstAnimation 1.3s ease-out forwards;
+  }
+
+  :global(.coin-burst-image) {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: crisp-edges;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  @keyframes coinBurstAnimation {
+    0% {
+      opacity: 0;
+      transform: translate(-50%, -50%) translate(0, 0);
+    }
+    5% {
+      opacity: 1;
+      transform: translate(-50%, -50%) translate(0, 0);
+    }
+    100% {
+      opacity: 0;
+      transform: translate(-50%, -50%) translate(var(--delta-x, 0px), var(--delta-y, 0px));
+    }
+  }
+
+  /* モバイル対応 */
+  @media (max-width: 768px) {
+    .coin-counter {
+      top: 48px;
+      left: 16px;
+      margin: 0;
+      padding: 3px 0;
+      gap: 5px;
+    }
+
+    .coin-icon {
+      width: 24px;
+      height: 24px;
+    }
+
+    .coin-count-text {
+      font-size: 11px;
+    }
+
+    .coin-gain-indicator {
+      font-size: 10px;
+      margin-left: 4px;
+    }
   }
 
   /* プロフィールポップアップスタイル - worksタウンのポップアップと同様のスタイル */
