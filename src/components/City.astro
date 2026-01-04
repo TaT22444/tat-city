@@ -276,7 +276,10 @@ const blogNames: string[] = [
     </button>
   </div>
   <div class="popup-body">
-    <div class="ad-container" id="adContainer">
+    <div class="ad-prompt" id="adPrompt">
+      <p>広告を表示しますか？</p>
+    </div>
+    <div class="ad-container" id="adContainer" style="display: none;">
       {/* AdSense広告またはカスタム広告がここに表示される */}
       <ins class="adsbygoogle"
            style="display:block"
@@ -290,8 +293,8 @@ const blogNames: string[] = [
     </div>
   </div>
   <div class="popup-footer">
-    <button class="popup-close-btn">閉じる</button>
-    <button class="ad-toggle-btn" id="adToggleBtn" style="display: none;">カスタム広告を見る</button>
+    <button class="popup-close-btn" id="adCloseBtn">閉じる</button>
+    <button class="ad-view-btn" id="adViewBtn">広告を見る</button>
   </div>
 </div>
 
@@ -1110,25 +1113,22 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       return;
     }
     
-    // AdSense広告を表示（カスタム広告は非表示）
+    // 初期状態：広告プロンプトを表示、広告コンテナは非表示
+    const adPrompt = document.getElementById('adPrompt');
     const adContainer = document.getElementById('adContainer');
     const customAdContainer = document.getElementById('customAdContainer');
-    if (adContainer) adContainer.style.display = 'block';
-    if (customAdContainer) customAdContainer.style.display = 'none';
+    const adViewBtn = document.getElementById('adViewBtn');
+    const adCloseBtn = document.getElementById('adCloseBtn');
     
-    // AdSense広告を読み込む（初回のみ）
-    if (adContainer && !adContainer.dataset.loaded) {
-      try {
-        // AdSense広告を初期化
-        const adsbygoogleScript = document.createElement('script');
-        adsbygoogleScript.innerHTML = `
-          (adsbygoogle = window.adsbygoogle || []).push({});
-        `;
-        document.body.appendChild(adsbygoogleScript);
-        adContainer.dataset.loaded = 'true';
-      } catch (e) {
-        console.error('AdSense広告の読み込みに失敗しました:', e);
-      }
+    if (adPrompt) adPrompt.style.display = 'block';
+    if (adContainer) adContainer.style.display = 'none';
+    if (customAdContainer) customAdContainer.style.display = 'none';
+    if (adViewBtn) adViewBtn.style.display = 'block';
+    if (adCloseBtn) adCloseBtn.style.display = 'block';
+    
+    // 広告コンテナの読み込み状態をリセット（再表示時に再読み込みできるように）
+    if (adContainer) {
+      adContainer.dataset.loaded = 'false';
     }
     
     // ポップアップを表示
@@ -1149,6 +1149,37 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       exitZoomMode();
     }
   }
+  
+  // 広告を開始する関数（「広告を見る」ボタンが押されたときに呼ばれる）
+  function startAd() {
+    const adPrompt = document.getElementById('adPrompt');
+    const adContainer = document.getElementById('adContainer');
+    const adViewBtn = document.getElementById('adViewBtn');
+    
+    // プロンプトとボタンを非表示
+    if (adPrompt) adPrompt.style.display = 'none';
+    if (adViewBtn) adViewBtn.style.display = 'none';
+    
+    // 広告コンテナを表示
+    if (adContainer) {
+      adContainer.style.display = 'block';
+      
+      // AdSense広告を読み込む（初回のみ）
+      if (!adContainer.dataset.loaded || adContainer.dataset.loaded === 'false') {
+        try {
+          // AdSense広告を初期化
+          const adsbygoogleScript = document.createElement('script');
+          adsbygoogleScript.innerHTML = `
+            (adsbygoogle = window.adsbygoogle || []).push({});
+          `;
+          document.body.appendChild(adsbygoogleScript);
+          adContainer.dataset.loaded = 'true';
+        } catch (e) {
+          console.error('AdSense広告の読み込みに失敗しました:', e);
+        }
+      }
+    }
+  }
 
   // 広告ポップアップのイベントリスナーのセットアップ
   function setupAdPopupEvents() {
@@ -1156,8 +1187,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     if (!adPopup) return;
     
     const closeButton = adPopup.querySelector('.popup-close-button');
-    const closeBtn = adPopup.querySelector('.popup-close-btn');
-    const toggleBtn = document.getElementById('adToggleBtn');
+    const closeBtn = document.getElementById('adCloseBtn');
+    const viewBtn = document.getElementById('adViewBtn');
     
     // 閉じるボタンクリックイベント
     const closePopup = () => {
@@ -1177,33 +1208,21 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       closeBtn.addEventListener('click', closePopup);
     }
     
-    // カスタム広告切り替えボタン（将来の実装用）
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const adContainer = document.getElementById('adContainer');
-        const customAdContainer = document.getElementById('customAdContainer');
-        if (adContainer && customAdContainer) {
-          if (adContainer.style.display === 'none') {
-            // AdSense広告に切り替え
-            adContainer.style.display = 'block';
-            customAdContainer.style.display = 'none';
-            toggleBtn.textContent = 'カスタム広告を見る';
-          } else {
-            // カスタム広告に切り替え
-            adContainer.style.display = 'none';
-            customAdContainer.style.display = 'block';
-            toggleBtn.textContent = 'AdSense広告を見る';
-          }
-        }
+    // 「広告を見る」ボタンクリックイベント
+    if (viewBtn) {
+      viewBtn.addEventListener('click', () => {
+        startAd();
       });
     }
     
     // ESCキーでポップアップを閉じる
-    document.addEventListener('keydown', (e) => {
+    const escKeyHandler = (e) => {
       if (e.key === 'Escape' && adPopup.classList.contains('active')) {
         closePopup();
       }
-    });
+    };
+    document.removeEventListener('keydown', escKeyHandler);
+    document.addEventListener('keydown', escKeyHandler);
   }
 
   // ブログポップアップ表示関数
@@ -3572,6 +3591,22 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     transform: translateY(-50%) translateX(0);
   }
 
+  .ad-prompt {
+    width: 100%;
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .ad-prompt p {
+    font-size: 1rem;
+    color: var(--text-color, #4B5563);
+    margin: 0;
+  }
+
   .ad-container {
     width: 100%;
     min-height: 250px;
@@ -3588,6 +3623,42 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     align-items: center;
     justify-content: center;
     margin-bottom: 16px;
+  }
+
+  .ad-view-btn {
+    padding: 9px 16px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    background-color: #4F46E5;
+    color: white;
+    flex: 2;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .ad-view-btn:hover {
+    background-color: #4338CA;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .ad-view-btn:active {
+    transform: translateY(0);
+  }
+
+  html.dark-theme .ad-view-btn {
+    background-color: #5850EC;
+  }
+
+  html.dark-theme .ad-view-btn:hover {
+    background-color: #6366F1;
+  }
+
+  html.dark-theme .ad-prompt p {
+    color: #D1D5DB;
   }
 
   /* ダークテーマ対応 */
