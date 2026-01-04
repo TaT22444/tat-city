@@ -1,13 +1,13 @@
 // 作品データを外部ファイルで管理
-// src/assetsから画像をインポート（最適化される）
-import hamoriImage from '../assets/images/works/Hamori-thumb.png';
-import masimasiImage from '../assets/images/works/masimasi_pop.png';
-import attaImage from '../assets/images/works/atta_pop.png';
-import citportalImage from '../assets/images/works/citportal_pop.png';
-import shiminNoKiImage from '../assets/images/works/市民の木_pop.png';
-import invidiImage from '../assets/images/works/invidi_pop.png';
-import ittowImage from '../assets/images/works/works-ittow-thumb.png';
-import winkImage from '../assets/images/works/wink_pop.png';
+// src/assetsから画像をインポート（最適化されたWebP形式）
+import hamoriImage from '../assets/images/works/Hamori-thumb.webp';
+import masimasiImage from '../assets/images/works/masimasi_pop.webp';
+import attaImage from '../assets/images/works/atta_pop.webp';
+import citportalImage from '../assets/images/works/citportal_pop.webp';
+import shiminNoKiImage from '../assets/images/works/市民の木_pop.webp';
+import invidiImage from '../assets/images/works/invidi_pop.webp';
+import ittowImage from '../assets/images/works/works-ittow-thumb.webp';
+import winkImage from '../assets/images/works/wink_pop.webp';
 
 export const worksData = {
   // 作品の詳細情報

@@ -1,6 +1,6 @@
 // プロフィールデータを外部ファイルで管理
-// src/assetsから画像をインポート（最適化される）
-import profileImage from '../assets/images/profile/profile.png';
+// src/assetsから画像をインポート（最適化されたWebP形式）
+import profileImage from '../assets/images/profile/profile.webp';
 
 export const profileData = {
   // 基本情報
