@@ -27,22 +27,22 @@ const blogNames: string[] = [
     <div class="header-container">
       <div class="header-logo">
         <p class="logo-text">TaT Archive / 2025 ~ 2026</p>
-      </div>
+          </div>
       
       <div class="header-actions">
         <div class="social-links">
           <a href="#" class="social-link" aria-label="Twitter">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
               <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
-            </svg>
-          </a>
+                </svg>
+              </a>
           <a href="#" class="social-link" aria-label="Instagram">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
               <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
               <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
               <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
-            </svg>
-          </a>
+                </svg>
+              </a>
         </div>
         
         <button class="view-toggle-btn" id="viewModeToggle" aria-label="Toggle to portfolio view" onclick="window.location.href='/portfolio'">
@@ -56,7 +56,7 @@ const blogNames: string[] = [
             </svg>
           </div>
         </button>
-      </div>
+        </div>
     </div>
   </header>
   <div class="city-view town-works" id="cityView">
@@ -103,6 +103,12 @@ const blogNames: string[] = [
       <div class="point-bubble point-8 work-item" data-work-name="Wink">
             <div class="work-image"></div>
             <div class="work-title">Wink</div>
+      </div>
+      
+      {/* 広告ポイント */}
+      <div class="point-bubble point-10 ad-item" data-ad-point="true">
+            <div class="ad-icon">📢</div>
+            <div class="work-title">広告</div>
       </div>
 
     </div>
@@ -258,6 +264,37 @@ const blogNames: string[] = [
   </div>
 </div>
 
+<!-- 広告ポップアップ -->
+<div class="ad-popup" id="adPopup" style="display: none;">
+  <div class="popup-header">
+    <h3>広告</h3>
+    <button class="popup-close-button" aria-label="閉じる">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="popup-body">
+    <div class="ad-container" id="adContainer">
+      {/* AdSense広告またはカスタム広告がここに表示される */}
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-4144123835991811"
+           data-ad-slot="YOUR_AD_SLOT_ID"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div>
+    <div class="custom-ad-container" id="customAdContainer" style="display: none;">
+      {/* カスタム広告（自分の作品PR）がここに表示される */}
+    </div>
+  </div>
+  <div class="popup-footer">
+    <button class="popup-close-btn">閉じる</button>
+    <button class="ad-toggle-btn" id="adToggleBtn" style="display: none;">カスタム広告を見る</button>
+  </div>
+</div>
+
 <!-- ブログ情報ポップアップ -->
 <div class="work-popup" id="blogPopup" style="display: none;">
   <div class="popup-header">
@@ -282,6 +319,10 @@ const blogNames: string[] = [
     <button class="popup-more-btn">続きを読む</button>
   </div>
 </div>
+
+<!-- Google AdSense スクリプト -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4144123835991811"
+     crossorigin="anonymous"></script>
 
 <!-- テーマ切替スクリプト - より直接的なアプローチ -->
 <script is:inline>
@@ -529,6 +570,15 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         profilePopup.classList.remove('active');
         setTimeout(() => {
           profilePopup.style.display = 'none';
+        }, 300);
+      }
+      
+      // 広告ポップアップも閉じる
+      const adPopup = document.getElementById('adPopup');
+      if (adPopup && adPopup.classList.contains('active')) {
+        adPopup.classList.remove('active');
+        setTimeout(() => {
+          adPopup.style.display = 'none';
         }, 300);
       }
       
@@ -919,6 +969,24 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         return; // この後の処理をスキップ
       }
       
+      // 広告ポイントの特別処理
+      if (point.hasAttribute('data-ad-point')) {
+        point.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const adPopup = document.getElementById('adPopup');
+          if (adPopup?.classList.contains('active')) {
+            hideAdPopup();
+          } else {
+            // ズームしてからポップアップを表示
+            zoomToPoint('ad');
+            setTimeout(() => {
+              showAdPopup();
+            }, 600);
+          }
+        });
+        return; // この後の処理をスキップ
+      }
+      
       // Works townの場合は作品情報を表示（統合後は基本的にworks）
       if (currentTown.includes('works') || !currentTown.includes('blogs')) {
         const workName = point.getAttribute('data-work-name') || '';
@@ -1011,6 +1079,131 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       profilePopup.classList.remove('active');
       exitZoomMode();
     }
+  }
+
+  // 広告ポップアップ表示関数
+  function showAdPopup() {
+    const adPopup = document.getElementById('adPopup');
+    if (!adPopup) {
+      console.error('広告ポップアップ要素が見つかりません');
+      return;
+    }
+    
+    // 他のポップアップが開いている場合は閉じる
+    const workPopup = document.getElementById('workPopup');
+    const profilePopup = document.getElementById('profilePopup');
+    if (workPopup && workPopup.classList.contains('active')) {
+      workPopup.classList.remove('active');
+      setTimeout(() => {
+        workPopup.style.display = 'none';
+      }, 300);
+    }
+    if (profilePopup && profilePopup.classList.contains('active')) {
+      profilePopup.classList.remove('active');
+      setTimeout(() => {
+        profilePopup.style.display = 'none';
+      }, 300);
+    }
+    
+    // 既に広告ポップアップが表示されている場合は何もしない
+    if (adPopup.classList.contains('active')) {
+      return;
+    }
+    
+    // AdSense広告を表示（カスタム広告は非表示）
+    const adContainer = document.getElementById('adContainer');
+    const customAdContainer = document.getElementById('customAdContainer');
+    if (adContainer) adContainer.style.display = 'block';
+    if (customAdContainer) customAdContainer.style.display = 'none';
+    
+    // AdSense広告を読み込む（初回のみ）
+    if (adContainer && !adContainer.dataset.loaded) {
+      try {
+        // AdSense広告を初期化
+        const adsbygoogleScript = document.createElement('script');
+        adsbygoogleScript.innerHTML = `
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        `;
+        document.body.appendChild(adsbygoogleScript);
+        adContainer.dataset.loaded = 'true';
+      } catch (e) {
+        console.error('AdSense広告の読み込みに失敗しました:', e);
+      }
+    }
+    
+    // ポップアップを表示
+    adPopup.style.display = 'flex';
+    setTimeout(() => {
+      adPopup.classList.add('active');
+    }, 10);
+    
+    // 広告ポップアップのイベントリスナーをセットアップ
+    setupAdPopupEvents();
+  }
+
+  // 広告ポップアップ非表示関数
+  function hideAdPopup() {
+    const adPopup = document.getElementById('adPopup');
+    if (adPopup && adPopup.classList.contains('active')) {
+      adPopup.classList.remove('active');
+      exitZoomMode();
+    }
+  }
+
+  // 広告ポップアップのイベントリスナーのセットアップ
+  function setupAdPopupEvents() {
+    const adPopup = document.getElementById('adPopup');
+    if (!adPopup) return;
+    
+    const closeButton = adPopup.querySelector('.popup-close-button');
+    const closeBtn = adPopup.querySelector('.popup-close-btn');
+    const toggleBtn = document.getElementById('adToggleBtn');
+    
+    // 閉じるボタンクリックイベント
+    const closePopup = () => {
+      hideAdPopup();
+      setTimeout(() => {
+        if (adPopup) {
+          adPopup.style.display = 'none';
+        }
+      }, 300);
+    };
+    
+    if (closeButton) {
+      closeButton.addEventListener('click', closePopup);
+    }
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closePopup);
+    }
+    
+    // カスタム広告切り替えボタン（将来の実装用）
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+        const adContainer = document.getElementById('adContainer');
+        const customAdContainer = document.getElementById('customAdContainer');
+        if (adContainer && customAdContainer) {
+          if (adContainer.style.display === 'none') {
+            // AdSense広告に切り替え
+            adContainer.style.display = 'block';
+            customAdContainer.style.display = 'none';
+            toggleBtn.textContent = 'カスタム広告を見る';
+          } else {
+            // カスタム広告に切り替え
+            adContainer.style.display = 'none';
+            customAdContainer.style.display = 'block';
+            toggleBtn.textContent = 'AdSense広告を見る';
+          }
+        }
+      });
+    }
+    
+    // ESCキーでポップアップを閉じる
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && adPopup.classList.contains('active')) {
+        closePopup();
+      }
+    });
   }
 
   // ブログポップアップ表示関数
@@ -1109,9 +1302,14 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       
       // 対応するポイント要素を見つけて、そのwork-titleを表示
       // プロフィールポイントの場合はdata-profile-pointで検索
-      const pointElement = pointName === 'profile' 
-        ? document.querySelector('.point-bubble[data-profile-point="true"]')
-        : document.querySelector(`.point-bubble[data-work-name="${pointName}"]`);
+      let pointElement = null;
+      if (pointName === 'profile') {
+        pointElement = document.querySelector('.point-bubble[data-profile-point="true"]');
+      } else if (pointName === 'ad') {
+        pointElement = document.querySelector('.point-bubble[data-ad-point="true"]');
+      } else {
+        pointElement = document.querySelector(`.point-bubble[data-work-name="${pointName}"]`);
+      }
       
       if (pointElement) {
         const workTitle = pointElement.querySelector('.work-title');
@@ -1466,7 +1664,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   const pointOffsetMap = {
     'works': {
       ...worksData.positions,
-      'profile': profileData.position // プロフィールポイントの位置をworksタウンに追加
+      'profile': profileData.position, // プロフィールポイントの位置をworksタウンに追加
+      'ad': { x: 40, y: 90 } // 広告ポイントの位置
     },
     // 後方互換性のため残す（将来的に削除可能）
     'profile': {
@@ -1507,6 +1706,9 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         } else if (bubble.dataset.profilePoint) {
             foundItemName = 'profile';
             foundItemType = 'profile';
+        } else if (bubble.dataset.adPoint) {
+            foundItemName = 'ad';
+            foundItemType = 'ad';
         } else if (bubble.dataset.blogName) {
             foundItemName = bubble.dataset.blogName;
             foundItemType = 'blog';
@@ -1531,6 +1733,13 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
             zoomToPoint(foundItemName);
             setTimeout(() => {
               if (isZoomed && zoomedPointName === foundItemName) showProfilePopup();
+              isEventLocked = false;
+            }, 600);
+        } else if (foundItemType === 'ad') {
+            // 広告ポイントの処理：まずズーム、その後ポップアップ
+            zoomToPoint(foundItemName);
+            setTimeout(() => {
+              if (isZoomed && zoomedPointName === foundItemName) showAdPopup();
               isEventLocked = false;
             }, 600);
         } else if (foundItemType === 'blog') {
@@ -2466,7 +2675,7 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   .town-works .point-7 { left: 55%; top: 90%; animation-delay: 2.4s; }/* Ittow */
   .town-works .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }/* Wink */
   .town-works .point-9 { left: 50%; top: 80%; animation-delay: 3.2s; }/* Profile */
-  .town-works .point-10 { left: 60%; top: 15%; animation-delay: 3.6s; }
+  .town-works .point-10 { left: 40%; top: 90%; animation-delay: 3.6s; }
   .town-works .point-11 { left: 35%; top: 95%; animation-delay: 4s; }
   .town-works .point-12 { left: 68%; top: 85%; animation-delay: 4.4s; }
 
@@ -3269,6 +3478,134 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   /* モバイル対応 */
   @media (max-width: 768px) {
     .work-popup {
+      left: 10px;
+      right: 10px;
+      width: calc(100% - 20px);
+      max-width: 320px;
+    }
+  }
+
+  /* 広告ポイントのスタイル */
+  .point-bubble.ad-item {
+    width: 50px;
+    height: 50px;
+    overflow: visible;
+    position: absolute;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.8), rgba(255, 165, 0, 0.8));
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.6), inset 0 0 10px rgba(255, 255, 255, 0.8);
+    border: 2px solid rgba(255, 215, 0, 0.9);
+  }
+
+  .point-bubble.ad-item::before {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.95);
+    z-index: 2;
+  }
+
+  .point-bubble.ad-item::after {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    animation: adPulse 4s infinite ease-out;
+    z-index: 1;
+  }
+
+  .point-bubble.ad-item:hover {
+    transform: translate(-50%, -50%) translateZ(8px) scale(1.1);
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.9), rgba(255, 165, 0, 0.9));
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.8), inset 0 0 15px rgba(255, 255, 255, 1);
+  }
+
+  .ad-icon {
+    width: 90%;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    position: relative;
+    z-index: 3;
+  }
+
+  @keyframes adPulse {
+    0% {
+      width: 40px;
+      height: 40px;
+      opacity: 0.7;
+      border-width: 2px;
+    }
+    50% {
+      width: 80px;
+      height: 80px;
+      opacity: 0.2;
+      border-width: 1px;
+    }
+    100% {
+      width: 40px;
+      height: 40px;
+      opacity: 0.7;
+      border-width: 2px;
+    }
+  }
+
+  /* 広告ポップアップのスタイル */
+  .ad-popup {
+    position: fixed;
+    left: 4%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-4%);
+    width: 30%;
+    background-color: rgba(255, 255, 255, 0.85);
+    border-radius: 32px;
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 16px 24px;
+  }
+
+  .ad-popup.active {
+    transform: translateY(-50%) translateX(0);
+  }
+
+  .ad-container {
+    width: 100%;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .custom-ad-container {
+    width: 100%;
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  /* ダークテーマ対応 */
+  html.dark-theme .ad-popup {
+    background-color: rgba(30, 30, 35, 0.92);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2), 
+                0 5px 10px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.05);
+  }
+
+  html.dark-theme .point-bubble.ad-item {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.7), rgba(255, 165, 0, 0.7));
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.5), inset 0 0 10px rgba(255, 255, 255, 0.6);
+  }
+
+  /* モバイル対応 */
+  @media (max-width: 768px) {
+    .ad-popup {
       left: 10px;
       right: 10px;
       width: calc(100% - 20px);
