@@ -43,7 +43,7 @@ const blogNames: string[] = [
               <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
                 </svg>
               </a>
-          </div>
+        </div>
         
         <button class="view-toggle-btn" id="viewModeToggle" aria-label="Toggle to portfolio view" onclick="window.location.href='/portfolio'">
           <div class="toggle-icons">
@@ -54,9 +54,64 @@ const blogNames: string[] = [
               <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
               <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
             </svg>
-      </div>
+          </div>
         </button>
+        </div>
+      
+      <!-- Mobile Hamburger Menu Button -->
+      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
       </div>
+    
+    <!-- Mobile Menu Dropdown -->
+    <div class="mobile-menu-dropdown" id="mobileMenuDropdown">
+      <nav class="mobile-menu-nav">
+        <!-- View Mode Toggle (Top) -->
+        <div class="mobile-menu-view-toggle">
+          <span class="mobile-view-toggle-label">表示モード</span>
+          <button class="mobile-view-toggle-btn" onclick="window.location.href='/portfolio'" aria-label="Toggle to portfolio view">
+            <div class="mobile-toggle-icons">
+              <svg class="icon-grid" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <svg class="icon-3d active" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
+                <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
+              </svg>
+      </div>
+          </button>
+      </div>
+        
+        <!-- Portfolio List (Mobile) -->
+        <div class="mobile-menu-portfolio">
+          <h3 class="mobile-portfolio-title">Portfolio</h3>
+          <ul class="mobile-portfolio-list">
+            <li class="mobile-portfolio-item" data-profile-point="true">Profile</li>
+            {workNames.map(name => (
+              <li class="mobile-portfolio-item" data-work-name={name}>{name} Co.</li>
+            ))}
+          </ul>
+      </div>
+        
+        <!-- Social Links -->
+        <div class="mobile-menu-social">
+          <a href="#" class="mobile-social-link" aria-label="Twitter">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
+            </svg>
+          </a>
+          <a href="#" class="mobile-social-link" aria-label="Instagram">
+            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
+              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
+              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
+            </svg>
+          </a>
+      </div>
+      </nav>
       </div>
   </header>
   <div class="city-view town-works" id="cityView">
@@ -336,8 +391,48 @@ if (localStorage.getItem('cityTheme') === 'dark') {
 
 // 表示モード切替はonclick属性で処理
 
+// Mobile Menu Toggle
+function setupMobileMenu() {
+  const menuBtn = document.getElementById('mobileMenuBtn');
+  const menuDropdown = document.getElementById('mobileMenuDropdown');
+  const header = document.querySelector('.portfolio-header');
+  
+  if (!menuBtn || !menuDropdown || !header) return;
+  
+  const closeMenu = () => {
+    menuDropdown.classList.remove('active');
+    menuBtn.classList.remove('active');
+    header.classList.remove('menu-open');
+  };
+  
+  const openMenu = () => {
+    menuDropdown.classList.add('active');
+    menuBtn.classList.add('active');
+    header.classList.add('menu-open');
+  };
+  
+  menuBtn.addEventListener('click', () => {
+    if (menuDropdown.classList.contains('active')) {
+      closeMenu();
+    } else {
+      openMenu();
+    }
+  });
+  
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (menuDropdown.classList.contains('active') && 
+        !menuDropdown.contains(e.target) && 
+        !menuBtn.contains(e.target)) {
+      closeMenu();
+    }
+  });
+}
+
 // Header scroll effect
 document.addEventListener('DOMContentLoaded', () => {
+  setupMobileMenu();
+  
   const header = document.querySelector('.portfolio-header');
   if (header) {
     window.addEventListener('scroll', () => {
@@ -882,16 +977,31 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     }
   }
 
-  // ナビゲーションリストのセットアップ
+  // ナビゲーションリストのセットアップ（PC用のcompany-itemとモバイル用のmobile-portfolio-itemの両方に対応）
   function setupNavigationList() {
+    // PC用のcompany-item
     const navItems = document.querySelectorAll('.company-item');
+    // モバイル用のmobile-portfolio-item
+    const mobileNavItems = document.querySelectorAll('.mobile-portfolio-item');
     
-    navItems.forEach(item => {
+    // 共通のクリックハンドラー
+    const handleItemClick = (item) => {
       // プロフィール項目の処理
       if (item.hasAttribute('data-profile-point')) {
         item.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+          // モバイルメニューを閉じる（モバイルアイテムの場合のみ）
+          if (item.classList.contains('mobile-portfolio-item')) {
+            const menuDropdown = document.getElementById('mobileMenuDropdown');
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            const header = document.querySelector('.portfolio-header');
+            if (menuDropdown && menuBtn && header) {
+              menuDropdown.classList.remove('active');
+              menuBtn.classList.remove('active');
+              header.classList.remove('menu-open');
+            }
+          }
           zoomToPoint('profile');
           setTimeout(() => {
             showProfilePopup();
@@ -906,13 +1016,29 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         item.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
+          // モバイルメニューを閉じる（モバイルアイテムの場合のみ）
+          if (item.classList.contains('mobile-portfolio-item')) {
+            const menuDropdown = document.getElementById('mobileMenuDropdown');
+            const menuBtn = document.getElementById('mobileMenuBtn');
+            const header = document.querySelector('.portfolio-header');
+            if (menuDropdown && menuBtn && header) {
+              menuDropdown.classList.remove('active');
+              menuBtn.classList.remove('active');
+              header.classList.remove('menu-open');
+            }
+          }
           zoomToPoint(workName);
           setTimeout(() => {
             showWorkPopup(workName);
           }, 600);
         });
       }
-    });
+    };
+    
+    // PC用のアイテムにイベントを設定
+    navItems.forEach(item => handleItemClick(item));
+    // モバイル用のアイテムにイベントを設定
+    mobileNavItems.forEach(item => handleItemClick(item));
   }
 
   // ポイントをクリックしたときの処理を追加（統合版）
@@ -3120,15 +3246,352 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     color: #808080;
   }
 
+  /* Mobile Menu Button (Hidden on Desktop) */
+  .mobile-menu-btn {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 20px;
+    height: 16px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+    transition: all 0.3s ease;
+  }
+
+  .hamburger-line {
+    width: 100%;
+    height: 1.5px;
+    background-color: var(--text-color, #333);
+    border-radius: 1px;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  html.dark-theme .hamburger-line {
+    background-color: var(--text-color, #e0e0e0);
+  }
+
+  .mobile-menu-btn.active .hamburger-line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .mobile-menu-btn.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+
+  .mobile-menu-btn.active .hamburger-line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile Menu Dropdown */
+  .mobile-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    z-index: 999;
+    height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0.3s ease;
+    opacity: 0;
+    visibility: hidden;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  .mobile-menu-dropdown.active {
+    height: auto;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .mobile-menu-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    padding: 8px 0 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .mobile-menu-view-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 24px;
+    margin: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .mobile-view-toggle-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-color, #808080);
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+
+  html.dark-theme .mobile-view-toggle-label {
+    color: var(--text-color, #9CA3AF);
+  }
+
+  .mobile-view-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--color-white, #ffffff);
+    border: 1px solid #cdcdcd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  html.dark-theme .mobile-view-toggle-btn {
+    background: rgba(30, 30, 35, 0.8);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .mobile-view-toggle-btn:active {
+    transform: scale(0.96);
+    background: #f5f5f5;
+  }
+
+  html.dark-theme .mobile-view-toggle-btn:active {
+    background: rgba(40, 40, 45, 0.9);
+  }
+
+  .mobile-toggle-icons {
+    display: flex;
+    gap: 2px;
+  }
+
+  .mobile-toggle-icons svg {
+    width: 14px;
+    height: 14px;
+    padding: 6px;
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+
+  .mobile-toggle-icons .icon-grid.active {
+    background: var(--color-white, #ffffff);
+    border: 1px solid rgba(226, 226, 226, 0.8);
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.12);
+  }
+
+  html.dark-theme .mobile-toggle-icons .icon-grid.active {
+    background: rgba(50, 50, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .mobile-toggle-icons .icon-3d.active {
+    background: var(--color-white, #ffffff);
+    border: 1px solid rgba(226, 226, 226, 0.8);
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.12);
+  }
+
+  html.dark-theme .mobile-toggle-icons .icon-3d.active {
+    background: rgba(50, 50, 60, 0.9);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+
+  .mobile-toggle-icons .icon-3d {
+    color: var(--text-color, #808080);
+  }
+
+  .mobile-menu-social {
+    display: flex;
+    gap: 10px;
+    margin: 8px 0 0;
+    padding: 16px 24px 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .mobile-social-link {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--text-color, #333);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+
+  html.dark-theme .mobile-social-link {
+    background: rgba(30, 30, 35, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-color, #e0e0e0);
+  }
+
+  .mobile-social-link:active {
+    background: rgba(255, 255, 255, 0.9);
+    transform: scale(0.95);
+    border-color: rgba(0, 0, 0, 0.12);
+  }
+
+  html.dark-theme .mobile-social-link:active {
+    background: rgba(40, 40, 45, 0.9);
+  }
+
+  /* Mobile Portfolio List */
+  .mobile-menu-portfolio {
+    padding: 16px 24px;
+    margin: 0;
+  }
+
+  html.dark-theme .mobile-menu-portfolio {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .mobile-portfolio-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-color, #808080);
+    margin: 0 0 12px;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+  }
+
+  html.dark-theme .mobile-portfolio-title {
+    color: var(--text-color, #9CA3AF);
+  }
+
+  .mobile-portfolio-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .mobile-portfolio-item {
+    padding: 10px 0px;
+    background: rgba(255, 255, 255, 0.4);
+    /* border: 1px solid rgba(0, 0, 0, 0.06); */
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-color, #333);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+
+  html.dark-theme .mobile-portfolio-item {
+    background: rgba(30, 30, 35, 0.4);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--text-color, #e0e0e0);
+  }
+
+  .mobile-portfolio-item:active {
+    background: rgba(255, 255, 255, 0.6);
+    transform: scale(0.98);
+    border-color: rgba(0, 0, 0, 0.1);
+  }
+
+  html.dark-theme .mobile-portfolio-item:active {
+    background: rgba(40, 40, 45, 0.6);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
   /* Header Responsive */
   @media (max-width: 768px) {
+    /* Header - Mobile: Same behavior as PC (transparent by default, background on scroll) */
+    .portfolio-header {
+      background-color: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    .portfolio-header.scrolled {
+      background-color: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    html.dark-theme .portfolio-header.scrolled {
+      background-color: rgba(30, 30, 35, 0.8);
+    }
+
+    /* When menu is open, show background on header and menu */
+    .portfolio-header.menu-open {
+      background-color: rgba(255, 255, 255, 1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    html.dark-theme .portfolio-header.menu-open {
+      background-color: rgba(30, 30, 35, 1);
+    }
+
+    .mobile-menu-dropdown {
+      background-color: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      border-top: none;
+    }
+
+    /* When menu is active, show unified background */
+    .mobile-menu-dropdown.active {
+      background-color: rgba(255, 255, 255, 1);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    html.dark-theme .mobile-menu-dropdown.active {
+      background-color: rgba(30, 30, 35, 1);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Header - Mobile Layout: Logo Left, Hamburger Right */
     .header-container {
-      padding: 20px 24px 8px;
-      flex-wrap: wrap;
+      padding: 16px 20px;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-logo {
+      flex: 0 0 auto;
     }
 
     .logo-text {
-      font-size: 16px;
+      font-size: 13px;
+      line-height: 1.2;
+      font-weight: 500;
+    }
+
+    /* Hide desktop actions on mobile */
+    .header-actions {
+      display: none;
+    }
+
+    /* Show hamburger menu button */
+    .mobile-menu-btn {
+      display: flex;
+    }
+
+    /* Hide company-list on mobile (shown in mobile menu instead) */
+    .company-list {
+      display: none;
     }
   }
 
@@ -3165,6 +3628,13 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   .company-list .company-item:hover {
     background: rgba(150,150,150,0.1);
     transform: translateX(2px);
+  }
+
+  /* Mobile: Hide company-list on mobile */
+  @media (max-width: 768px) {
+    .company-list {
+      display: none;
+    }
   }
 
   /* ポイント名表示のスタイル */

@@ -84,9 +84,28 @@ const featuredWork = {
     <!-- Mobile Menu Dropdown -->
     <div class="mobile-menu-dropdown" id="mobileMenuDropdown">
       <nav class="mobile-menu-nav">
+        <!-- View Mode Toggle (Top) -->
+        <div class="mobile-menu-view-toggle">
+          <span class="mobile-view-toggle-label">表示モード</span>
+          <button class="mobile-view-toggle-btn" onclick="window.location.href='/'" aria-label="Toggle to 3D view">
+            <div class="mobile-toggle-icons">
+              <svg class="icon-grid active" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <svg class="icon-3d" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
+                <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
+              </svg>
+            </div>
+          </button>
+        </div>
+        
+        <!-- Navigation Links -->
         <a href="#about" class="mobile-nav-link">about</a>
         <a href="#works" class="mobile-nav-link">works</a>
         <a href="#contact" class="mobile-nav-link">contact</a>
+        
+        <!-- Social Links -->
         <div class="mobile-menu-social">
           <a href="#" class="mobile-social-link" aria-label="Twitter">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -909,8 +928,8 @@ const featuredWork = {
     display: flex;
     flex-direction: column;
     gap: 0;
-    padding: 0;
-    margin: 24px 0;
+    padding: 8px 0 16px;
+    border-bottom: (1px solid rgba(0, 0, 0, 0.8));
   }
 
   .mobile-nav-link {
@@ -946,8 +965,8 @@ const featuredWork = {
   .mobile-menu-social {
     display: flex;
     gap: 10px;
-    margin: 16px 0 0;
-    padding: 32px 24px 24px;
+    margin: 8px 0 0;
+    padding: 16px 24px 0;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
   }
 
@@ -971,6 +990,65 @@ const featuredWork = {
     background: rgba(255, 255, 255, 0.9);
     transform: scale(0.95);
     border-color: rgba(0, 0, 0, 0.12);
+  }
+
+  .mobile-menu-view-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 24px;
+    margin: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .mobile-view-toggle-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+  }
+
+  .mobile-view-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    background: var(--color-white);
+    border: 1px solid #cdcdcd;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .mobile-view-toggle-btn:active {
+    transform: scale(0.96);
+    background: #f5f5f5;
+  }
+
+  .mobile-toggle-icons {
+    display: flex;
+    gap: 2px;
+  }
+
+  .mobile-toggle-icons svg {
+    width: 14px;
+    height: 14px;
+    padding: 6px;
+    border-radius: 14px;
+    transition: all 0.2s;
+  }
+
+  .mobile-toggle-icons .icon-grid.active {
+    background: var(--color-white);
+    border: 1px solid var(--color-border-light);
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.12);
+  }
+
+  .mobile-toggle-icons .icon-3d {
+    color: var(--color-text-secondary);
   }
 
   /* ========================================
@@ -1444,7 +1522,7 @@ const featuredWork = {
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
-    margin: 4px 0 0;
+    margin: 8px 0 0;
   }
 
   .work-category {
@@ -1640,10 +1718,11 @@ const featuredWork = {
 
     /* Hero Section - Mobile Optimized */
     .hero-section {
+      position: sticky;
+      top: 0;
       min-height: 100vh;
       padding-top: 0;
       padding-bottom: 0;
-      position: relative;
       overflow: hidden;
     }
 
@@ -1699,7 +1778,7 @@ const featuredWork = {
     }
 
     .hero-work-description {
-      font-size: 13px;
+      font-size: 12px;
       padding: 0;
       line-height: 1.6;
       color: var(--color-text-primary);
@@ -1820,7 +1899,7 @@ const featuredWork = {
 
     /* Works Section - Mobile */
     .works-grid {
-      gap: 48px;
+      gap: 64px;
       grid-template-columns: 1fr;
     }
 
@@ -1845,8 +1924,11 @@ const featuredWork = {
       font-weight: 600;
     }
 
+    .work-info {
+      gap: 8px;
+    }
+
     .work-category {
-      font-size: 10px;
     }
 
     .work-name {
@@ -1855,7 +1937,6 @@ const featuredWork = {
     }
 
     .work-description {
-      font-size: 13px;
       line-height: 1.6;
       color: var(--color-text-tertiary);
     }
