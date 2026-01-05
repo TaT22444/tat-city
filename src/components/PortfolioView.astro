@@ -233,17 +233,21 @@ const featuredWork = {
           
           return (
             <article class="work-card">
-              <div class="work-thumbnail">
-                <img 
-                  src={workImage} 
-                  alt={workName} 
-                  class="work-image"
-                  loading="lazy"
-                  fetchpriority="low"
-                />
-                {isReleased && <span class="work-badge">リリース</span>}
-              </div>
-              <div class="work-info">
+              <a href={`/works/${workName}`} class="work-link">
+                <div class="work-thumbnail">
+                  <img 
+                    src={workImage} 
+                    alt={workName} 
+                    class="work-image"
+                    loading="lazy"
+                    fetchpriority="low"
+                  />
+                  {isReleased && <span class="work-badge">リリース</span>}
+                  <div class="work-view-overlay">
+                    <span class="work-view-text">詳細を見る</span>
+                  </div>
+                </div>
+                <div class="work-info">
                 <p class="work-category">
                   {(Array.isArray(worksData.types[workName as keyof typeof worksData.types])
                     ? worksData.types[workName as keyof typeof worksData.types].join(' / ')
@@ -252,6 +256,7 @@ const featuredWork = {
                 <h3 class="work-name">{workName}</h3>
                 <p class="work-description">{workDescription}</p>
               </div>
+              </a>
             </article>
           );
         })}
@@ -615,9 +620,59 @@ const featuredWork = {
     });
   }
 
+  // Intersection Observer for mobile work cards
+  function setupWorkCardIntersectionObserver() {
+    // モバイルサイズでのみ動作
+    if (window.innerWidth > 768) return;
+    
+    const workCards = document.querySelectorAll('.work-card');
+    if (workCards.length === 0) return;
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: '-20% 0px -20% 0px', // 画面中央付近を検知
+      threshold: 0.3
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+        } else {
+          entry.target.classList.remove('in-view');
+        }
+      });
+    }, observerOptions);
+    
+    workCards.forEach(card => {
+      observer.observe(card);
+    });
+    
+    // リサイズ時に再設定
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        // モバイルサイズの場合のみ再設定
+        if (window.innerWidth <= 768) {
+          workCards.forEach(card => {
+            observer.observe(card);
+          });
+        } else {
+          // PCサイズの場合は全てのクラスを削除
+          workCards.forEach(card => {
+            card.classList.remove('in-view');
+            observer.unobserve(card);
+          });
+        }
+      }, 250);
+    });
+  }
+
   // Smooth scroll for navigation links
   document.addEventListener('DOMContentLoaded', () => {
     setupMobileMenu();
+    setupWorkCardIntersectionObserver();
     
     const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
     navLinks.forEach(link => {
@@ -1467,6 +1522,19 @@ const featuredWork = {
     border: 1px solid var(--color-border-light); */
   }
 
+  .work-link {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+
+  .work-link:hover {
+    opacity: 1;
+  }
+
   .work-thumbnail {
     position: relative;
     width: 100%;
@@ -1485,6 +1553,44 @@ const featuredWork = {
     width: 100%;
     object-fit: cover;
     z-index: 2;
+    transition: transform 0.5s ease;
+  }
+  
+  .work-card:hover .work-image {
+    transform: scale(1.1);
+  }
+  
+  /* PCサイズ: ホバー時にオーバーレイを表示 */
+  .work-view-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 6;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: 8px;
+  }
+  
+  .work-card:hover .work-view-overlay {
+    opacity: 1;
+  }
+  
+  .work-view-text {
+    color: var(--color-white);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    z-index: 7;
+    position: relative;
   }
 
   .work-badge {
@@ -1912,9 +2018,40 @@ const featuredWork = {
     }
 
     .work-thumbnail {
+      position: relative;
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 0 24px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* モバイルサイズ: ホバー時はオーバーレイを表示しない（PCサイズのホバースタイルを上書き） */
+    .work-card:hover .work-view-overlay {
+      opacity: 0;
+      animation: none;
+    }
+    
+    /* モバイルサイズ: 画面中央に来た時にオーバーレイを表示（緩やかにフェードインアウト） */
+    .work-card.in-view .work-view-overlay {
+      opacity: 1;
+      animation: mobileFadeInOut 4s ease-in-out infinite;
+    }
+    
+    @keyframes mobileFadeInOut {
+      0% {
+        opacity: 0;
+      }
+      15% {
+        opacity: 1;
+      }
+      40% {
+        opacity: 1;
+      }
+      60% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 0;
+      }
     }
 
     .work-badge {
