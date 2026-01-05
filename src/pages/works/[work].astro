@@ -23,8 +23,12 @@ const workData = {
 let Content = null;
 try {
   const worksContent = await getCollection('works');
-  // item.idはファイル名から拡張子を除いたもの（例: Hamori.md -> Hamori）
-  const workContent = worksContent.find((item) => item.id === workName);
+  // item.idはファイル名（拡張子付き、例: Hamori.md）なので、拡張子を除いて比較
+  const workContent = worksContent.find((item) => {
+    const idWithoutExt = item.id.replace(/\.md$/, '');
+    return idWithoutExt === workName;
+  });
+  
   if (workContent) {
     const renderResult = await workContent.render();
     Content = renderResult.Content;
@@ -227,7 +231,7 @@ export async function getStaticPaths() {
           </div>
         ) : workData.description && (
           <div class="work-description">
-            <p>{workData.description}</p>
+            <p>aaa</p>
           </div>
         )}
       </div>
@@ -688,9 +692,11 @@ export async function getStaticPaths() {
 
   /* Markdownコンテンツ（本文） */
   .work-content-body {
-    margin-bottom: 40px;
+    margin: 64px 0;
+    max-width: 100%;
   }
 
+  /* 見出しのスタイル */
   .work-content-body :global(h1),
   .work-content-body :global(h2),
   .work-content-body :global(h3),
@@ -699,27 +705,58 @@ export async function getStaticPaths() {
   .work-content-body :global(h6) {
     font-weight: 600;
     color: var(--color-text-primary);
-    margin: 2em 0 1em;
     line-height: 1.4;
     letter-spacing: 0.01em;
+    margin: 0;
   }
 
   .work-content-body :global(h1) {
     font-size: 24px;
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+  }
+
+  .work-content-body :global(h1:first-child) {
+    margin-top: 0;
   }
 
   .work-content-body :global(h2) {
     font-size: 20px;
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .work-content-body :global(h2:first-child) {
+    margin-top: 0;
   }
 
   .work-content-body :global(h3) {
-    font-size: 18px;
+    font-size: 16px;
+    margin-top: 2em;
+    margin-bottom: 0.75em;
   }
 
   .work-content-body :global(h4) {
     font-size: 16px;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
   }
 
+  .work-content-body :global(h5) {
+    font-size: 16px;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .work-content-body :global(h6) {
+    font-size: 14px;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  /* 段落のスタイル */
   .work-content-body :global(p) {
     font-size: 14px;
     font-weight: 500;
@@ -732,6 +769,7 @@ export async function getStaticPaths() {
     margin-bottom: 0;
   }
 
+  /* リストのスタイル */
   .work-content-body :global(ul),
   .work-content-body :global(ol) {
     font-size: 14px;
@@ -739,11 +777,15 @@ export async function getStaticPaths() {
     line-height: 2;
     color: var(--color-text-primary);
     margin: 0 0 1.5em;
-    padding-left: 1.5em;
+    padding-left: 1.75em;
   }
 
   .work-content-body :global(li) {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.75em;
+  }
+
+  .work-content-body :global(li:last-child) {
+    margin-bottom: 0;
   }
 
   .work-content-body :global(ul:last-child),
@@ -751,9 +793,20 @@ export async function getStaticPaths() {
     margin-bottom: 0;
   }
 
+  /* ネストされたリスト */
+  .work-content-body :global(ul ul),
+  .work-content-body :global(ol ol),
+  .work-content-body :global(ul ol),
+  .work-content-body :global(ol ul) {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  /* リンクのスタイル */
   .work-content-body :global(a) {
     color: var(--color-text-primary);
     text-decoration: underline;
+    text-underline-offset: 2px;
     transition: opacity 0.2s ease;
   }
 
@@ -761,41 +814,80 @@ export async function getStaticPaths() {
     opacity: 0.7;
   }
 
+  /* 画像のスタイル */
   .work-content-body :global(img) {
     width: 100%;
+    max-width: 100%;
     height: auto;
     border-radius: 8px;
-    margin: 2em 0;
+    margin: 2.5em 0;
     box-shadow: 0 0 32px rgba(0, 0, 0, 0.08);
+    display: block;
   }
 
+  /* 引用のスタイル */
   .work-content-body :global(blockquote) {
     border-left: 3px solid var(--color-border);
-    padding-left: 1em;
+    padding-left: 1.5em;
     margin: 2em 0;
     font-style: italic;
     color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 2;
   }
 
+  .work-content-body :global(blockquote p) {
+    margin-bottom: 0.75em;
+  }
+
+  .work-content-body :global(blockquote p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* コードのスタイル */
   .work-content-body :global(code) {
     background-color: var(--color-background-gray);
-    padding: 0.2em 0.4em;
+    padding: 0.15em 0.4em;
     border-radius: 4px;
     font-size: 0.9em;
-    font-family: monospace;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    color: var(--color-text-primary);
+    font-weight: 400;
   }
 
   .work-content-body :global(pre) {
     background-color: var(--color-background-gray);
-    padding: 1em;
+    padding: 1.5em;
     border-radius: 8px;
     overflow-x: auto;
     margin: 2em 0;
+    border: 1px solid var(--color-border-light);
   }
 
   .work-content-body :global(pre code) {
     background-color: transparent;
     padding: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    display: block;
+    color: var(--color-text-primary);
+  }
+
+  /* 水平線のスタイル */
+  .work-content-body :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-border-light);
+    margin: 2.5em 0;
+  }
+
+  /* 強調のスタイル */
+  .work-content-body :global(strong) {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .work-content-body :global(em) {
+    font-style: italic;
   }
 
   /* Hero画像（コンテンツ内に統合） */
@@ -947,6 +1039,86 @@ export async function getStaticPaths() {
 
     .work-description p {
       font-size: 12px;
+    }
+
+    .work-content-body {
+      margin: 40px 0;
+    }
+
+    .work-content-body :global(h1) {
+      font-size: 18px;
+      margin-top: 2em;
+      margin-bottom: 0.75em;
+    }
+
+    .work-content-body :global(h2) {
+      font-size: 16px;
+      margin-top: 2em;
+      margin-bottom: 0.75em;
+      padding-bottom: 0.4em;
+    }
+
+    .work-content-body :global(h3) {
+      font-size: 14px;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .work-content-body :global(h4) {
+      font-size: 13px;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .work-content-body :global(h5) {
+      font-size: 13px;
+      margin-top: 1.25em;
+      margin-bottom: 0.5em;
+    }
+
+    .work-content-body :global(h6) {
+      font-size: 13px;
+      margin-top: 1.25em;
+      margin-bottom: 0.5em;
+    }
+
+    .work-content-body :global(p),
+    .work-content-body :global(ul),
+    .work-content-body :global(ol),
+    .work-content-body :global(blockquote) {
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    .work-content-body :global(ul),
+    .work-content-body :global(ol) {
+      padding-left: 1.5em;
+    }
+
+    .work-content-body :global(li) {
+      margin-bottom: 0.5em;
+    }
+
+    .work-content-body :global(img) {
+      margin: 2em 0;
+    }
+
+    .work-content-body :global(blockquote) {
+      padding-left: 1.25em;
+      margin: 1.5em 0;
+    }
+
+    .work-content-body :global(pre) {
+      padding: 1.25em;
+      margin: 1.5em 0;
+    }
+
+    .work-content-body :global(pre code) {
+      font-size: 11px;
+    }
+
+    .work-content-body :global(hr) {
+      margin: 2em 0;
     }
 
     .work-release-links {
