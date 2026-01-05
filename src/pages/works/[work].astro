@@ -2,6 +2,7 @@
 // 作品詳細ページ - ブログ風デザイン
 import Layout from '../../layouts/Layout.astro';
 import { worksData } from '../../data/worksData.js';
+import { getCollection } from 'astro:content';
 
 // URLパラメータから作品名を取得
 const workName = Astro.params.work;
@@ -17,6 +18,20 @@ const workData = {
   released: worksData.released[workName as keyof typeof worksData.released] || false,
   releaseLinks: worksData.releaseLinks[workName as keyof typeof worksData.releaseLinks] || []
 };
+
+// Markdownコンテンツの取得（存在する場合）
+let Content = null;
+try {
+  const worksContent = await getCollection('works');
+  const workContent = worksContent.find((item) => item.id === workName);
+  if (workContent) {
+    const { Content: MarkdownContent } = await workContent.render();
+    Content = MarkdownContent;
+  }
+} catch (error) {
+  // Content Collectionsが設定されていない場合は無視
+  console.warn('Content Collections not found:', error);
+}
 
 // 画像の取得関数
 const getWorkImage = (image: any): string => {
@@ -204,8 +219,12 @@ export async function getStaticPaths() {
           </div>
         )}
 
-        <!-- 説明文 -->
-        {workData.description && (
+        <!-- 本文（Markdownコンテンツまたは説明文） -->
+        {Content ? (
+          <div class="work-content-body">
+            <Content />
+          </div>
+        ) : workData.description && (
           <div class="work-description">
             <p>{workData.description}</p>
           </div>
@@ -664,6 +683,118 @@ export async function getStaticPaths() {
 
   .work-description p:last-child {
     margin-bottom: 0;
+  }
+
+  /* Markdownコンテンツ（本文） */
+  .work-content-body {
+    margin-bottom: 40px;
+  }
+
+  .work-content-body :global(h1),
+  .work-content-body :global(h2),
+  .work-content-body :global(h3),
+  .work-content-body :global(h4),
+  .work-content-body :global(h5),
+  .work-content-body :global(h6) {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 2em 0 1em;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  .work-content-body :global(h1) {
+    font-size: 24px;
+  }
+
+  .work-content-body :global(h2) {
+    font-size: 20px;
+  }
+
+  .work-content-body :global(h3) {
+    font-size: 18px;
+  }
+
+  .work-content-body :global(h4) {
+    font-size: 16px;
+  }
+
+  .work-content-body :global(p) {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 2;
+    color: var(--color-text-primary);
+    margin: 0 0 1.5em;
+  }
+
+  .work-content-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .work-content-body :global(ul),
+  .work-content-body :global(ol) {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 2;
+    color: var(--color-text-primary);
+    margin: 0 0 1.5em;
+    padding-left: 1.5em;
+  }
+
+  .work-content-body :global(li) {
+    margin-bottom: 0.5em;
+  }
+
+  .work-content-body :global(ul:last-child),
+  .work-content-body :global(ol:last-child) {
+    margin-bottom: 0;
+  }
+
+  .work-content-body :global(a) {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    transition: opacity 0.2s ease;
+  }
+
+  .work-content-body :global(a:hover) {
+    opacity: 0.7;
+  }
+
+  .work-content-body :global(img) {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 2em 0;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .work-content-body :global(blockquote) {
+    border-left: 3px solid var(--color-border);
+    padding-left: 1em;
+    margin: 2em 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+  }
+
+  .work-content-body :global(code) {
+    background-color: var(--color-background-gray);
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: monospace;
+  }
+
+  .work-content-body :global(pre) {
+    background-color: var(--color-background-gray);
+    padding: 1em;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 2em 0;
+  }
+
+  .work-content-body :global(pre code) {
+    background-color: transparent;
+    padding: 0;
   }
 
   /* Hero画像（コンテンツ内に統合） */
