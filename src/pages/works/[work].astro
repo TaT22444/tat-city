@@ -23,10 +23,11 @@ const workData = {
 let Content = null;
 try {
   const worksContent = await getCollection('works');
+  // item.idはファイル名から拡張子を除いたもの（例: Hamori.md -> Hamori）
   const workContent = worksContent.find((item) => item.id === workName);
   if (workContent) {
-    const { Content: MarkdownContent } = await workContent.render();
-    Content = MarkdownContent;
+    const renderResult = await workContent.render();
+    Content = renderResult.Content;
   }
 } catch (error) {
   // Content Collectionsが設定されていない場合は無視
@@ -907,7 +908,7 @@ export async function getStaticPaths() {
 
     .work-title-section {
       gap: 16px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .work-title {
