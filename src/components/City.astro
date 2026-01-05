@@ -15,6 +15,11 @@ import { profileData } from '../data/profileData.js';
 import CityStyles from './CityStyles.astro';
 // コイン画像をインポート
 import coinImage from '../assets/object/coin.png';
+// テーマ切り替えアイコンをインポート
+import sunIcon from '../assets/icon/solar_sun-linear.svg';
+import moonIcon from '../assets/icon/basil_moon-outline.svg';
+// 位置リセットアイコンをインポート
+import locationIcon from '../assets/icon/tabler_location.svg';
 
 // Worksタウン用の会社リスト（ポイント名に 'Co.' を付加）
 const workNames: string[] = worksData.names;
@@ -116,11 +121,19 @@ const blogNames: string[] = [
       </nav>
       </div>
       
-      <!-- コイン数表示UI - headerの下に配置 -->
-      <div class="coin-counter" id="coinCounter">
-        <img src={coinImage.src} alt="コイン" class="coin-icon" />
-        <span class="coin-count-label">所持コイン : </span>
-        <span class="coin-count-text" id="coinCountText">0</span>
+      <!-- コイン数表示UIとボーナス中UIのコンテナ -->
+      <div class="coin-counter-wrapper">
+        <div class="coin-counter" id="coinCounter">
+          <img src={coinImage.src} alt="コイン" class="coin-icon" />
+          <span class="coin-count-label">所持コイン : </span>
+          <span class="coin-count-text" id="coinCountText">0</span>
+        </div>
+        
+        <!-- ボーナス中UI -->
+        <div class="bonus-indicator" id="bonusIndicator" style="display: none;">
+          <span class="bonus-label">ボーナス中</span>
+          <span class="bonus-time" id="bonusTime">5:00</span>
+        </div>
       </div>
   </header>
   <div class="city-view town-works" id="cityView">
@@ -160,10 +173,10 @@ const blogNames: string[] = [
         );
       })}
       
-      {/* 広告ポイント */}
+      {/* ボーナスチャンスポイント */}
       <div class="point-bubble point-10 ad-item" data-ad-point="true">
             <div class="ad-icon">📢</div>
-            <div class="work-title">広告</div>
+            <div class="work-title">ボーナスチャンス</div>
       </div>
 
       {/* コイン */}
@@ -209,28 +222,18 @@ const blogNames: string[] = [
     
     <!-- テーマ切替ボタン -->
     <div class="theme-switcher">
-      <button id="theme-toggle" aria-label="テーマ切替">
-        <div class="theme-icon light">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 17C14.7614 17 17 14.7614 17 12C17 9.23858 14.7614 7 12 7C9.23858 7 7 9.23858 7 12C7 14.7614 9.23858 17 12 17Z" stroke="currentColor" stroke-width="2"/>
-            <path d="M12 3V5M12 19V21M5 12H3M21 12H19M18.364 5.636L16.95 7.05M7.05 16.95L5.636 18.364M16.95 16.95L18.364 18.364M7.05 7.05L5.636 5.636" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <div class="theme-icon dark">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M21 12.79C20.8427 14.4922 20.2039 16.1144 19.1582 17.4668C18.1126 18.8192 16.7035 19.8458 15.0957 20.4265C13.4879 21.0073 11.7479 21.1181 10.0794 20.7461C8.41093 20.3741 6.88202 19.5345 5.67425 18.3267C4.46649 17.119 3.62688 15.5901 3.2549 13.9216C2.88293 12.2531 2.99374 10.5132 3.57451 8.90536C4.15528 7.29748 5.18191 5.88837 6.53433 4.84275C7.88674 3.79713 9.50897 3.15832 11.211 3C10.2508 4.34827 9.79869 5.9867 9.94571 7.62017C10.0927 9.25364 10.8259 10.7803 12.0187 11.9162C13.2115 13.0521 14.787 13.7072 16.4132 13.7692C18.0394 13.8312 19.6522 13.2961 21 12.29" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-          </svg>
+      <!-- 位置リセットボタン（左側） -->
+      <button id="reset-position" aria-label="位置リセット">
+        <div class="reset-icon">
+          <img src={typeof locationIcon === 'string' ? locationIcon : locationIcon.src} alt="位置リセット" />
         </div>
       </button>
       
-      <!-- 位置リセットボタン -->
-      <button id="reset-position" aria-label="位置リセット">
-        <div class="reset-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M12 22C17.5228 22 22 17.5228 22 12C22 10.8406 21.7701 9.73493 21.3486 8.72022" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 4"/>
-          </svg>
+      <!-- テーマ切替ボタン（右側） -->
+      <button id="theme-toggle" class="theme-toggle-btn" aria-label="テーマ切替">
+        <div class="toggle-theme-icons">
+          <img src={typeof sunIcon === 'string' ? sunIcon : sunIcon.src} alt="ライトモード" class="theme-icon-light" />
+          <img src={typeof moonIcon === 'string' ? moonIcon : moonIcon.src} alt="ダークモード" class="theme-icon-dark" />
         </div>
       </button>
     </div>
@@ -354,10 +357,10 @@ const blogNames: string[] = [
   </div>
 </div>
 
-<!-- 広告ポップアップ -->
+<!-- ボーナスチャンスポップアップ -->
 <div class="ad-popup" id="adPopup" style="display: none;">
   <div class="popup-header">
-    <h3>広告</h3>
+    <h3>ボーナスチャンス</h3>
     <button class="popup-close-button" aria-label="閉じる">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -367,7 +370,7 @@ const blogNames: string[] = [
   </div>
   <div class="popup-body">
     <div class="ad-prompt" id="adPrompt">
-      <p>広告を表示しますか？</p>
+      <p>広告を視聴すると、5分間コイン取得数が2倍になります！</p>
     </div>
     <div class="ad-container" id="adContainer" style="display: none;">
       {/* AdSense広告またはカスタム広告がここに表示される */}
@@ -536,6 +539,12 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   // 各作品・プロフィールのコイン獲得数を管理
   const worksCoinGains = {}; // { workName: count }
   let profileCoinGains = 0; // プロフィールのコイン獲得数
+  
+  // ポイント倍増機能
+  let isPointBonusActive = false; // ポイント倍増が有効かどうか
+  let bonusTimer = null; // ボーナスタイマー
+  let bonusRemainingTime = 0; // 残り時間（秒）
+  const BONUS_DURATION = 300; // ボーナス時間（5分 = 300秒）
   
   // Firebase初期化
   let db = null; // Firestoreインスタンス
@@ -854,7 +863,10 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     if (!coin || coin.collected) return;
     
     coin.collected = true;
-    coinCount++;
+    
+    // ポイント倍増が有効な場合は2倍にする
+    const coinGain = isPointBonusActive ? 2 : 1;
+    coinCount += coinGain;
     
     // コイン要素を取得してアニメーションを開始
     const coinElement = document.getElementById(coinId);
@@ -870,8 +882,8 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       }, 900);
     }
     
-    // 「+1」アニメーションを表示
-    showCoinGainAnimation();
+    // 「+1」または「+2」アニメーションを表示
+    showCoinGainAnimation(coinGain);
     
     // アニメーション表示後にカウントを更新（少し遅延させて視覚的に分かりやすく）
     setTimeout(() => {
@@ -2002,6 +2014,75 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
         }
       }
     }
+    
+    // 広告視聴完了を検知（実際の実装では広告APIのコールバックを使用）
+    // ここでは簡易的に5秒後にボーナスを開始（実際は広告視聴完了時に呼ぶ）
+    setTimeout(() => {
+      activatePointBonus();
+      // 広告ポップアップを閉じる
+      hideAdPopup();
+    }, 5000); // 5秒後（実際は広告視聴完了時に呼ぶ）
+  }
+  
+  // ポイント倍増ボーナスを有効化する関数
+  function activatePointBonus() {
+    // 既存のタイマーをクリア
+    if (bonusTimer) {
+      clearInterval(bonusTimer);
+    }
+    
+    // ボーナスを有効化
+    isPointBonusActive = true;
+    bonusRemainingTime = BONUS_DURATION;
+    
+    // ボーナスUIを表示
+    const bonusIndicator = document.getElementById('bonusIndicator');
+    if (bonusIndicator) {
+      bonusIndicator.style.display = 'flex';
+    }
+    
+    // タイマーを開始
+    updateBonusTimer();
+    bonusTimer = setInterval(() => {
+      bonusRemainingTime--;
+      updateBonusTimer();
+      
+      if (bonusRemainingTime <= 0) {
+        deactivatePointBonus();
+      }
+    }, 1000);
+    
+    console.log('ポイント倍増ボーナスが有効化されました！');
+  }
+  
+  // ポイント倍増ボーナスを無効化する関数
+  function deactivatePointBonus() {
+    isPointBonusActive = false;
+    bonusRemainingTime = 0;
+    
+    // タイマーをクリア
+    if (bonusTimer) {
+      clearInterval(bonusTimer);
+      bonusTimer = null;
+    }
+    
+    // ボーナスUIを非表示
+    const bonusIndicator = document.getElementById('bonusIndicator');
+    if (bonusIndicator) {
+      bonusIndicator.style.display = 'none';
+    }
+    
+    console.log('ポイント倍増ボーナスが終了しました。');
+  }
+  
+  // ボーナスタイマーを更新する関数
+  function updateBonusTimer() {
+    const bonusTimeElement = document.getElementById('bonusTime');
+    if (!bonusTimeElement) return;
+    
+    const minutes = Math.floor(bonusRemainingTime / 60);
+    const seconds = bonusRemainingTime % 60;
+    bonusTimeElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
   }
 
   // 広告ポップアップのイベントリスナーのセットアップ
@@ -2859,17 +2940,17 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   }
   
   // 「+1」アニメーションを表示する関数
-  function showCoinGainAnimation() {
+  function showCoinGainAnimation(gain = 1) {
     const coinCounter = document.getElementById('coinCounter');
     if (!coinCounter) {
       console.error('coinCounter not found for gain animation');
       return;
     }
     
-    // 「+1」要素を作成
+    // 「+1」または「+2」要素を作成
     const gainElement = document.createElement('div');
     gainElement.className = 'coin-gain-indicator';
-    gainElement.textContent = '+1';
+    gainElement.textContent = `+${gain}`;
     
     // コインカウンターの位置を取得
     const counterRect = coinCounter.getBoundingClientRect();
@@ -3566,16 +3647,100 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     transform: translateY(0);
   }
   
-  #theme-toggle .theme-icon.dark {
-    display: none;
+  /* テーマ切り替えボタンはview-toggle-btnと同じスタイル（!importantで確実に上書き） */
+  .theme-switcher button.theme-toggle-btn {
+    width: auto !important;
+    height: auto !important;
+    border-radius: 24px !important;
+    padding: 4px !important;
+    background: #ffffff !important;
+    border: 1px solid #cdcdcd !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
   }
   
-  #theme-toggle.dark-active .theme-icon.light {
-    display: none;
+  html.dark-theme .theme-switcher button.theme-toggle-btn {
+    background: rgba(30, 30, 35, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.2) !important;
   }
   
-  #theme-toggle.dark-active .theme-icon.dark {
-    display: block;
+  .theme-switcher button.theme-toggle-btn:hover {
+    background: #f5f5f5 !important;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+  
+  html.dark-theme .theme-switcher button.theme-toggle-btn:hover {
+    background: rgba(40, 40, 45, 0.9) !important;
+  }
+  
+  .toggle-theme-icons {
+    display: flex;
+    gap: 2px;
+  }
+  
+  .toggle-theme-icons img {
+    width: 16px;
+    height: 16px;
+    padding: 8px;
+    border-radius: 16px;
+    transition: all 0.2s;
+    object-fit: contain;
+  }
+  
+  .toggle-theme-icons .theme-icon-light {
+    background: #ffffff;
+    border: 1px solid #e2e2e2;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
+  }
+  
+  html.dark-theme .toggle-theme-icons .theme-icon-light {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    opacity: 0.5;
+  }
+  
+  .toggle-theme-icons .theme-icon-dark {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    opacity: 0.5;
+  }
+  
+  html.dark-theme .toggle-theme-icons .theme-icon-dark {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
+    opacity: 1;
+  }
+  
+  /* ダークモード時にアイコンを白にする */
+  html.dark-theme .toggle-theme-icons .theme-icon-light {
+    filter: brightness(0) invert(1);
+  }
+  
+  html.dark-theme .toggle-theme-icons .theme-icon-dark {
+    filter: brightness(0) invert(1);
+  }
+  
+  .reset-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .reset-icon img {
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+  }
+  
+  /* ダークモード時に位置リセットアイコンを白にする */
+  html.dark-theme .reset-icon img {
+    filter: brightness(0) invert(1);
   }
   
   #reset-position:hover .reset-icon {
@@ -3711,14 +3876,14 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
       height: 36px;
     }
     
-    #theme-toggle {
-      width: 42px;
-      height: 42px;
+    .theme-toggle-btn {
+      padding: 3px;
     }
     
-    .theme-icon svg {
-      width: 20px;
-      height: 20px;
+    .toggle-theme-icons img {
+      width: 14px;
+      height: 14px;
+      padding: 6px;
     }
   }
   
@@ -5343,12 +5508,13 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 16px;
     margin-bottom: 16px;
     text-align: center;
   }
 
   .ad-prompt p {
-    font-size: 1rem;
+    font-size: 0.8rem;
     color: var(--text-color, #4B5563);
     margin: 0;
   }
@@ -5423,20 +5589,30 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   /* モバイル対応 */
   @media (max-width: 768px) {
     .ad-popup {
-      left: 10px;
-      right: 10px;
-      width: calc(100% - 20px);
-      max-width: 320px;
+      left: 50%;
+      right: auto;
+      width: calc(100% - 40px);
+      max-width: 300px;
+      transform: translateX(-50%) translateY(-50%);
+    }
+    
+    .ad-popup.active {
+      transform: translateX(-50%) translateY(-50%);
     }
   }
 
   /* モバイル対応 */
   @media (max-width: 768px) {
     .work-popup {
-      left: 10px;
-      right: 10px;
-      width: calc(100% - 20px);
-      max-width: 320px;
+      left: 50%;
+      right: auto;
+      width: calc(100% - 40px);
+      max-width: 300px;
+      transform: translateX(-50%) translateY(-50%);
+    }
+    
+    .work-popup.active {
+      transform: translateX(-50%) translateY(-50%);
     }
     
     /* ポイントのサイズを小さく */
@@ -5503,6 +5679,10 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     /* 広告ポイントのボーダーサイズも調整 */
     .point-bubble.ad-item {
       border-width: 1.5px;
+    }
+
+    .ad-prompt {
+      margin-top: 0;
     }
   }
 
@@ -6015,20 +6195,62 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
     filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5)) brightness(1.1);
   }
 
-  /* コイン数表示UI - headerの下に配置（背景色なし） */
-  .coin-counter {
+  /* コイン数表示UIとボーナス中UIのコンテナ */
+  .coin-counter-wrapper {
     position: fixed;
     top: 60px; /* header-containerの高さ（padding: 16px 40px 8px）を考慮 */
     left: 24px;
     display: flex;
     align-items: center;
+    gap: 10px;
+    z-index: 1001;
+    transition: all 0.2s ease;
+  }
+  
+  /* コイン数表示UI */
+  .coin-counter {
+    display: flex;
+    align-items: center;
     gap: 6px;
     padding: 4px 8px;
-    z-index: 1001;
     font-size: 12px;
     font-weight: 600;
     color: var(--text-color, #333);
     transition: all 0.2s ease;
+  }
+  
+  /* ボーナス中UI - コインカウンターと横並びに配置 */
+  .bonus-indicator {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ff6b00;
+    background-color: rgba(255, 107, 0, 0.1);
+    border: 1px solid rgba(255, 107, 0, 0.3);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.2s ease;
+  }
+  
+  html.dark-theme .bonus-indicator {
+    color: #ff8c42;
+    background-color: rgba(255, 140, 66, 0.15);
+    border-color: rgba(255, 140, 66, 0.4);
+  }
+  
+  .bonus-label {
+    font-size: 10px;
+    font-weight: 600;
+  }
+  
+  .bonus-time {
+    font-size: 11px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
   }
 
   html.dark-theme .coin-counter {
@@ -6139,12 +6361,30 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
 
   /* モバイル対応 */
   @media (max-width: 768px) {
-    .coin-counter {
+    .coin-counter-wrapper {
       top: 48px;
       left: 16px;
+      gap: 8px;
+    }
+    
+    .coin-counter {
       margin: 0;
       padding: 3px 0;
       gap: 5px;
+    }
+    
+    .bonus-indicator {
+      padding: 3px 6px;
+      gap: 4px;
+      font-size: 10px;
+    }
+    
+    .bonus-label {
+      font-size: 9px;
+    }
+    
+    .bonus-time {
+      font-size: 10px;
     }
 
     .coin-icon {
@@ -6207,10 +6447,15 @@ if (window.location.pathname === '/profile' || window.location.pathname === '/bl
   /* モバイル対応 */
   @media (max-width: 768px) {
     .profile-popup {
-      left: 10px;
-      right: 10px;
-      width: calc(100% - 20px);
-      max-width: 320px;
+      left: 50%;
+      right: auto;
+      width: calc(100% - 40px);
+      max-width: 300px;
+      transform: translateX(-50%) translateY(-50%);
+    }
+    
+    .profile-popup.active {
+      transform: translateX(-50%) translateY(-50%);
     }
   }
   
