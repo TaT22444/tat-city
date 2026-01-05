@@ -30,112 +30,21 @@ const blogNames: string[] = [
 
 <CityStyles />
 <div class="city">
-  <header class="portfolio-header">
-    <div class="header-container">
-      <div class="header-logo">
-        <p class="logo-text">TaT Archive / 2025 ~ 2026</p>
-      </div>
-      
-      <div class="header-actions">
-        <div class="social-links">
-          <a href="https://x.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Twitter">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
-                </svg>
-              </a>
-          <a href="https://www.instagram.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
-                </svg>
-              </a>
-        </div>
-        
-        <button class="view-toggle-btn" id="viewModeToggle" aria-label="Toggle to portfolio view" onclick="window.location.href='/portfolio'">
-          <div class="toggle-icons">
-            <svg class="icon-grid" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <svg class="icon-3d active" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
-              <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
-            </svg>
-          </div>
-        </button>
-        </div>
-      
-      <!-- Mobile Hamburger Menu Button -->
-      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-      </div>
+  <!-- コイン数表示UIとボーナス中UIのコンテナ -->
+  <div class="coin-counter-wrapper">
+    <div class="coin-counter" id="coinCounter">
+      <img src={coinImage.src} alt="コイン" class="coin-icon" />
+      <span class="coin-count-label">所持コイン : </span>
+      <span class="coin-count-text" id="coinCountText">0</span>
+    </div>
     
-    <!-- Mobile Menu Dropdown -->
-    <div class="mobile-menu-dropdown" id="mobileMenuDropdown">
-      <nav class="mobile-menu-nav">
-        <!-- View Mode Toggle (Top) -->
-        <div class="mobile-menu-view-toggle">
-          <span class="mobile-view-toggle-label">表示モード</span>
-          <button class="mobile-view-toggle-btn" onclick="window.location.href='/portfolio'" aria-label="Toggle to portfolio view">
-            <div class="mobile-toggle-icons">
-              <svg class="icon-grid" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <svg class="icon-3d active" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
-                <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
-              </svg>
-      </div>
-          </button>
-      </div>
-        
-        <!-- Portfolio List (Mobile) -->
-        <div class="mobile-menu-portfolio">
-          <h3 class="mobile-portfolio-title">Portfolio</h3>
-          <ul class="mobile-portfolio-list">
-            <li class="mobile-portfolio-item" data-profile-point="true">Profile</li>
-            {workNames.map(name => (
-              <li class="mobile-portfolio-item" data-work-name={name}>{name} Co.</li>
-            ))}
-          </ul>
-      </div>
-        
-        <!-- Social Links -->
-        <div class="mobile-menu-social">
-          <a href="https://x.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="mobile-social-link" aria-label="Twitter">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="mobile-social-link" aria-label="Instagram">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
-            </svg>
-          </a>
-      </div>
-      </nav>
-      </div>
-      
-      <!-- コイン数表示UIとボーナス中UIのコンテナ -->
-      <div class="coin-counter-wrapper">
-        <div class="coin-counter" id="coinCounter">
-          <img src={coinImage.src} alt="コイン" class="coin-icon" />
-          <span class="coin-count-label">所持コイン : </span>
-          <span class="coin-count-text" id="coinCountText">0</span>
-        </div>
-        
-        <!-- ボーナス中UI -->
-        <div class="bonus-indicator" id="bonusIndicator" style="display: none;">
-          <span class="bonus-label">ボーナス中</span>
-          <span class="bonus-time" id="bonusTime">5:00</span>
-        </div>
-      </div>
-  </header>
+    <!-- ボーナス中UI -->
+    <div class="bonus-indicator" id="bonusIndicator" style="display: none;">
+      <span class="bonus-label">ボーナス中</span>
+      <span class="bonus-time" id="bonusTime">5:00</span>
+    </div>
+  </div>
+  
   <div class="city-view town-works" id="cityView">
     <div class="city-grid" id="cityGrid">
       <!-- グリッド（地面） -->
@@ -442,66 +351,8 @@ if (localStorage.getItem('cityTheme') === 'dark') {
 
 // 表示モード切替はonclick属性で処理
 
-// Mobile Menu Toggle
-function setupMobileMenu() {
-  const menuBtn = document.getElementById('mobileMenuBtn');
-  const menuDropdown = document.getElementById('mobileMenuDropdown');
-  const header = document.querySelector('.portfolio-header');
-  
-  if (!menuBtn || !menuDropdown || !header) return;
-  
-  const closeMenu = () => {
-    menuDropdown.classList.remove('active');
-    menuBtn.classList.remove('active');
-    header.classList.remove('menu-open');
-  };
-  
-  const openMenu = () => {
-    menuDropdown.classList.add('active');
-    menuBtn.classList.add('active');
-    header.classList.add('menu-open');
-  };
-  
-  menuBtn.addEventListener('click', () => {
-    if (menuDropdown.classList.contains('active')) {
-      closeMenu();
-    } else {
-      openMenu();
-    }
-  });
-  
-  // Close menu when clicking outside
-  document.addEventListener('click', (e) => {
-    if (menuDropdown.classList.contains('active') && 
-        !menuDropdown.contains(e.target) && 
-        !menuBtn.contains(e.target)) {
-      closeMenu();
-    }
-  });
-}
+// Mobile Menu Toggle and Header scroll effect - PortfolioHeaderコンポーネントに移動したため削除
 
-// Header scroll effect
-document.addEventListener('DOMContentLoaded', () => {
-  setupMobileMenu();
-  
-  const header = document.querySelector('.portfolio-header');
-  if (header) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 50) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
-  }
-});
-
-// 統合後はリダイレクト不要（index.astroが直接worksタウンを表示）
-// 後方互換性のため、古いURLからアクセスした場合はリダイレクト
-if (window.location.pathname === '/profile' || window.location.pathname === '/blogs') {
-  // 統合後はworksタウンにリダイレクト（将来的に削除可能）
-  // window.location.href = '/';
-}
 </script>
 
 <!-- メインスクリプト -->

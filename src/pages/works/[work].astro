@@ -54,6 +54,12 @@ if (!workName || !worksData.names.includes(workName)) {
   return Astro.redirect('/portfolio');
 }
 
+// SEO用のデータ準備
+const workDescription = workData.description || `${workData.name}のポートフォリオページです。`;
+const workUrl = new URL(`/works/${workName}`, Astro.url.origin).toString();
+const portfolioUrl = new URL('/portfolio', Astro.url.origin).toString();
+const workImageFullUrl = workImageSrc ? new URL(workImageSrc, Astro.url.origin).toString() : undefined;
+
 // 静的パス生成
 export async function getStaticPaths() {
   return worksData.names.map((name) => ({
@@ -62,89 +68,70 @@ export async function getStaticPaths() {
 }
 ---
 
-<Layout title={`${workData.name} - Portfolio`}>
+<Layout 
+  title={`${workData.name} - Portfolio`}
+  description={workDescription}
+  ogImage={workImageSrc}
+  ogType="article"
+  canonical={true}
+  showNavigation={true}
+  navigationLinks={[
+    { href: '/portfolio#about', label: 'about' },
+    { href: '/portfolio#works', label: 'works' },
+    { href: '/portfolio#contact', label: 'contact' }
+  ]}
+  viewToggleLink="/"
+  viewToggleActiveIcon="grid"
+  showMobileViewToggle={false}
+>
   {workImageSrc && (
     <link slot="head" rel="preload" as="image" href={workImageSrc} fetchpriority="high" />
   )}
   
+  {/* BreadcrumbList構造化データ（JSON-LD） */}
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Portfolio",
+        "item": portfolioUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": workData.name,
+        "item": workUrl
+      }
+    ]
+  })} />
+  
+  {/* CreativeWork構造化データ（JSON-LD） */}
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify((() => {
+    const schema: any = {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      "name": workData.name,
+      "description": workDescription,
+      "url": workUrl,
+      "creator": {
+        "@type": "Person",
+        "name": "Tatsuya Aihara"
+      }
+    };
+    if (workImageFullUrl) {
+      schema.image = workImageFullUrl;
+    }
+    if (workData.types && workData.types.length > 0) {
+      schema.keywords = workData.types.join(', ');
+      schema.genre = workData.types[0];
+    }
+    return schema;
+  })())} />
+  
   <div class="work-detail-page">
-    <!-- Header（PortfolioViewと同じ） -->
-    <header class="portfolio-header">
-      <div class="header-container">
-        <div class="header-logo">
-          <p class="logo-text">TaT Archive / 2025 ~ 2026</p>
-        </div>
-        
-        <!-- Desktop Navigation -->
-        <nav class="header-nav">
-          <a href="/portfolio#about" class="nav-link">about</a>
-          <a href="/portfolio#works" class="nav-link">works</a>
-          <a href="/portfolio#contact" class="nav-link">contact</a>
-        </nav>
-        
-        <div class="header-actions">
-          <div class="social-links">
-            <a href="https://x.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Twitter">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
-              </svg>
-            </a>
-            <a href="https://www.instagram.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
-                <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
-                <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
-              </svg>
-            </a>
-          </div>
-          
-          <button class="view-toggle-btn" id="viewToggleBtn" onclick="window.location.href='/'">
-            <div class="toggle-icons">
-              <svg class="icon-grid active" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <svg class="icon-3d" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
-                <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
-              </svg>
-            </div>
-          </button>
-        </div>
-      
-      <!-- Mobile Hamburger Menu Button -->
-      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-    </div>
-    
-    <!-- Mobile Menu Dropdown -->
-    <div class="mobile-menu-dropdown" id="mobileMenuDropdown">
-      <nav class="mobile-menu-nav">
-        <!-- Navigation Links -->
-        <a href="/portfolio#about" class="mobile-nav-link">about</a>
-        <a href="/portfolio#works" class="mobile-nav-link">works</a>
-        <a href="/portfolio#contact" class="mobile-nav-link">contact</a>
-        
-        <!-- Social Links -->
-        <div class="mobile-menu-social">
-          <a href="https://x.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="mobile-social-link" aria-label="Twitter">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="mobile-social-link" aria-label="Instagram">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
-            </svg>
-          </a>
-        </div>
-      </nav>
-    </div>
-  </header>
 
     <!-- 作品詳細コンテンツ（統合されたコンテナ） -->
     <article class="work-content">
@@ -160,7 +147,7 @@ export async function getStaticPaths() {
         </div>
 
         <!-- タイトルとCTA（リリースリンク） -->
-        <header class="work-header">
+        <div class="work-header">
           <div class="work-title-section">
             <h1 class="work-title">{workData.name}</h1>
             {workData.releaseLinks.length > 0 && (
@@ -209,7 +196,7 @@ export async function getStaticPaths() {
               </div>
             )}
           </div>
-        </header>
+        </div>
 
         <!-- Hero画像（コンテンツ内に統合） -->
         {workImageSrc && (
@@ -274,277 +261,6 @@ export async function getStaticPaths() {
     color: var(--color-text-primary);
     line-height: 1.6;
   }
-
-  /* ========================================
-     Header（PortfolioViewと同じスタイル）
-     ======================================== */
-  .portfolio-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-    padding: 0;
-    margin: 0;
-    transition: backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
-  }
-
-  .portfolio-header.scrolled {
-    background-color: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transition: backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease;
-  }
-
-  .header-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 40px 8px;
-    position: sticky;
-    top: 0;
-  }
-
-  .logo-text {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-black);
-    margin: 0;
-    letter-spacing: 0.01em;
-  }
-
-  .header-nav {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 40px;
-  }
-
-  .nav-link {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--color-text-primary);
-    text-decoration: none;
-    transition: opacity 0.2s ease;
-    letter-spacing: 0.01em;
-  }
-
-  .nav-link:hover {
-    opacity: 0.7;
-  }
-
-  .header-actions {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-  }
-
-  .social-links {
-    display: flex;
-    gap: 8px;
-  }
-
-  .social-link {
-    width: 32px;
-    height: 32px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    border: 1px solid var(--color-border-light);
-    background: var(--color-white);
-    color: var(--color-black);
-    text-decoration: none;
-    transition: all 0.2s;
-    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
-  }
-
-  .social-link:hover {
-    background: #f5f5f5;
-  }
-
-  .view-toggle-btn {
-    width: 78px;
-    height: 44px;
-    border-radius: 24px;
-    padding: 4px;
-    background: #ffffff;
-    border: 1px solid #cdcdcd;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .view-toggle-btn:hover {
-    background: #f5f5f5;
-  }
-
-  .toggle-icons {
-    display: flex;
-    gap: 2px;
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
-
-  .toggle-icons svg {
-    width: 16px;
-    height: 16px;
-    padding: 8px;
-    border-radius: 16px;
-    transition: all 0.2s;
-  }
-
-  .toggle-icons .icon-grid {
-    background: #ffffff;
-    border: 1px solid #e2e2e2;
-    box-shadow: 0 0 32px rgba(0, 0, 0, 0.15);
-  }
-
-  .toggle-icons .icon-3d {
-    background: transparent;
-    border: none;
-    box-shadow: none;
-    opacity: 0.5;
-  }
-
-  /* Mobile Menu Button (Hidden on Desktop) */
-  .mobile-menu-btn {
-    display: none;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 20px;
-    height: 16px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 1001;
-    transition: all 0.3s ease;
-  }
-
-  .hamburger-line {
-    width: 100%;
-    height: 1.5px;
-    background-color: var(--color-black);
-    border-radius: 1px;
-    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
-
-  .mobile-menu-btn.active .hamburger-line:nth-child(1) {
-    transform: translateY(7px) rotate(45deg);
-  }
-
-  .mobile-menu-btn.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-
-  .mobile-menu-btn.active .hamburger-line:nth-child(3) {
-    transform: translateY(-7px) rotate(-45deg);
-  }
-
-  /* Mobile Menu Dropdown */
-  .mobile-menu-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: transparent;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    z-index: 999;
-    height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, visibility 0.3s ease;
-    opacity: 0;
-    visibility: hidden;
-    box-shadow: none;
-    pointer-events: none;
-  }
-
-  .mobile-menu-dropdown.active {
-    height: auto;
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-  }
-
-  .portfolio-header.scrolled .mobile-menu-dropdown {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  }
-
-  .mobile-menu-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    padding: 8px 0 16px;
-  }
-
-  .mobile-nav-link {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--color-black);
-    text-decoration: none;
-    padding: 16px 24px;
-    transition: all 0.2s ease;
-    position: relative;
-    letter-spacing: 0.01em;
-  }
-
-  .mobile-nav-link::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    width: 0;
-    background-color: rgba(0, 0, 0, 0.05);
-    transition: width 0.3s ease;
-  }
-
-  .mobile-nav-link:active {
-    background-color: rgba(0, 0, 0, 0.05);
-  }
-
-  .mobile-nav-link:active::before {
-    width: 3px;
-  }
-
-  .mobile-menu-social {
-    display: flex;
-    gap: 10px;
-    margin: 4px 0 0;
-    padding: 16px 24px 0;
-    border-top: 1px solid rgba(0, 0, 0, 0.06);
-  }
-
-  .mobile-social-link {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.6);
-    color: var(--color-black);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-  }
-
-  .mobile-social-link:active {
-    background: rgba(255, 255, 255, 0.9);
-    transform: scale(0.95);
-    border-color: rgba(0, 0, 0, 0.12);
-  }
-
 
   /* ========================================
      作品情報セクション（統合されたコンテナ）
@@ -911,75 +627,6 @@ export async function getStaticPaths() {
      モバイル対応
      ======================================== */
   @media (max-width: 768px) {
-    .header-container {
-      padding: 16px 20px 8px;
-    }
-
-    /* Header - Mobile: Same behavior as PC (transparent by default, background on scroll) */
-    .portfolio-header {
-      background-color: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-    }
-
-    .portfolio-header.scrolled {
-      background-color: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-
-    /* When menu is open, show background on header and menu */
-    .portfolio-header.menu-open {
-      background-color: rgba(255, 255, 255, 1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-    }
-
-    .mobile-menu-dropdown {
-      background-color: transparent;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      border-top: none;
-    }
-
-    /* When menu is active, show unified background */
-    .mobile-menu-dropdown.active {
-      background-color: rgba(255, 255, 255, 1);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    /* Header - Mobile Layout: Logo Left, Hamburger Right */
-    .header-container {
-      padding: 16px 20px;
-      flex-wrap: nowrap;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .header-logo {
-      flex: 0 0 auto;
-    }
-
-    .logo-text {
-      font-size: 13px;
-    }
-
-    /* Hide desktop navigation and actions on mobile */
-    .header-nav {
-      display: none;
-    }
-
-    .header-actions {
-      display: none;
-    }
-
-    /* Show hamburger menu button */
-    .mobile-menu-btn {
-      display: flex;
-    }
-
     .work-content {
       padding: 56px 0 80px;
     }
@@ -1127,66 +774,3 @@ export async function getStaticPaths() {
     }
   }
 </style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Mobile Menu Toggle
-    const menuBtn = document.getElementById('mobileMenuBtn');
-    const menuDropdown = document.getElementById('mobileMenuDropdown');
-    const header = document.querySelector('.portfolio-header');
-    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-    
-    if (menuBtn && menuDropdown && header) {
-      const closeMenu = () => {
-        menuBtn.classList.remove('active');
-        menuDropdown.classList.remove('active');
-        header.classList.remove('menu-open');
-        document.body.style.overflow = '';
-      };
-
-      const openMenu = () => {
-        menuBtn.classList.add('active');
-        menuDropdown.classList.add('active');
-        header.classList.add('menu-open');
-        document.body.style.overflow = 'hidden';
-      };
-
-      menuBtn.addEventListener('click', () => {
-        if (menuBtn.classList.contains('active')) {
-          closeMenu();
-        } else {
-          openMenu();
-        }
-      });
-
-      // Close menu when clicking on nav links
-      mobileNavLinks.forEach(link => {
-        link.addEventListener('click', () => {
-          closeMenu();
-        });
-      });
-
-      // Close menu when clicking outside
-      document.addEventListener('click', (e) => {
-        const target = e.target as Node;
-        if (target && !header.contains(target) && menuBtn.classList.contains('active')) {
-          closeMenu();
-        }
-      });
-    }
-
-    // Header scroll effect
-    if (header) {
-      const handleScroll = () => {
-        if (window.scrollY > 10) {
-          header.classList.add('scrolled');
-        } else {
-          header.classList.remove('scrolled');
-        }
-      };
-
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      handleScroll(); // Initial check
-    }
-  });
-</script>

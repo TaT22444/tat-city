@@ -2,8 +2,24 @@
 // このページは自動的にWorks townにリダイレクトします（統合後）
 import Layout from '../layouts/Layout.astro';
 import City from '../components/City.astro';
+import { worksData } from '../data/worksData.js';
+
+const workNames: string[] = worksData.names;
 ---
 
-<Layout title="TaT City - Works Town">
+<Layout 
+  title="TaT City - Works Town"
+  showNavigation={false}
+  viewToggleLink="/portfolio"
+  viewToggleActiveIcon="3d"
+  showMobileViewToggle={true}
+  mobileViewToggleLink="/portfolio"
+  mobileViewToggleActiveIcon="3d"
+  showMobilePortfolioList={true}
+  portfolioListItems={[
+    { name: 'Profile', dataAttribute: 'profile' },
+    ...workNames.map(name => ({ name: `${name} Co.`, dataAttribute: 'work' }))
+  ]}
+>
   <City currentTown="works" />
 </Layout>

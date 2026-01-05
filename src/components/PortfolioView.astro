@@ -30,99 +30,6 @@ const featuredWork = {
 ---
 
 <div class="portfolio-view-new" id="portfolioView">
-  <!-- Header -->
-  <header class="portfolio-header">
-    <div class="header-container">
-      <div class="header-logo">
-        <p class="logo-text">TaT Archive / 2025 ~ 2026</p>
-      </div>
-      
-      <!-- Desktop Navigation -->
-      <nav class="header-nav">
-        <a href="#about" class="nav-link">about</a>
-        <a href="#works" class="nav-link">works</a>
-        <a href="#contact" class="nav-link">contact</a>
-      </nav>
-      
-      <div class="header-actions">
-        <div class="social-links">
-          <a href="https://x.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Twitter">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="social-link" aria-label="Instagram">
-            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
-            </svg>
-          </a>
-        </div>
-        
-        <button class="view-toggle-btn" id="viewToggleBtn" onclick="window.location.href='/'">
-          <div class="toggle-icons">
-            <svg class="icon-grid active" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            <svg class="icon-3d" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
-              <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
-            </svg>
-          </div>
-        </button>
-      </div>
-      
-      <!-- Mobile Hamburger Menu Button -->
-      <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-        <span class="hamburger-line"></span>
-      </button>
-    </div>
-    
-    <!-- Mobile Menu Dropdown -->
-    <div class="mobile-menu-dropdown" id="mobileMenuDropdown">
-      <nav class="mobile-menu-nav">
-        <!-- View Mode Toggle (Top) -->
-        <div class="mobile-menu-view-toggle">
-          <span class="mobile-view-toggle-label">表示モード</span>
-          <button class="mobile-view-toggle-btn" onclick="window.location.href='/'" aria-label="Toggle to 3D view">
-            <div class="mobile-toggle-icons">
-              <svg class="icon-grid active" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.5 12.5H17.5M2.5 7.5H17.5M7.5 17.5V2.5M12.5 17.5V2.5M4.5 2.5H15.5C16.0304 2.5 16.5391 2.71071 16.9142 3.08579C17.2893 3.46086 17.5 3.96957 17.5 4.5V15.5C17.5 16.0304 17.2893 16.5391 16.9142 16.9142C16.5391 17.2893 16.0304 17.5 15.5 17.5H4.5C3.96957 17.5 3.46086 17.2893 3.08579 16.9142C2.71071 16.5391 2.5 16.0304 2.5 15.5V4.5C2.5 4.23736 2.55173 3.97728 2.65224 3.73463C2.75275 3.49198 2.90007 3.2715 3.08579 3.08579C3.46086 2.71071 3.96957 2.5 4.5 2.5Z" stroke="currentColor" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <svg class="icon-3d" width="16" height="16" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.79136 2.39927L3.82886 5.15427C3.44157 5.37017 3.11915 5.68582 2.89509 6.06845C2.67102 6.45107 2.55349 6.88671 2.5547 7.33011V12.6751C2.55364 13.1184 2.67124 13.5538 2.8953 13.9363C3.11935 14.3188 3.4417 14.6343 3.82886 14.8501L8.79303 17.6059C9.16231 17.8114 9.57793 17.9193 10.0005 17.9193C10.4231 17.9193 10.8387 17.8114 11.208 17.6059L16.1722 14.8509C16.5595 14.635 16.8819 14.3194 17.106 13.9368C17.33 13.5541 17.4476 13.1185 17.4464 12.6751V7.33011C17.4474 6.88685 17.3298 6.45138 17.1058 6.06892C16.8817 5.68646 16.5594 5.37093 16.1722 5.15511L11.208 2.39927C10.8387 2.19379 10.4231 2.08594 10.0005 2.08594C9.57793 2.08594 9.16231 2.19379 8.79303 2.39927H8.79136Z" stroke="currentColor"/>
-                <path d="M16.9419 5.83594L10.0003 10.0059M10.0003 10.0059L3.05859 5.83594M10.0003 10.0059V17.9143" stroke="currentColor"/>
-              </svg>
-            </div>
-          </button>
-        </div>
-        
-        <!-- Navigation Links -->
-        <a href="#about" class="mobile-nav-link">about</a>
-        <a href="#works" class="mobile-nav-link">works</a>
-        <a href="#contact" class="mobile-nav-link">contact</a>
-        
-        <!-- Social Links -->
-        <div class="mobile-menu-social">
-          <a href="https://x.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="mobile-social-link" aria-label="Twitter">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/tatsu_aihara" target="_blank" rel="noopener noreferrer" class="mobile-social-link" aria-label="Instagram">
-            <svg width="16" height="16" viewBox="0 0 20 20" fill="none">
-              <rect x="2.5" y="2.5" width="15" height="15" rx="3.75" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="10" cy="10" r="3.125" stroke="currentColor" stroke-width="1.5"/>
-              <circle cx="14.375" cy="5.625" r="0.9375" fill="currentColor"/>
-            </svg>
-          </a>
-        </div>
-      </nav>
-    </div>
-  </header>
 
   <!-- Hero Section (Carousel) -->
   <section class="hero-section">
@@ -576,49 +483,7 @@ const featuredWork = {
     }
   }
 
-  // Mobile Menu Toggle
-  function setupMobileMenu() {
-    const menuBtn = document.getElementById('mobileMenuBtn');
-    const menuDropdown = document.getElementById('mobileMenuDropdown');
-    const header = document.querySelector('.portfolio-header');
-    const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
-    
-    if (!menuBtn || !menuDropdown || !header) return;
-    
-    const closeMenu = () => {
-      menuDropdown.classList.remove('active');
-      menuBtn.classList.remove('active');
-      header.classList.remove('menu-open');
-    };
-    
-    const openMenu = () => {
-      menuDropdown.classList.add('active');
-      menuBtn.classList.add('active');
-      header.classList.add('menu-open');
-    };
-    
-    menuBtn.addEventListener('click', () => {
-      if (menuDropdown.classList.contains('active')) {
-        closeMenu();
-      } else {
-        openMenu();
-      }
-    });
-    
-    // Close menu when clicking on a link
-    mobileNavLinks.forEach(link => {
-      link.addEventListener('click', closeMenu);
-    });
-    
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-      if (menuDropdown.classList.contains('active') && 
-          !menuDropdown.contains(e.target) && 
-          !menuBtn.contains(e.target)) {
-        closeMenu();
-      }
-    });
-  }
+  // Mobile Menu Toggle - PortfolioHeaderコンポーネントに移動したため削除
 
   // Intersection Observer for mobile work cards
   function setupWorkCardIntersectionObserver() {
@@ -671,39 +536,9 @@ const featuredWork = {
 
   // Smooth scroll for navigation links
   document.addEventListener('DOMContentLoaded', () => {
-    setupMobileMenu();
     setupWorkCardIntersectionObserver();
     
-    const navLinks = document.querySelectorAll('.nav-link, .mobile-nav-link');
-    navLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const targetId = link.getAttribute('href')?.substring(1);
-        if (!targetId) return;
-        
-        const targetElement = document.getElementById(targetId);
-        if (targetElement) {
-          const headerHeight = 80;
-          const targetPosition = targetElement.offsetTop - headerHeight;
-          window.scrollTo({
-            top: targetPosition,
-            behavior: 'smooth'
-          });
-        }
-      });
-    });
-
-    // Header scroll effect
-    const header = document.querySelector('.portfolio-header');
-    if (header) {
-      window.addEventListener('scroll', () => {
-        if (window.scrollY > 50) {
-          header.classList.add('scrolled');
-        } else {
-          header.classList.remove('scrolled');
-        }
-      });
-    }
+    // Header scroll effect and mobile menu - PortfolioHeaderコンポーネントに移動したため削除
 
     // Hero carousel navigation
     const prevButton = document.querySelector('.hero-nav-arrow.prev');

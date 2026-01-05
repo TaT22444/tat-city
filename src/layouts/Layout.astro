@@ -1,9 +1,57 @@
 ---
+import PortfolioHeader from '../components/PortfolioHeader.astro';
+import { worksData } from '../data/worksData.js';
+
 interface Props {
 	title?: string;
+	// SEO関連のprops
+	description?: string;
+	ogImage?: string;
+	ogType?: string;
+	canonical?: boolean;
+	// Header関連のprops
+	showNavigation?: boolean;
+	navigationLinks?: Array<{ href: string; label: string }>;
+	viewToggleLink?: string;
+	viewToggleActiveIcon?: 'grid' | '3d';
+	showMobileViewToggle?: boolean;
+	mobileViewToggleLink?: string;
+	mobileViewToggleActiveIcon?: 'grid' | '3d';
+	showMobilePortfolioList?: boolean;
+	portfolioListItems?: Array<{ name: string; href?: string; dataAttribute?: string }>;
 }
 
-const { title = 'TaT City' } = Astro.props;
+const { 
+	title = 'TaT City',
+	description,
+	ogImage,
+	ogType = 'website',
+	canonical = true,
+	showNavigation = true,
+	navigationLinks = [
+		{ href: '#about', label: 'about' },
+		{ href: '#works', label: 'works' },
+		{ href: '#contact', label: 'contact' }
+	],
+	viewToggleLink = '/',
+	viewToggleActiveIcon = 'grid',
+	showMobileViewToggle = true,
+	mobileViewToggleLink = '/',
+	mobileViewToggleActiveIcon = 'grid',
+	showMobilePortfolioList = false,
+	portfolioListItems = []
+} = Astro.props;
+
+// 現在のURLを取得
+const currentUrl = new URL(Astro.url.pathname, Astro.site || Astro.url.origin).toString();
+
+// OG画像のURLを生成（相対パスの場合は絶対URLに変換）
+const fullOgImage = ogImage 
+	? (ogImage.startsWith('http') ? ogImage : new URL(ogImage, Astro.site || Astro.url.origin).toString())
+	: undefined;
+
+// Portfolio List用のworkNames（City.astro用）
+const workNames: string[] = worksData.names;
 ---
 
 <!doctype html>
@@ -14,14 +62,55 @@ const { title = 'TaT City' } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		
+		{/* メタディスクリプション */}
+		{description && (
+			<meta name="description" content={description} />
+		)}
+		
+		{/* Canonical URL */}
+		{canonical && (
+			<link rel="canonical" href={currentUrl} />
+		)}
+		
+		{/* Open Graphタグ */}
+		<meta property="og:title" content={title} />
+		{description && (
+			<meta property="og:description" content={description} />
+		)}
+		{fullOgImage && (
+			<meta property="og:image" content={fullOgImage} />
+		)}
+		<meta property="og:url" content={currentUrl} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:site_name" content="TaT Archive" />
+		<meta property="og:locale" content="ja_JP" />
+		
+		{/* Twitter Cardタグ */}
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		{description && (
+			<meta name="twitter:description" content={description} />
+		)}
+		{fullOgImage && (
+			<meta name="twitter:image" content={fullOgImage} />
+		)}
+		
 		<slot name="head" />
 	</head>
 	<body>
-		<header style="position: fixed; top: 0; left: 0; width: 100%; z-index: 100; display: none;">
-			<div class="header_inner">
-				<h1 class="header_title">tatsuya city</h1>
-			</div>
-		</header>
+		<!-- Header -->
+		<PortfolioHeader
+			showNavigation={showNavigation}
+			navigationLinks={navigationLinks}
+			viewToggleLink={viewToggleLink}
+			viewToggleActiveIcon={viewToggleActiveIcon}
+			showMobileViewToggle={showMobileViewToggle}
+			mobileViewToggleLink={mobileViewToggleLink}
+			mobileViewToggleActiveIcon={mobileViewToggleActiveIcon}
+			showMobilePortfolioList={showMobilePortfolioList}
+			portfolioListItems={portfolioListItems.length > 0 ? portfolioListItems : []}
+		/>
 		<slot />
 	</body>
 </html>
@@ -43,6 +132,4 @@ const { title = 'TaT City' } = Astro.props;
 	html {
 		overflow: hidden;
 	}
-
-	.
 </style>

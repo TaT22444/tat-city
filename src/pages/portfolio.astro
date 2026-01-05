@@ -2,15 +2,57 @@
 // ポートフォリオ表示ページ - 新デザイン
 import Layout from '../layouts/Layout.astro';
 import PortfolioView from '../components/PortfolioView.astro';
-import { Fragment } from 'astro/jsx-runtime';
+import { profileData } from '../data/profileData.js';
 // Hero背景画像をインポート（プリロード用、最適化されたWebP形式）
 import heroBackgroundImage from '../assets/hero-ittow-backgroundImage.webp';
+
+// プロフィール画像のURLを取得
+const profileImageUrl = typeof profileData.image === 'object' && 'src' in profileData.image 
+  ? profileData.image.src 
+  : (typeof profileData.image === 'string' ? profileData.image : '');
 ---
 
-<Layout title="Portfolio - Tatsuya Aihara">
-  <Fragment slot="head">
-    <link rel="preload" as="image" href={heroBackgroundImage.src} fetchpriority="high" />
-  </Fragment>
+<Layout 
+  title="Portfolio - Tatsuya Aihara"
+  description={profileData.description}
+  ogImage={profileImageUrl}
+  ogType="website"
+  canonical={true}
+  showNavigation={true}
+  navigationLinks={[
+    { href: '#about', label: 'about' },
+    { href: '#works', label: 'works' },
+    { href: '#contact', label: 'contact' }
+  ]}
+  viewToggleLink="/"
+  viewToggleActiveIcon="grid"
+  showMobileViewToggle={true}
+  mobileViewToggleLink="/"
+  mobileViewToggleActiveIcon="grid"
+>
+  <link slot="head" rel="preload" as="image" href={heroBackgroundImage.src} fetchpriority="high" />
+  
+  {/* Person構造化データ（JSON-LD） */}
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify((() => {
+    const schema: any = {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": profileData.nameEn,
+      "alternateName": profileData.name,
+      "description": profileData.description,
+      "jobTitle": profileData.meta[0],
+      "alumniOf": {
+        "@type": "EducationalOrganization",
+        "name": profileData.bio
+      },
+      "url": new URL('/portfolio', Astro.url.origin).toString()
+    };
+    if (profileImageUrl) {
+      schema.image = new URL(profileImageUrl, Astro.url.origin).toString();
+    }
+    return schema;
+  })())} />
+  
   <PortfolioView />
 </Layout>
 
