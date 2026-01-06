@@ -3,6 +3,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { worksData } from '../../data/worksData.js';
 import { getCollection } from 'astro:content';
+import { Image } from 'astro:assets';
 
 // URLパラメータから作品名を取得
 const workName = Astro.params.work;
@@ -38,8 +39,8 @@ try {
   console.warn('Content Collections not found:', error);
 }
 
-// 画像の取得関数
-const getWorkImage = (image: any): string => {
+// 画像の取得関数（URL文字列用：ogImageやpreload用）
+const getWorkImageSrc = (image: any): string => {
   if (!image) return '';
   if (typeof image === 'object' && 'src' in image) {
     return image.src;
@@ -47,7 +48,10 @@ const getWorkImage = (image: any): string => {
   return typeof image === 'string' ? image : '';
 };
 
-const workImageSrc = getWorkImage(workData.image);
+// 画像オブジェクト（Imageコンポーネント用）
+const rawWorkImage = workData.image;
+// 画像URL文字列（ogImageやpreload用）
+const workImageSrc = getWorkImageSrc(workData.image);
 
 // 作品が存在しない場合は404
 if (!workName || !worksData.names.includes(workName)) {
@@ -127,6 +131,21 @@ export async function getStaticPaths() {
     if (workData.types && workData.types.length > 0) {
       schema.keywords = workData.types.join(', ');
       schema.genre = workData.types[0];
+      // より具体的な作品タイプを指定
+      if (workData.types.includes('iOSアプリ')) {
+        schema.applicationCategory = "MobileApplication";
+        schema.operatingSystem = "iOS";
+      } else if (workData.types.includes('アプリデザイン') || workData.types.includes('UI/UX')) {
+        schema.creativeWorkStatus = "Published";
+      }
+    }
+    // 制作範囲の情報
+    if (workData.scope) {
+      schema.creditText = workData.scope;
+    }
+    // 制作期間の情報（期間として記録）
+    if (workData.duration) {
+      schema.timeRequired = workData.duration;
     }
     return schema;
   })())} />
@@ -137,14 +156,14 @@ export async function getStaticPaths() {
     <article class="work-content">
       <div class="work-content-container">
         <!-- 戻るボタン（上部に配置） -->
-        <div class="work-back-link">
+        <nav class="work-back-link" aria-label="作品一覧へのナビゲーション">
           <a href="/portfolio#works" class="back-link">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <span>作品一覧に戻る</span>
           </a>
-        </div>
+        </nav>
 
         <!-- タイトルとCTA（リリースリンク） -->
         <div class="work-header">
@@ -170,40 +189,40 @@ export async function getStaticPaths() {
           </div>
           
           <!-- メタ情報 -->
-          <div class="work-meta">
+          <dl class="work-meta">
             {workData.types.length > 0 && (
               <div class="work-meta-item">
-                <span class="work-meta-label">タイプ: </span>
-                <span class="work-meta-value">{workData.types.join(' / ')}</span>
+                <dt class="work-meta-label">タイプ</dt>
+                <dd class="work-meta-value">{workData.types.join(' / ')}</dd>
               </div>
             )}
             {workData.scope && (
               <div class="work-meta-item">
-                <span class="work-meta-label">制作範囲: </span>
-                <span class="work-meta-value">{workData.scope}</span>
+                <dt class="work-meta-label">制作範囲</dt>
+                <dd class="work-meta-value">{workData.scope}</dd>
               </div>
             )}
             {workData.duration && (
               <div class="work-meta-item">
-                <span class="work-meta-label">制作期間: </span>
-                <span class="work-meta-value">{workData.duration}</span>
+                <dt class="work-meta-label">制作期間</dt>
+                <dd class="work-meta-value">{workData.duration}</dd>
               </div>
             )}
             {workData.released && (
               <div class="work-meta-item">
-                <span class="work-meta-label">ステータス: </span>
-                <span class="work-meta-value work-status-released">リリース済み</span>
+                <dt class="work-meta-label">ステータス</dt>
+                <dd class="work-meta-value work-status-released">リリース済み</dd>
               </div>
             )}
-          </div>
+          </dl>
         </div>
 
         <!-- Hero画像（コンテンツ内に統合） -->
-        {workImageSrc && (
+        {rawWorkImage && (
           <div class="work-hero-image-wrapper">
-            <img 
-              src={workImageSrc} 
-              alt={workData.name}
+            <Image 
+              src={rawWorkImage} 
+              alt={`${workData.name}のプレビュー画像`}
               class="work-hero-image"
               loading="eager"
               fetchpriority="high"
@@ -363,12 +382,15 @@ export async function getStaticPaths() {
     display: flex;
     flex-wrap: wrap;
     gap: 24px 32px;
+    margin: 0;
+    padding: 0;
   }
 
   .work-meta-item {
     display: flex;
     align-items: center;
     gap: 4px;
+    margin: 0;
   }
 
   .work-meta-label {
@@ -377,12 +399,19 @@ export async function getStaticPaths() {
     color: var(--color-text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    margin: 0;
+  }
+
+  .work-meta-label::after {
+    content: ':';
+    margin-left: 0;
   }
 
   .work-meta-value {
     font-size: 10px;
     font-weight: 500;
     color: var(--color-text-primary);
+    margin: 0;
   }
 
   .work-status-released {

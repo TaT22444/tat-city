@@ -245,9 +245,7 @@ const blogNames: string[] = [
   </div>
   <div class="popup-body">
     <div class="popup-meta">
-      <span>デザイナー</span>
-      <span>エンジニア</span>
-      <span>千葉工業大学大学院</span>
+      <span></span>
     </div>
     <p id="popupDescription">UI/UXデザイン、フロントエンド開発を専門とするデザイナー兼エンジニア。使いやすさと美しさを追求した体験設計が得意です。</p>
   </div>
@@ -1730,7 +1728,7 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     const popupTitle = document.getElementById('profilePopupTitle');
     const popupDescription = document.getElementById('profilePopupDescription');
     const popupImage = profilePopup.querySelector('.profile-image-large');
-    const popupMeta = profilePopup.querySelectorAll('.popup-meta span');
+    const popupMetaContainer = profilePopup.querySelector('.popup-meta');
     
     if (popupTitle) popupTitle.textContent = profileData.name;
     if (popupDescription) popupDescription.textContent = profileData.description;
@@ -1740,11 +1738,15 @@ if (localStorage.getItem('cityTheme') === 'dark') {
         : (typeof profileData.image === 'string' ? profileData.image : '');
       popupImage.src = imageSrc;
     }
-    if (popupMeta.length > 0) {
-      popupMeta.forEach((span, index) => {
-        if (profileData.meta[index]) {
-          span.textContent = profileData.meta[index];
-        }
+    // meta情報を動的に生成
+    if (popupMetaContainer && profileData.meta && Array.isArray(profileData.meta)) {
+      // 既存のspan要素を全て削除
+      popupMetaContainer.innerHTML = '';
+      // profileData.metaの各要素に対してspan要素を生成
+      profileData.meta.forEach((metaItem) => {
+        const span = document.createElement('span');
+        span.textContent = metaItem;
+        popupMetaContainer.appendChild(span);
       });
     }
     
@@ -5052,7 +5054,7 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     flex-wrap: wrap;
   }
 
-  .popup-meta span {
+  :global(.popup-meta span) {
     font-size: 0.7rem;
     font-weight: 500;
     color: #4F46E5;
