@@ -58,7 +58,7 @@ const featuredWork = {
             ? worksData.types[featuredWork.name as keyof typeof worksData.types].join(' / ')
             : worksData.types[featuredWork.name as keyof typeof worksData.types])}
         </p>
-        <h1 class="hero-work-title" id="heroWorkTitle">{featuredWork.title}</h1>
+        <h2 class="hero-work-title" id="heroWorkTitle">{featuredWork.title}</h2>
         <p class="hero-work-description" id="heroWorkDescription">{featuredWork.description}</p>
 
         <!-- Navigation Arrows -->
@@ -106,6 +106,9 @@ const featuredWork = {
       })}
     </div>
   </section>
+
+  <!-- Page Title (visually hidden for SEO and accessibility) -->
+  <h1 class="visually-hidden">Portfolio</h1>
 
   <!-- About Section -->
   <section class="about-section" id="about">
@@ -1238,6 +1241,21 @@ const featuredWork = {
     opacity: 0.5;
     cursor: not-allowed;
     pointer-events: none;
+  }
+
+  /* ========================================
+     Visually Hidden (for SEO and accessibility)
+     ======================================== */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
   }
 
   /* ========================================

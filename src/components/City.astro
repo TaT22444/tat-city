@@ -225,7 +225,7 @@ const blogNames: string[] = [
   </div>
   <div class="popup-footer">
     <button class="popup-close-btn">閉じる</button>
-    <button class="popup-more-btn">準備中</button>
+    <a href="#" class="popup-more-btn" id="workPopupMoreBtn">詳細を見る</a>
   </div>
 </div>
 
@@ -2209,6 +2209,12 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     // コイン獲得数を表示（常に更新）
     updateWorkCoinDisplay(workName);
     
+    // 詳細ページへのリンクを更新（作品が切り替わった際にも更新、City.astroから来たことを示すクエリパラメータを追加）
+    const moreBtn = popup.querySelector('.popup-more-btn');
+    if (moreBtn && workName) {
+      moreBtn.href = `/works/${workName}?from=city`;
+    }
+    
     // 既に開いている場合は閉じずに内容だけ更新、開いていない場合は表示
     if (!wasActive) {
     // ポップアップを表示
@@ -2992,18 +2998,11 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     
     if (moreBtn && newMoreBtn) {
       moreBtn.parentNode?.replaceChild(newMoreBtn, moreBtn);
-      newMoreBtn.addEventListener('click', () => {
-        // モーダルを表示するなど、詳細情報へのアクセスを提供
-        const currentWorkName = document.getElementById('popupTitle')?.textContent?.replace(' Co.', '') || '';
-        closePopup();
-        
-        // 詳細ページに遷移するなどの処理
-        console.log('詳細ページに遷移: ', currentWorkName);
-        if (buildingModal) {
-          buildingModal.style.display = 'flex';
-          setTimeout(() => buildingModal.classList.add('active'), 10);
-        }
-      });
+      // 作品詳細ページへのリンクを設定（City.astroから来たことを示すクエリパラメータを追加）
+      const currentWorkName = document.getElementById('popupTitle')?.textContent?.replace(' Co.', '') || '';
+      if (currentWorkName) {
+        newMoreBtn.href = `/works/${currentWorkName}?from=city`;
+      }
     }
     
     // コイン応援ボタンのイベントリスナー
@@ -5094,6 +5093,11 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     cursor: pointer;
     transition: all 0.2s ease;
     border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    outline: none;
   }
 
   .popup-close-btn {
@@ -5109,6 +5113,10 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
 
+  .popup-more-btn:visited {
+    color: white;
+  }
+
   .popup-close-btn:hover {
     background-color: #E5E7EB;
   }
@@ -5117,10 +5125,18 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     background-color: #4338CA;
     transform: translateY(-1px);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: white;
+    text-decoration: none;
   }
 
   .popup-more-btn:active {
     transform: translateY(0);
+    color: white;
+  }
+
+  .popup-more-btn:focus {
+    outline: 2px solid #4338CA;
+    outline-offset: 2px;
   }
 
   .popup-coin-container {
