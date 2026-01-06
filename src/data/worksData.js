@@ -9,6 +9,11 @@ import invidiImage from '../assets/images/works/invidi_pop.webp';
 import ittowImage from '../assets/images/works/works-ittow-thumb.webp';
 import winkImage from '../assets/images/works/wink_pop.webp';
 
+// Hero背景画像をインポート（最適化されたWebP形式）
+import heroIttowBackgroundImage from '../assets/hero-ittow-backgroundImage.webp';
+import heroHamoriBackgroundImage from '../assets/hero-hamori-backgroundImage.webp';
+import heroCitBackgroundImage from '../assets/hero-cit-backgroundImage.webp';
+
 export const worksData = {
   // 作品の詳細情報
   descriptions: {
@@ -78,6 +83,14 @@ export const worksData = {
     'Invidi': invidiImage,
     'Ittow': ittowImage,
     'Wink': winkImage
+  },
+  
+  // Hero背景画像（PortfolioViewのheroセクション用）
+  heroBackgroundImages: {
+    'Ittow': heroIttowBackgroundImage,
+    'Hamori': heroHamoriBackgroundImage,
+    'CIT portal': heroCitBackgroundImage
+    // その他の作品は未定義の場合、デフォルト（Ittow）が使用される
   },
   
   // リリースバッジの表示設定

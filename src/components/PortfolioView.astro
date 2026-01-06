@@ -4,9 +4,6 @@ import { worksData } from '../data/worksData.js';
 import { profileData } from '../data/profileData.js';
 import { Image } from 'astro:assets';
 
-// Hero背景画像をインポート（最適化されたWebP形式）
-import heroBackgroundImage from '../assets/hero-ittow-backgroundImage.webp';
-
 // 画像の取得関数（worksDataから直接取得）
 // URL文字列が必要な場合（JavaScript内で使用）
 const getWorkImage = (workName: string): string => {
@@ -23,6 +20,31 @@ const getWorkImageObject = (workName: string): any => {
   return worksData.images[workName as keyof typeof worksData.images] || null;
 };
 
+// 画像オブジェクトからURL文字列を取得する関数
+const getImageUrl = (image: any): string => {
+  if (!image) return '';
+  if (typeof image === 'object' && 'src' in image) {
+    return image.src;
+  }
+  return typeof image === 'string' ? image : '';
+};
+
+// 作品名からHero背景画像を取得する関数（worksDataから取得、デフォルトはIttow）
+const getHeroBackgroundImage = (workName: string): any => {
+  const heroBackgroundImages = worksData.heroBackgroundImages || {};
+  const defaultImage = heroBackgroundImages['Ittow' as keyof typeof heroBackgroundImages];
+  return heroBackgroundImages[workName as keyof typeof heroBackgroundImages] || defaultImage;
+};
+
+// Hero背景画像のURLマッピング（クライアントサイド用）
+const heroBackgroundImageUrls: Record<string, string> = {};
+if (worksData.heroBackgroundImages) {
+  Object.keys(worksData.heroBackgroundImages).forEach((workName) => {
+    const image = (worksData.heroBackgroundImages as Record<string, any>)[workName];
+    heroBackgroundImageUrls[workName] = getImageUrl(image);
+  });
+}
+
 const workNames: string[] = worksData.names;
 
 // Heroセクション用のフィーチャー作品（初期表示はIttow）
@@ -32,7 +54,7 @@ const featuredWork = {
   name: initialWorkName,
   title: initialWorkName,
   description: worksData.descriptions[initialWorkName as keyof typeof worksData.descriptions] || '',
-  backgroundImage: heroBackgroundImage // 全作品で同じ背景画像を使用（最適化された画像オブジェクト）
+  backgroundImage: getHeroBackgroundImage(initialWorkName)
 };
 ---
 
@@ -230,7 +252,12 @@ const featuredWork = {
   </section>
 </div>
 
-<script define:vars={{ worksData, workNames }}>
+<script define:vars={{ worksData, workNames, heroBackgroundImageUrls }}>
+  // 作品名から背景画像URLを取得（デフォルトはIttow）
+  function getHeroBackgroundImageUrl(workName) {
+    return heroBackgroundImageUrls[workName] || heroBackgroundImageUrls['Ittow'] || '';
+  }
+  
   // Hero Carousel functionality
   // Find initial work index (Ittow or first work)
   const initialWorkName = 'Ittow';
@@ -241,7 +268,7 @@ const featuredWork = {
   
   let isAnimating = false;
   let autoPlayInterval = null;
-  const AUTO_PLAY_INTERVAL = 5000; // 5秒間隔で自動切り替え
+  const AUTO_PLAY_INTERVAL = 7000; // 7秒間隔で自動切り替え（ゆったりとした切り替え）
   
   // 自動再生を開始する関数
   function startAutoPlay() {
@@ -364,6 +391,19 @@ const featuredWork = {
     
     // Wait for fade out to complete, then update content and fade in
     const updateContent = () => {
+      // Update background image (immediately, before fade in)
+      const heroBackgroundImg = document.querySelector('.hero-background img');
+      if (heroBackgroundImg) {
+        const newImageUrl = getHeroBackgroundImageUrl(workName);
+        if (newImageUrl && newImageUrl !== heroBackgroundImg.src) {
+          // 即座に画像を切り替え（フェードアニメーション中なので問題なし）
+          heroBackgroundImg.src = newImageUrl;
+          // 画像のプリロードも開始（次回切り替え時の準備）
+          const preloadImg = new Image();
+          preloadImg.src = newImageUrl;
+        }
+      }
+      
       // Update content
       if (titleElement) {
         titleElement.textContent = workName;
@@ -464,7 +504,7 @@ const featuredWork = {
           if (prevButton) prevButton.classList.remove('disabled');
           if (nextButton) nextButton.classList.remove('disabled');
           paginationDots.forEach(dot => dot.style.pointerEvents = 'auto');
-        }, 600);
+        }, 1200); // Match background fade-in animation duration
       } else {
         isAnimating = false;
       }
@@ -473,7 +513,7 @@ const featuredWork = {
     if (skipAnimation) {
       updateContent();
     } else {
-      setTimeout(updateContent, 300); // Half of animation duration
+      setTimeout(updateContent, 450); // Half of animation duration (0.9s / 2)
     }
   }
   
@@ -975,19 +1015,20 @@ const featuredWork = {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 200%;
+    width: 150%;
     max-width: 2200px;
     height: auto;
     opacity: 1;
     pointer-events: none;
     z-index: 1;
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .hero-bg-image {
     width: 100%;
     height: auto;
     object-fit: contain;
+    transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .hero-content {
@@ -995,7 +1036,7 @@ const featuredWork = {
     z-index: 10;
     width: 100%;
     max-width: 800px;
-    padding-top: 20dvh;
+    padding-top: 16dvh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1006,8 +1047,8 @@ const featuredWork = {
     width: 100%;
     padding: 24px 32px;
     background: rgba(255, 255, 255, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--color-white);
     border-radius: 24px;
     box-shadow: 0 0 64px rgba(25, 25, 25, 0.10);
@@ -1018,7 +1059,7 @@ const featuredWork = {
   .hero-work-title,
   .hero-work-description,
   .hero-work-category {
-    transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.9s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .hero-text-fade-out {
@@ -1027,7 +1068,7 @@ const featuredWork = {
 
   .hero-text-fade-in {
     opacity: 1;
-    animation: heroTextFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: heroTextFadeIn 0.9s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes heroTextFadeIn {
@@ -1046,7 +1087,7 @@ const featuredWork = {
 
   .hero-bg-fade-in {
     opacity: 1;
-    animation: heroBgFadeIn 1s cubic-bezier(1, 0.2, 1);
+    animation: heroBgFadeIn 1.2s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   @keyframes heroBgFadeIn {
@@ -1727,7 +1768,9 @@ const featuredWork = {
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid var(--color-border-light);
       box-shadow: 0 0 32px rgba(0, 0, 0, 0.1);
     }
@@ -1790,7 +1833,27 @@ const featuredWork = {
     }
 
     .hero-nav-arrow {
-      display: none;
+      display: flex;
+      width: 32px;
+      height: 100%;
+      /* top: 24px; */
+      /* background: rgba(255, 255, 255, 0.6); */
+      background: none;
+      filter: none;
+      border: none;
+    }
+    
+    .hero-nav-arrow svg {
+      width: 14px;
+      height: 14px;
+    }
+    
+    .hero-nav-arrow.prev {
+      left: 0px;
+    }
+    
+    .hero-nav-arrow.next {
+      right: 0px;
     }
 
     .hero-pagination {

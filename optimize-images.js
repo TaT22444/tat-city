@@ -5,9 +5,9 @@ import { existsSync } from 'fs';
 
 // 画像最適化設定
 const optimizationConfig = {
-  // Hero背景画像: max-width 2200px (Retina対応で2倍の4400pxでも可、ただしファイルサイズを考慮して2200px)
+  // Hero背景画像: max-width 2400px (解像度をあまり下げすぎない程度に調整)
   hero: {
-    width: 2200,
+    width: 2400,
     quality: 85,
     format: 'webp'
   },
@@ -94,17 +94,33 @@ async function optimizeProfileImage() {
   return await optimizeImage(inputPath, outputPath, optimizationConfig.profile);
 }
 
-async function optimizeHeroImage() {
-  const inputPath = 'src/assets/hero-ittow-backgroundImage.png';
+async function optimizeHeroImage(heroName) {
+  const inputPath = `src/assets/hero-${heroName}-backgroundImage.png`;
   
   if (!existsSync(inputPath)) {
-    console.log('Hero image not found, skipping...');
+    console.log(`Hero image ${inputPath} not found, skipping...`);
     return null;
   }
   
-  console.log('\n=== Optimizing Hero Background Image ===');
-  const outputPath = 'src/assets/hero-ittow-backgroundImage.webp';
+  console.log(`\n=== Optimizing Hero Background Image: ${heroName} ===`);
+  const outputPath = `src/assets/hero-${heroName}-backgroundImage.webp`;
   return await optimizeImage(inputPath, outputPath, optimizationConfig.hero);
+}
+
+async function optimizeAllHeroImages() {
+  const heroImages = ['ittow', 'hamori', 'cit'];
+  let totalOriginal = 0;
+  let totalOptimized = 0;
+  
+  for (const heroName of heroImages) {
+    const result = await optimizeHeroImage(heroName);
+    if (result) {
+      totalOriginal += result.originalSize;
+      totalOptimized += result.optimizedSize;
+    }
+  }
+  
+  return { totalOriginal, totalOptimized };
 }
 
 async function main() {
@@ -112,12 +128,12 @@ async function main() {
   
   const worksResult = await optimizeWorksImages();
   const profileResult = await optimizeProfileImage();
-  const heroResult = await optimizeHeroImage();
+  const heroResult = await optimizeAllHeroImages();
   
   console.log('\n=== Optimization Complete ===');
-  const totalOriginal = (worksResult?.totalOriginal || 0) + (profileResult?.originalSize || 0) + (heroResult?.originalSize || 0);
-  const totalOptimized = (worksResult?.totalOptimized || 0) + (profileResult?.optimizedSize || 0) + (heroResult?.optimizedSize || 0);
-  const totalReduction = ((totalOriginal - totalOptimized) / totalOriginal * 100).toFixed(1);
+  const totalOriginal = (worksResult?.totalOriginal || 0) + (profileResult?.originalSize || 0) + (heroResult?.totalOriginal || 0);
+  const totalOptimized = (worksResult?.totalOptimized || 0) + (profileResult?.optimizedSize || 0) + (heroResult?.totalOptimized || 0);
+  const totalReduction = totalOriginal > 0 ? ((totalOriginal - totalOptimized) / totalOriginal * 100).toFixed(1) : 0;
   
   console.log(`\nTotal size reduction: ${(totalOriginal / 1024 / 1024).toFixed(2)}MB → ${(totalOptimized / 1024 / 1024).toFixed(2)}MB (${totalReduction}% reduction)`);
   console.log('\nNote: Original PNG files are preserved in original/ folders.');
