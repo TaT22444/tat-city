@@ -1627,6 +1627,12 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       
       // プロフィールポイントの特別処理（worksタウンでも有効）
       if (point.hasAttribute('data-profile-point')) {
+        // プロフィールポイントの位置を設定
+        const profilePos = pointOffsetMap['works']?.['profile'] || profileData.position;
+        if (profilePos) {
+          point.style.left = `${profilePos.x}%`;
+          point.style.top = `${profilePos.y}%`;
+        }
         point.addEventListener('click', (e) => {
           e.stopPropagation();
           const profilePopup = document.getElementById('profilePopup');
@@ -1645,6 +1651,13 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       
       // 広告ポイントの特別処理
       if (point.hasAttribute('data-ad-point')) {
+        // 広告ポイントの位置を設定
+        const adPos = pointOffsetMap['works']?.['ad'] || { x: 40, y: 90 };
+        if (adPos) {
+          point.style.left = `${adPos.x}%`;
+          point.style.top = `${adPos.y}%`;
+        }
+        
         point.addEventListener('click', (e) => {
           e.stopPropagation();
           const adPopup = document.getElementById('adPopup');
@@ -1665,6 +1678,14 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       if (currentTown.includes('works') || !currentTown.includes('blogs')) {
         const workName = point.getAttribute('data-work-name') || '';
         if (workName) {
+          // 作品ポイントの位置を動的に設定
+          const workPos = worksData.positions[workName];
+          if (workPos) {
+            point.style.left = `${workPos.x}%`;
+            point.style.top = `${workPos.y}%`;
+            console.log('Setting position for', workName, ':', workPos);
+          }
+          
           console.log('Setting up click event for work:', workName);
         
         point.addEventListener('click', (e) => {
@@ -4027,19 +4048,35 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   .town-profile .point-11 { left: 40%; top: 50%; animation-delay: 4s; }
   .town-profile .point-12 { left: 60%; top: 20%; animation-delay: 4.4s; }
 
-  /* Worksタウン用のポイント位置 - 現在の設定を維持 */
-  .town-works .point-1 { left: 60%; top: 65%; animation-delay: 0s; } /* Hamori */
-  .town-works .point-2 { left: 75%; top: 35%; animation-delay: 0.4s; } /* MasiMasi */
-  .town-works .point-3 { left: 35%; top: 40%; animation-delay: 0.8s; } /* Atta! */
-  .town-works .point-4 { left: 45%; top: 75%; animation-delay: 1.2s; } /* CIT portal */
-  .town-works .point-5 { left: 24%; top: 64%; animation-delay: 1.6s; } /* 市民の木 */
-  .town-works .point-6 { left: 58%; top: 45%; animation-delay: 2s; } /* Invidi */
-  .town-works .point-7 { left: 55%; top: 90%; animation-delay: 2.4s; }/* Ittow */
-  .town-works .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }/* Wink */
-  .town-works .point-9 { left: 50%; top: 80%; animation-delay: 3.2s; }/* Profile */
+  /* Worksタウン用のポイント位置 - JavaScriptで動的に設定されるため削除
+  .town-works .point-1 { left: 60%; top: 65%; animation-delay: 0s; } 
+  .town-works .point-2 { left: 75%; top: 35%; animation-delay: 0.4s; } 
+  .town-works .point-3 { left: 35%; top: 40%; animation-delay: 0.8s; } 
+  .town-works .point-4 { left: 45%; top: 75%; animation-delay: 1.2s; } 
+  .town-works .point-5 { left: 24%; top: 64%; animation-delay: 1.6s; } 
+  .town-works .point-6 { left: 58%; top: 45%; animation-delay: 2s; } 
+  .town-works .point-7 { left: 55%; top: 90%; animation-delay: 2.4s; }
+  .town-works .point-8 { left: 40%; top: 60%; animation-delay: 2.8s; }
+  .town-works .point-9 { left: 50%; top: 80%; animation-delay: 3.2s; }
   .town-works .point-10 { left: 40%; top: 90%; animation-delay: 3.6s; }
   .town-works .point-11 { left: 35%; top: 95%; animation-delay: 4s; }
   .town-works .point-12 { left: 68%; top: 85%; animation-delay: 4.4s; }
+  */
+  
+  /* Worksタウンでは、JavaScriptでworksData.positionsから動的に位置を設定 */
+  /* アニメーション遅延のみ設定 */
+  .town-works .point-1 { animation-delay: 0s; }
+  .town-works .point-2 { animation-delay: 0.4s; }
+  .town-works .point-3 { animation-delay: 0.8s; }
+  .town-works .point-4 { animation-delay: 1.2s; }
+  .town-works .point-5 { animation-delay: 1.6s; }
+  .town-works .point-6 { animation-delay: 2s; }
+  .town-works .point-7 { animation-delay: 2.4s; }
+  .town-works .point-8 { animation-delay: 2.8s; }
+  .town-works .point-9 { animation-delay: 3.2s; }
+  .town-works .point-10 { animation-delay: 3.6s; }
+  .town-works .point-11 { animation-delay: 4s; }
+  .town-works .point-12 { animation-delay: 4.4s; }
 
   /* Blogsタウン用のポイント位置 */
   .town-blogs .point-1 { left: 40%; top: 20%; animation-delay: 0s; }
