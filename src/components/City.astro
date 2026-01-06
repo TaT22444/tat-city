@@ -1547,12 +1547,12 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     }
   }
 
-  // ナビゲーションリストのセットアップ（PC用のcompany-itemとモバイル用のmobile-portfolio-itemの両方に対応）
+  // ナビゲーションリストのセットアップ（PC用のcompany-itemとモバイル用のmobile-portfolio-buttonの両方に対応）
   function setupNavigationList() {
     // PC用のcompany-item
     const navItems = document.querySelectorAll('.company-item');
-    // モバイル用のmobile-portfolio-item
-    const mobileNavItems = document.querySelectorAll('.mobile-portfolio-item');
+    // モバイル用のmobile-portfolio-button（button要素）
+    const mobileNavItems = document.querySelectorAll('.mobile-portfolio-button');
     
     // 共通のクリックハンドラー
     const handleItemClick = (item) => {
@@ -1562,7 +1562,7 @@ if (localStorage.getItem('cityTheme') === 'dark') {
           e.preventDefault();
           e.stopPropagation();
           // モバイルメニューを閉じる（モバイルアイテムの場合のみ）
-          if (item.classList.contains('mobile-portfolio-item')) {
+          if (item.classList.contains('mobile-portfolio-button')) {
             const menuDropdown = document.getElementById('mobileMenuDropdown');
             const menuBtn = document.getElementById('mobileMenuBtn');
             const header = document.querySelector('.portfolio-header');
@@ -1587,7 +1587,7 @@ if (localStorage.getItem('cityTheme') === 'dark') {
           e.preventDefault();
           e.stopPropagation();
           // モバイルメニューを閉じる（モバイルアイテムの場合のみ）
-          if (item.classList.contains('mobile-portfolio-item')) {
+          if (item.classList.contains('mobile-portfolio-button')) {
             const menuDropdown = document.getElementById('mobileMenuDropdown');
             const menuBtn = document.getElementById('mobileMenuBtn');
             const header = document.querySelector('.portfolio-header');
@@ -4713,9 +4713,16 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   }
 
   .mobile-portfolio-item {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-portfolio-button {
+    width: 100%;
     padding: 10px 0px;
     background: rgba(255, 255, 255, 0.4);
-    /* border: 1px solid rgba(0, 0, 0, 0.06); */
+    border: none;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -4723,21 +4730,23 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.01em;
+    text-align: left;
+    font-family: inherit;
   }
 
-  html.dark-theme .mobile-portfolio-item {
+  html.dark-theme .mobile-portfolio-button {
     background: rgba(30, 30, 35, 0.4);
     border-color: rgba(255, 255, 255, 0.1);
     color: var(--text-color, #e0e0e0);
   }
 
-  .mobile-portfolio-item:active {
+  .mobile-portfolio-button:active {
     background: rgba(255, 255, 255, 0.6);
     transform: scale(0.98);
     border-color: rgba(0, 0, 0, 0.1);
   }
 
-  html.dark-theme .mobile-portfolio-item:active {
+  html.dark-theme .mobile-portfolio-button:active {
     background: rgba(40, 40, 45, 0.6);
     border-color: rgba(255, 255, 255, 0.15);
   }

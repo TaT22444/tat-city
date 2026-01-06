@@ -2,11 +2,13 @@
 // 新しいポートフォリオビューデザイン - Figmaデザイン準拠
 import { worksData } from '../data/worksData.js';
 import { profileData } from '../data/profileData.js';
+import { Image } from 'astro:assets';
 
 // Hero背景画像をインポート（最適化されたWebP形式）
 import heroBackgroundImage from '../assets/hero-ittow-backgroundImage.webp';
 
 // 画像の取得関数（worksDataから直接取得）
+// URL文字列が必要な場合（JavaScript内で使用）
 const getWorkImage = (workName: string): string => {
   const image = worksData.images[workName as keyof typeof worksData.images];
   if (image && typeof image === 'object' && 'src' in image) {
@@ -14,6 +16,11 @@ const getWorkImage = (workName: string): string => {
   }
   // フォールバック（文字列パスの場合）
   return typeof image === 'string' ? image : '';
+};
+
+// 画像オブジェクトを取得する関数（Imageコンポーネント用）
+const getWorkImageObject = (workName: string): any => {
+  return worksData.images[workName as keyof typeof worksData.images] || null;
 };
 
 const workNames: string[] = worksData.names;
@@ -25,7 +32,7 @@ const featuredWork = {
   name: initialWorkName,
   title: initialWorkName,
   description: worksData.descriptions[initialWorkName as keyof typeof worksData.descriptions] || '',
-  backgroundImage: heroBackgroundImage.src // 全作品で同じ背景画像を使用（最適化された画像）
+  backgroundImage: heroBackgroundImage // 全作品で同じ背景画像を使用（最適化された画像オブジェクト）
 };
 ---
 
@@ -34,9 +41,9 @@ const featuredWork = {
   <!-- Hero Section (Carousel) -->
   <section class="hero-section">
     <div class="hero-background">
-      <img 
+      <Image 
         src={featuredWork.backgroundImage} 
-        alt={featuredWork.name} 
+        alt={`${featuredWork.name}の背景画像`}
         class="hero-bg-image"
         fetchpriority="high"
         loading="eager"
@@ -133,7 +140,8 @@ const featuredWork = {
       
       <div class="works-grid">
         {workNames.map((workName) => {
-          const workImage = getWorkImage(workName);
+          const workImageObject = getWorkImageObject(workName);
+          const workImageSrc = getWorkImage(workName); // JavaScript内で使用するためURL文字列も保持
           const workDescription = worksData.descriptions[workName as keyof typeof worksData.descriptions] || '';
           
           const isReleased = worksData.released[workName as keyof typeof worksData.released] || false;
@@ -142,13 +150,15 @@ const featuredWork = {
             <article class="work-card">
               <a href={`/works/${workName}`} class="work-link">
                 <div class="work-thumbnail">
-                  <img 
-                    src={workImage} 
-                    alt={workName} 
-                    class="work-image"
-                    loading="lazy"
-                    fetchpriority="low"
-                  />
+                  {workImageObject && (
+                    <Image 
+                      src={workImageObject} 
+                      alt={`${workName}のサムネイル画像`}
+                      class="work-image"
+                      loading="lazy"
+                      fetchpriority="low"
+                    />
+                  )}
                   {isReleased && <span class="work-badge">リリース</span>}
                   <div class="work-view-overlay">
                     <span class="work-view-text">詳細を見る</span>
@@ -1386,7 +1396,7 @@ const featuredWork = {
 
   .work-image {
     width: 100%;
-    object-fit: cover;
+    object-fit: contain;
     z-index: 2;
     transition: transform 0.5s ease;
   }

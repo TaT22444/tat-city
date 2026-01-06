@@ -60,6 +60,7 @@ if (!workName || !worksData.names.includes(workName)) {
 
 // SEO用のデータ準備
 const workDescription = workData.description || `${workData.name}のポートフォリオページです。`;
+const homeUrl = new URL('/', Astro.url.origin).toString();
 const workUrl = new URL(`/works/${workName}`, Astro.url.origin).toString();
 const portfolioUrl = new URL('/portfolio', Astro.url.origin).toString();
 const workImageFullUrl = workImageSrc ? new URL(workImageSrc, Astro.url.origin).toString() : undefined;
@@ -100,12 +101,18 @@ export async function getStaticPaths() {
       {
         "@type": "ListItem",
         "position": 1,
+        "name": "Home",
+        "item": homeUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
         "name": "Portfolio",
         "item": portfolioUrl
       },
       {
         "@type": "ListItem",
-        "position": 2,
+        "position": 3,
         "name": workData.name,
         "item": workUrl
       }
@@ -303,8 +310,12 @@ export async function getStaticPaths() {
   .back-link {
     display: inline-flex;
     align-items: center;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background-color: var(--color-background-gray);
+    border: 1px solid var(--color-border-light);
     gap: 8px;
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 500;
     color: var(--color-text-secondary);
     text-decoration: none;
