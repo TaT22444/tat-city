@@ -247,7 +247,7 @@ const blogNames: string[] = [
     <div class="popup-meta">
       <span></span>
     </div>
-    <p id="popupDescription">UI/UXデザイン、フロントエンド開発を専門とするデザイナー兼エンジニア。使いやすさと美しさを追求した体験設計が得意です。</p>
+    <p class="profile-popup-description" id="profilePopupDescription">{profileData.description}</p>
   </div>
   <div class="popup-coin-container">
     <div class="popup-coin-worksgain">
@@ -5116,6 +5116,14 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     margin: 0 4px 16px;
   }
 
+  :global(.profile-popup-description) {
+    font-size: 0.775rem;
+    line-height: 1.6;
+    color: #4B5563;
+    margin: 0 4px 16px;
+  }
+
+
   .popup-footer {
     margin-top: 24px;
     display: flex;
@@ -5334,7 +5342,9 @@ if (localStorage.getItem('cityTheme') === 'dark') {
 
 
   /* 広告ポイントのスタイル */
+  /* TODO: 広告が適用されたらdisplay: none;を削除する */
   .point-bubble.ad-item {
+    display: none; /* 広告未適用のため一時的に非表示 */
     width: 50px;
     height: 50px;
     overflow: visible;

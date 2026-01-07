@@ -51,7 +51,7 @@ export const worksData = {
   },
   
   durations: {
-    'Hamori': '3ヶ月',
+    'Hamori': '1週間',
     'MasiMasi': '2ヶ月',
     'Atta!': '4ヶ月',
     'CIT portal': '6ヶ月',
