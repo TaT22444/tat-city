@@ -68,25 +68,19 @@
   </div>
 
   <script is:inline>
-    console.log('テーマテスト - スクリプト開始');
-    
     // DOM読み込み完了トリガー
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('テーマテスト - DOM読み込み完了');
       setupTheme();
     });
     
     // 即時実行関数
     (function() {
-      console.log('テーマテスト - 即時関数実行');
       if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        console.log('テーマテスト - 即時セットアップ');
         setupTheme();
       }
     })();
     
     function setupTheme() {
-      console.log('テーマテスト - セットアップ開始');
       const themeToggle = document.getElementById('theme-toggle');
       const themeName = document.getElementById('theme-name');
       
@@ -94,21 +88,14 @@
       if (localStorage.getItem('testTheme') === 'dark') {
         document.documentElement.classList.add('dark-theme');
         themeName.textContent = 'ダーク';
-        console.log('テーマテスト - 初期状態: ダーク');
-      } else {
-        console.log('テーマテスト - 初期状態: ライト');
       }
       
       // クリックイベント設定
       themeToggle.onclick = function() {
-        console.log('テーマテスト - ボタンクリック');
         const isDark = document.documentElement.classList.toggle('dark-theme');
         localStorage.setItem('testTheme', isDark ? 'dark' : 'light');
         themeName.textContent = isDark ? 'ダーク' : 'ライト';
-        console.log('テーマテスト - テーマ変更:', isDark ? 'ダーク' : 'ライト');
       };
-      
-      console.log('テーマテスト - セットアップ完了');
     }
   </script>
 </body>

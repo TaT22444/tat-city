@@ -338,7 +338,6 @@ document.querySelector('#theme-toggle')?.addEventListener('click', function() {
   const isDark = html.classList.toggle('dark-theme');
   this.classList.toggle('dark-active', isDark);
   localStorage.setItem('cityTheme', isDark ? 'dark' : 'light');
-  console.log('Theme toggled to:', isDark ? 'dark' : 'light');
 });
 
 // 保存されたテーマを適用
@@ -443,7 +442,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       }
       db = firebase.firestore();
       firebaseInitialized = true;
-      console.log('Firebase initialized successfully');
       
       // コイン獲得数を読み込む
       await loadCoinGains();
@@ -476,8 +474,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
         profileCoinGains = profileDoc.data().count || 0;
         updateProfileCoinDisplay();
       }
-      
-      console.log('Coin gains loaded from Firestore');
     } catch (error) {
       console.error('Error loading coin gains:', error);
     }
@@ -486,7 +482,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   // Firestoreにコイン獲得数を保存する
   async function saveCoinGains(type, workName = null) {
     if (!db) {
-      console.warn('Firestore not initialized, skipping save');
       throw new Error('Firestore not initialized');
     }
     
@@ -502,7 +497,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
           count: profileCoinGains
         }, { merge: true });
       }
-      console.log(`Coin gains saved to Firestore: ${type} ${workName || ''}`);
       return true; // 成功を返す
     } catch (error) {
       console.error('Error saving coin gains:', error);
@@ -617,7 +611,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
         if (moreBtn) {
           moreBtn.addEventListener('click', () => {
             // 詳細ページに遷移するなどの処理
-            console.log('詳細ページに遷移: プロフィール');
           });
         }
         
@@ -743,8 +736,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       updateCoinCounter();
     }, 300);
     
-    console.log(`コインを取得しました！ 現在の所持数: ${coinCount}`);
-    
     // コイン補充タイマーをリセット
     if (coinRespawnTimer) {
       clearTimeout(coinRespawnTimer);
@@ -808,8 +799,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
           adPopup.style.display = 'none';
         }, 300);
       }
-      
-      console.log('Exited zoom mode');
     }
   }
   
@@ -1617,9 +1606,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     const activeTownElement = document.querySelector('.town-list li.active a');
     const currentTown = activeTownElement?.textContent?.trim().toLowerCase() || 'works';
     
-    console.log('setupPointBubbles called, found', points.length, 'points');
-    console.log('Current town:', currentTown);
-    
     points.forEach((point, index) => {
       // ポイントにIDを設定
       point.setAttribute('id', `point-${index + 1}`);
@@ -1683,14 +1669,10 @@ if (localStorage.getItem('cityTheme') === 'dark') {
           if (workPos) {
             point.style.left = `${workPos.x}%`;
             point.style.top = `${workPos.y}%`;
-            console.log('Setting position for', workName, ':', workPos);
           }
-          
-          console.log('Setting up click event for work:', workName);
         
         point.addEventListener('click', (e) => {
           e.stopPropagation();
-            console.log('Point clicked:', workName);
           // まずズームして、その後ポップアップを表示
           zoomToPoint(workName);
           setTimeout(() => {
@@ -1929,8 +1911,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
         deactivatePointBonus();
       }
     }, 1000);
-    
-    console.log('ポイント倍増ボーナスが有効化されました！');
   }
   
   // ポイント倍増ボーナスを無効化する関数
@@ -1949,8 +1929,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     if (bonusIndicator) {
       bonusIndicator.style.display = 'none';
     }
-    
-    console.log('ポイント倍増ボーナスが終了しました。');
   }
   
   // ボーナスタイマーを更新する関数
@@ -2065,7 +2043,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
 
   // ポイントにズームする機能だけを提供する関数（モーダルは表示しない）
   function zoomToPoint(pointName) {
-    console.log('zoomToPoint called with:', pointName);
     if (!pointName) return;
     
     // 現在のタウンを取得（統合後は基本的にworks）
@@ -2074,9 +2051,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     const currentTown = currentTownText.includes('profile') ? 'profile' : 
                         currentTownText.includes('works') ? 'works' : 
                         currentTownText.includes('blogs') ? 'blogs' : 'works';
-    
-    console.log('Current town:', currentTown);
-    console.log('pointOffsetMap:', pointOffsetMap);
     
     // 既存の表示されているwork-titleを全て非表示にする
     document.querySelectorAll('.work-title').forEach(title => {
@@ -2087,7 +2061,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     // worksタウンに統合したので、worksから取得を優先
     const townMap = pointOffsetMap['works'] || pointOffsetMap[currentTown] || pointOffsetMap['profile'];
     const pos = townMap[pointName];
-    console.log('Position for', pointName, ':', pos);
     
     if (pos && cityGrid) {
       // ズーム状態をセット
@@ -2371,8 +2344,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       
       // 保存が成功したら、コインが画面に溢れるアニメーションを開始
       createCoinBurstAnimation(type === 'work' ? document.getElementById('workPopup') : document.getElementById('profilePopup'));
-      
-      console.log(`コインで応援しました！ ${type === 'work' ? workName : 'Profile'}`);
     } catch (error) {
       // エラーが発生した場合、変更を元に戻す
       console.error('コイン送信に失敗しました:', error);
@@ -2529,8 +2500,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
           profilePopup.style.display = 'none';
         }, 300);
       }
-      
-      console.log('User position reset to initial coordinates');
     });
   }
   
@@ -2788,7 +2757,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       }, 1200); // アニメーション時間と同じ
     });
     
-    console.log(`Coin created: ${coinId} at (${coinX}%, ${coinY}%)`);
     return coinData;
   }
   
@@ -2804,7 +2772,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     const needed = MAX_VISIBLE_COINS - visibleCount;
     
     if (needed > 0) {
-      console.log(`Respawning ${needed} coin(s)...`);
       for (let i = 0; i < needed; i++) {
         createSingleCoin();
       }
@@ -2813,14 +2780,10 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   
   // コインを配置する関数（初期表示時のみ）
   function setupCoins() {
-    console.log('setupCoins: Initial coin setup...');
-    
     // 初期表示は最大3つ
     for (let i = 0; i < MAX_VISIBLE_COINS; i++) {
       createSingleCoin();
     }
-    
-    console.log(`setupCoins complete: ${MAX_VISIBLE_COINS} coins created`);
   }
   
   // 「+1」アニメーションを表示する関数
@@ -2849,7 +2812,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         gainElement.classList.add('active');
-        console.log('Coin gain animation started');
       });
     });
     
@@ -2866,7 +2828,6 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     const coinCountText = document.getElementById('coinCountText');
     if (coinCountText) {
       coinCountText.textContent = coinCount.toString();
-      console.log('Coin counter updated:', coinCount);
     } else {
       console.error('coinCountText element not found!');
     }
