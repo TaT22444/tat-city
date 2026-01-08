@@ -8,6 +8,8 @@ import shiminNoKiImage from '../assets/images/works/市民の木_pop.webp';
 import invidiImage from '../assets/images/works/invidi_pop.webp';
 import ittowImage from '../assets/images/works/works-ittow-thumb.webp';
 import winkImage from '../assets/images/works/wink_pop.webp';
+import copipeImage from '../assets/images/works/works-copipe-thumb.webp';
+import emiuchiImage from '../assets/images/works/works-m1-thumb.webp';
 
 // Hero背景画像をインポート（最適化されたWebP形式）
 import heroIttowBackgroundImage from '../assets/hero-ittow-backgroundImage.webp';
@@ -24,7 +26,9 @@ export const worksData = {
     '市民の木': '未来の街開発における、市民の隠れた声を拾い上げるプラットフォーム。授業課題で作成しました。',
     'Invidi': 'ノーコードで個人のwebページが作成できるプラットフォーム。',
     'Ittow': 'アプリアイコン1タップで一問一答が始まる学習アプリ。',
-    'Wink': '積読防止スマートリンク管理アプリ'
+    'Wink': '積読防止スマートリンク管理アプリ',
+    'Copipe': '普段のコピペフローの中にAIを組み込み、その場でメール文章のリライトや多言語翻訳などを可能にすることで作業の効率を高めるMacアプリ',
+    'えむいち、': '大学院の友達と大学祭に出展しました。その際のサイトです。'
   },
   
   // 作品のメタ情報（複数指定可能）
@@ -36,7 +40,9 @@ export const worksData = {
     '市民の木': ['コミュニティプラットフォーム'],
     'Invidi': ['ノーコードアプリ', 'UI/UX'],
     'Ittow': ['iOSアプリ', 'UI/UX'],
-    'Wink': ['iOSアプリ', 'UI/UX']
+    'Wink': ['iOSアプリ', 'UI/UX'],
+    'Copipe': ['Macアプリ', 'UI/UX'],
+    'えむいち、': ['大学祭', 'Webサイト', 'ブランディング']
   },
   
   scopes: {
@@ -47,7 +53,9 @@ export const worksData = {
     '市民の木': ['授業課題(4人)'],
     'Invidi': ['個人制作'],
     'Ittow': ['個人制作'],
-    'Wink': ['個人制作']
+    'Wink': ['個人制作'],
+    'Copipe': ['個人制作'],
+    'えむいち、': ['デザ科M1(15人)'],
   },
   
   durations: {
@@ -58,7 +66,9 @@ export const worksData = {
     '市民の木': '3ヶ月',
     'Invidi': '1ヶ月',
     'Ittow': '2週間',
-    'Wink': '1ヶ月半'
+    'Wink': '1ヶ月半',
+    'Copipe': '1ヶ月',
+    'えむいち、': '6ヶ月(プロジェクト全体)'
   },
   
   // ポイント位置マップ
@@ -70,7 +80,9 @@ export const worksData = {
     '市民の木': { x: 24, y: 64 },
     'Invidi': { x: 58, y: 45 },
     'Ittow': { x: 55, y: 90 },
-    'Wink': { x: 40, y: 60 }
+    'Wink': { x: 40, y: 60 },
+    'Copipe': { x: 45, y: 85 },
+    'えむいち、': { x: 35, y: 70 }
   },
   
   // 画像パス（最適化された画像オブジェクト）
@@ -82,7 +94,9 @@ export const worksData = {
     '市民の木': shiminNoKiImage,
     'Invidi': invidiImage,
     'Ittow': ittowImage,
-    'Wink': winkImage
+    'Wink': winkImage,
+    'Copipe': copipeImage,
+    'えむいち、': emiuchiImage
   },
   
   // Hero背景画像（PortfolioViewのheroセクション用）
@@ -90,6 +104,7 @@ export const worksData = {
     'Ittow': heroIttowBackgroundImage,
     'Hamori': heroHamoriBackgroundImage,
     'CIT portal': heroCitBackgroundImage
+
     // その他の作品は未定義の場合、デフォルト（Ittow）が使用される
   },
   
@@ -102,7 +117,9 @@ export const worksData = {
     '市民の木': false,
     'Invidi': false,
     'Ittow': true,
-    'Wink': true
+    'Wink': false,
+    'Copipe': true,
+    'えむいち、': true
   },
   
   // リリース先リンク（複数指定可能）
@@ -120,11 +137,17 @@ export const worksData = {
     'Ittow': [
       { label: 'App Store', url: 'https://x.gd/ittow_ios' }
     ],
-    'Wink': []
+    'Wink': [],
+    'Copipe': [
+      { label: 'サービスサイト', url: 'https://copipe-lp.netlify.app/' }
+    ],
+    'えむいち、': [
+      { label: 'LP', url: 'https://m1-ten.netlify.app/' }
+    ]
   },
   
   // 作品名リスト
-  names: ['Hamori', 'Ittow','Wink', 'MasiMasi', 'Atta!', 'CIT portal', '市民の木', 'Invidi',]
+  names: ['Hamori','Copipe', 'Ittow', 'えむいち、', 'Wink', 'MasiMasi', 'Atta!', 'CIT portal', '市民の木', 'Invidi',]
 };
 
 // 新しい作品を追加する関数

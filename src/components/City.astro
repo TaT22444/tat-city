@@ -736,12 +736,18 @@ if (localStorage.getItem('cityTheme') === 'dark') {
       updateCoinCounter();
     }, 300);
     
+    // コインを取得した直後に、不足している分を即座に補充
+    // DOM更新を待つため、少し遅延させる
+    setTimeout(() => {
+      respawnCoins();
+    }, 300);
+    
     // コイン補充タイマーをリセット
     if (coinRespawnTimer) {
       clearTimeout(coinRespawnTimer);
     }
     
-    // 一定時間後にコインを補充
+    // 一定時間後に再度コインを補充（最大3つになるまで）
     coinRespawnTimer = setTimeout(() => {
       respawnCoins();
       coinRespawnTimer = null;
