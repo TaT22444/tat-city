@@ -59,10 +59,15 @@ if (!workName || !worksData.names.includes(workName)) {
 
 // SEO用のデータ準備
 const workDescription = workData.description || `${workData.name}のポートフォリオページです。`;
-const homeUrl = new URL('/', Astro.url.origin).toString();
-const workUrl = new URL(`/works/${workName}`, Astro.url.origin).toString();
-const portfolioUrl = new URL('/portfolio', Astro.url.origin).toString();
-const workImageFullUrl = workImageSrc ? new URL(workImageSrc, Astro.url.origin).toString() : undefined;
+const homeUrl = new URL('/', Astro.site || Astro.url.origin).toString();
+const workUrl = new URL(`/works/${workName}`, Astro.site || Astro.url.origin).toString();
+const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toString();
+// OG画像の絶対URLを生成（Astro.siteが設定されている場合はそれを使用）
+const workImageFullUrl = workImageSrc 
+  ? (workImageSrc.startsWith('http') 
+      ? workImageSrc 
+      : new URL(workImageSrc, Astro.site || Astro.url.origin).toString())
+  : undefined;
 
 // City.astroから来たかどうかを判定（URLクエリパラメータから）
 const fromCity = Astro.url.searchParams.get('from') === 'city';
@@ -78,7 +83,7 @@ export async function getStaticPaths() {
 <Layout 
   title={`${workData.name} | TaT Archive / 2025 ~ 2026`}
   description={workDescription}
-  ogImage={workImageSrc}
+  ogImage={workImageFullUrl || workImageSrc}
   ogType="article"
   canonical={true}
   showNavigation={true}
