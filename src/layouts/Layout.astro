@@ -9,6 +9,7 @@ interface Props {
 	ogImage?: string;
 	ogType?: string;
 	canonical?: boolean;
+	favicon?: string; // 動的ファビコン用
 	// Header関連のprops
 	showNavigation?: boolean;
 	navigationLinks?: Array<{ href: string; label: string }>;
@@ -27,6 +28,7 @@ const {
 	ogImage,
 	ogType = 'website',
 	canonical = true,
+	favicon,
 	showNavigation = true,
 	navigationLinks = [
 		{ href: '#about', label: 'about' },
@@ -47,8 +49,15 @@ const currentUrl = new URL(Astro.url.pathname, Astro.site || Astro.url.origin).t
 
 // OG画像のURLを生成（相対パスの場合は絶対URLに変換）
 const fullOgImage = ogImage 
-	? (ogImage.startsWith('http') ? ogImage : new URL(ogImage, Astro.site || Astro.url.origin).toString())
+	? (ogImage.startsWith('http') ? ogImage : new URL(ogImage.startsWith('/') ? ogImage : `/${ogImage}`, Astro.site || Astro.url.origin).toString())
 	: undefined;
+
+// ファビコンのURLを生成（作品ページの場合は作品画像、それ以外はデフォルト）
+const faviconUrl = favicon
+	? (favicon.startsWith('http') ? favicon : new URL(favicon.startsWith('/') ? favicon : `/${favicon}`, Astro.site || Astro.url.origin).toString())
+	: '/favicon.svg';
+// ファビコンのMIMEタイプを判定
+const faviconType = favicon && favicon.endsWith('.svg') ? 'image/svg+xml' : 'image/webp';
 
 // Portfolio List用のworkNames（City.astro用）
 const workNames: string[] = worksData.names;
@@ -67,8 +76,8 @@ const workNames: string[] = worksData.names;
 		</script>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, maximum-scale=1.0, viewport-fit=cover" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="apple-touch-icon" href="/favicon.svg" />
+		<link rel="icon" type={faviconType} href={faviconUrl} />
+		<link rel="apple-touch-icon" href={faviconUrl} />
 		<meta name="generator" content={Astro.generator} />
 		<!-- Google Search Console 所有権確認 -->
 		<meta name="google-site-verification" content="RQfaisHC2R_v40fW83t8vvKtRv7mZlmhqbKvLl" />
@@ -90,7 +99,22 @@ const workNames: string[] = worksData.names;
 			<meta property="og:description" content={description} />
 		)}
 		{fullOgImage && (
-			<meta property="og:image" content={fullOgImage} />
+			<>
+				{/* HTTPS URLを確実にする */}
+				{(() => {
+					const secureImageUrl = fullOgImage.startsWith('http://') 
+						? fullOgImage.replace('http://', 'https://')
+						: fullOgImage;
+					return (
+						<>
+							<meta property="og:image" content={secureImageUrl} />
+							<meta property="og:image:url" content={secureImageUrl} />
+							<meta property="og:image:secure_url" content={secureImageUrl} />
+							<meta property="og:image:type" content="image/webp" />
+						</>
+					);
+				})()}
+			</>
 		)}
 		<meta property="og:url" content={currentUrl} />
 		<meta property="og:type" content={ogType} />
@@ -105,8 +129,18 @@ const workNames: string[] = worksData.names;
 		)}
 		{fullOgImage && (
 			<>
-				<meta name="twitter:image" content={fullOgImage} />
-				<meta name="twitter:image:alt" content={title} />
+				{(() => {
+					const secureImageUrl = fullOgImage.startsWith('http://') 
+						? fullOgImage.replace('http://', 'https://')
+						: fullOgImage;
+					return (
+						<>
+							<meta name="twitter:image" content={secureImageUrl} />
+							<meta name="twitter:image:src" content={secureImageUrl} />
+							<meta name="twitter:image:alt" content={title} />
+						</>
+					);
+				})()}
 			</>
 		)}
 		

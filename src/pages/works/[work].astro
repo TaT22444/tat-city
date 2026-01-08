@@ -63,10 +63,14 @@ const homeUrl = new URL('/', Astro.site || Astro.url.origin).toString();
 const workUrl = new URL(`/works/${workName}`, Astro.site || Astro.url.origin).toString();
 const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toString();
 // OG画像の絶対URLを生成（Astro.siteが設定されている場合はそれを使用）
+// 作品画像が相対パス（/_astro/...など）の場合も絶対URLに変換
 const workImageFullUrl = workImageSrc 
   ? (workImageSrc.startsWith('http') 
       ? workImageSrc 
-      : new URL(workImageSrc, Astro.site || Astro.url.origin).toString())
+      : new URL(
+          workImageSrc.startsWith('/') ? workImageSrc : `/${workImageSrc}`,
+          Astro.site || Astro.url.origin
+        ).toString())
   : undefined;
 
 // City.astroから来たかどうかを判定（URLクエリパラメータから）
@@ -85,6 +89,7 @@ export async function getStaticPaths() {
   description={workDescription}
   ogImage={workImageFullUrl || workImageSrc}
   ogType="article"
+  favicon={workImageFullUrl || workImageSrc}
   canonical={true}
   showNavigation={true}
   navigationLinks={[
