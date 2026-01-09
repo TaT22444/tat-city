@@ -46,8 +46,10 @@ Orynthでは、MVP（実用最小限の製品）段階や開発初期の状態�
 Solanaチェーン上のサービスですが、Web3関連のツールだけでなく、一般的なWebアプリや便利ツールも登録可能です。
 
 ### 3-2. 審査とマーケットの作成
-プロダクトの登録後、審査に通過するとそのプロダクト独自の「マーケット」を作成できるようになります。審査時間としては、うろ覚えですが、自分は夜の12時にプロダクトを登録し、朝起きて9時ごろには審査が通っていることを確認した気がします。
+プロダクトの登録後、審査に通過するとそのプロダクト独自の「マーケット」を作成できるようになります。
 これは株式上場のような大掛かりなものではなく、「このプロダクトを応援したい！」というユーザーの注目度をトークン化する仕組みです。
+
+審査時間としては、うろ覚えですが、自分は夜の12時にプロダクトを登録し、朝起きて9時ごろには審査が通っていることを確認した気がします。
 
 ### 3-3. 収益の受け取り
 マーケットで取引が行われると、その手数料の一部が開発者の収益となります。
@@ -58,7 +60,7 @@ Solanaチェーン上のサービスですが、Web3関連のツールだけで�
 
 実は2026年1月9日現在、**Orynthを利用しているユーザーの多くは日本人です。**
 
-Orynth公式Xアカウントも **「Orynth is growing pretty fast thanks to Japan!（日本のおかげで急成長している）」** と投稿しており、公開されたデータではアクセス元の **約80%** を日本が占めるなど、日本の個人開発者界隈で急速にムーブメントが起きています。
+Orynth公式Xアカウントも **「Orynth is growing pretty fast thanks to Japan!（日本のおかげで急成長している）」** と投稿しており、公開されたデータではアクセス元の **約80%** を日本が占めるなど、日本の開発者界隈で急速にムーブメントが起きています。
 
 <blockquote class="twitter-tweet"><p lang="ja" dir="ltr">Orynth is growing pretty fast thanks to Japan!<br><br>ご信頼いただきありがとうございます！💕<br><br>Thanks <a href="https://twitter.com/marclou?ref_src=twsrc%5Etfw">@marclou</a> for this cool tool! <br><br>(we had to upgrade to your max plan in 1 day) <a href="https://t.co/PLW7mJ09KH">pic.twitter.com/PLW7mJ09KH</a></p>&mdash; Orynth (@orynthai) <a href="https://twitter.com/orynthai/status/2009202478739542248?ref_src=twsrc%5Etfw">January 8, 2026</a></blockquote>
 
