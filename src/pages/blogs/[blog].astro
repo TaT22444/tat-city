@@ -63,6 +63,7 @@ try {
       title: blogsData.titles[blogSlug as keyof typeof blogsData.titles] || blogContent.data.title || blogSlug || '',
       description: blogsData.descriptions[blogSlug as keyof typeof blogsData.descriptions] || blogContent.data.description || '',
       image: blogsData.images[blogSlug as keyof typeof blogsData.images] || null,
+      ogImage: (blogsData as any).ogImages?.[blogSlug as string] || null,
       references: blogsData.references[blogSlug as keyof typeof blogsData.references] || [],
       showToc: blogContent.data.showToc ?? false,
       tocPosition: blogContent.data.tocPosition || 'after-title',
@@ -79,7 +80,7 @@ if (!blogSlug || !blogContent) {
   return Astro.redirect('/portfolio');
 }
 
-// 画像の取得関数（URL文字列用：ogImageやpreload用）
+// 画像の取得関数（表示用：Imageコンポーネント用）
 const getBlogImageSrc = (image: any): string => {
   if (!image) return '';
   if (typeof image === 'object' && 'src' in image) {
@@ -90,7 +91,7 @@ const getBlogImageSrc = (image: any): string => {
 
 // 画像オブジェクト（Imageコンポーネント用）
 const rawBlogImage = blogData?.image || null;
-// 画像URL文字列（ogImageやpreload用）
+// 表示用画像URL文字列（preload用）
 const blogImageSrc = getBlogImageSrc(blogData?.image);
 
 // SEO用のデータ準備
@@ -100,12 +101,13 @@ const homeUrl = new URL('/', Astro.site || Astro.url.origin).toString();
 const blogUrl = new URL(`/blogs/${blogSlug}`, Astro.site || Astro.url.origin).toString();
 const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toString();
 
-// OG画像の絶対URLを生成
-const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
-  ? (blogImageSrc.startsWith('http') 
-      ? blogImageSrc 
+// OG画像の絶対URLを生成（publicフォルダの画像を使用）
+const ogImagePath = blogData?.ogImage || blogImageSrc;
+const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
+  ? (ogImagePath.startsWith('http') 
+      ? ogImagePath 
       : new URL(
-          blogImageSrc.startsWith('/') ? blogImageSrc : `/${blogImageSrc}`,
+          ogImagePath.startsWith('/') ? ogImagePath : `/${ogImagePath}`,
           Astro.site || Astro.url.origin
         ).toString())
   : undefined;
@@ -114,7 +116,7 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
 <Layout 
   title={`${blogTitle} | TaT Archive / 2025 ~ 2026`}
   description={blogDescription}
-  ogImage={blogImageFullUrl || (blogImageSrc && blogImageSrc.trim() !== '' ? blogImageSrc : undefined)}
+  ogImage={blogImageFullUrl}
   ogType="article"
   canonical={true}
   showNavigation={true}

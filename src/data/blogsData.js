@@ -1,5 +1,5 @@
 // ブログデータを外部ファイルで管理
-// src/assetsから画像をインポート（最適化されたWebP形式）
+// 表示用の画像はsrc/assetsから、OG画像用はpublicフォルダから
 import orynthThumbImage from '../assets/images/blogs/thumb/blog-orynth-thumb.webp';
 
 export const blogsData = {
@@ -13,9 +13,14 @@ export const blogsData = {
     'Orynth': '【Orynthとは？】Solana発の「Web3版Product Hunt」'
   },
   
-  // 画像パス（最適化された画像オブジェクト）
+  // 表示用画像（AstroのImageコンポーネント用）
   images: {
     'Orynth': orynthThumbImage
+  },
+  
+  // OG画像用パス（publicフォルダからの直接パス）
+  ogImages: {
+    'Orynth': '/assets/images/blogs/blog-orynth-thumb.webp'
   },
   
   // 引用先・参考リンク（各ブログごとに配列で管理）
