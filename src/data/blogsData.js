@@ -5,7 +5,7 @@ import orynthThumbImage from '../assets/images/blogs/thumb/blog-orynth-thumb.web
 export const blogsData = {
   // ブログの詳細情報（説明文）
   descriptions: {
-    'Orynth': '【Orynthとは？】個人開発者がプロダクトを公開して資金調達できる、Solana発「Web3版Product Hunt」について、日本人ユーザーの事例も紹介しながら解説していきます'
+    'Orynth': '【Orynthとは？】個人開発者がプロダクトを公開して「持続的な開発支援」を得られる、Solana発「Web3版Product Hunt」について、日本人ユーザーの事例も紹介しながら解説していきます'
   },
   
   // ブログのタイトル（Markdownのfrontmatterのtitleと一致させる）
@@ -29,7 +29,10 @@ export const blogsData = {
       { label: 'AVATAR UI - X投稿', url: 'https://x.com/Sikino_Sito/status/2009065718533521826' },
       { label: 'Onigiri Anki - X投稿', url: 'https://x.com/statistics1012/status/2009409883582746960' },
       { label: 'Tinies Merge - X投稿', url: 'https://x.com/tty215_dev/status/2009321679395409973' },
-      { label: 'Copipe - X投稿', url: 'https://x.com/tatsu_aihara/status/2009062673812738352' }
+      { label: 'Copipe - X投稿', url: 'https://x.com/tatsu_aihara/status/2009062673812738352' },
+      { label: '@IHayato - X投稿', url: 'https://x.com/IHayato/status/2009417039568642343' },
+      { label: '@Sikino_Sito - X投稿', url: 'https://x.com/Sikino_Sito/status/2009477128002392082' },
+      { label: '@lucianlampdefi - X投稿', url: 'https://x.com/lucianlampdefi/status/2009601250049118304' }
     ]
   },
   

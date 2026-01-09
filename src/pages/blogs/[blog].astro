@@ -30,6 +30,35 @@ try {
   
   if (blogContent) {
     const renderResult = await blogContent.render();
+    
+    // Astroのrender()が返すheadingsを使用（h2, h3のみ）
+    // headingsが空の場合は、Markdownのbodyから正規表現で抽出（フォールバック）
+    let headings: Array<{ level: number; text: string; id: string }> = [];
+    
+    if (renderResult.headings && renderResult.headings.length > 0) {
+      headings = renderResult.headings
+        .filter((h: any) => h.depth === 2 || h.depth === 3)
+        .map((h: any) => ({
+          level: h.depth,
+          text: h.text,
+          id: h.slug || h.text.toLowerCase().replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+/g, '-').replace(/^-|-$/g, '') || `heading-${h.text}`
+        }));
+    } else {
+      // フォールバック: Markdownのbodyから正規表現で抽出
+      const body = blogContent.body || '';
+      const headingRegex = /^(#{2,3})\s+(.+)$/gm;
+      let match;
+      let index = 0;
+      
+      while ((match = headingRegex.exec(body)) !== null) {
+        const level = match[1].length;
+        const text = match[2].trim();
+        const id = text.toLowerCase().replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+/g, '-').replace(/^-|-$/g, '') || `heading-${index}`;
+        headings.push({ level, text, id });
+        index++;
+      }
+    }
+    
     blogData = {
       title: blogsData.titles[blogSlug as keyof typeof blogsData.titles] || blogContent.data.title || blogSlug || '',
       description: blogsData.descriptions[blogSlug as keyof typeof blogsData.descriptions] || blogContent.data.description || '',
@@ -37,6 +66,7 @@ try {
       references: blogsData.references[blogSlug as keyof typeof blogsData.references] || [],
       showToc: blogContent.data.showToc ?? false,
       tocPosition: blogContent.data.tocPosition || 'after-title',
+      headings: headings,
       Content: renderResult.Content
     };
   }
@@ -171,10 +201,26 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
         </nav>
 
         <!-- 目次（before-title位置） -->
-        {blogData?.showToc && blogData.tocPosition === 'before-title' && (
-          <nav class="blog-toc" id="blogToc" aria-label="目次">
-            <h2 class="blog-toc-title">目次</h2>
-            <ul class="blog-toc-list" id="blogTocList"></ul>
+        {blogData?.showToc && blogData.tocPosition === 'before-title' && blogData.headings && blogData.headings.length > 0 && (
+          <nav class="blog-toc" aria-label="目次">
+            <div class="blog-toc-header">
+              <p class="blog-toc-title">目次</p>
+              <button class="blog-toc-accordion" aria-label="目次を開閉" aria-expanded="false">
+                <svg class="toc-icon-up" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 5.29688L11.8564 9.14987L11.1494 9.85787L8.00244 6.71087L4.85644 9.85787L4.14844 9.14987L8.00244 5.29688Z" fill="currentColor"/>
+                </svg>
+                <svg class="toc-icon-down" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 10.7031L4.14844 6.85013L4.85644 6.14213L8.00244 9.28913L11.1494 6.14213L11.8564 6.85013L8.00244 10.7031Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+            <ul class="blog-toc-list">
+              {blogData.headings.map((heading) => (
+                <li class={`toc-item toc-item-h${heading.level}`}>
+                  <a href={`#${heading.id}`} class="toc-link">{heading.text}</a>
+                </li>
+              ))}
+            </ul>
           </nav>
         )}
 
@@ -184,10 +230,26 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
         </div>
 
         <!-- 目次（after-title位置） -->
-        {blogData?.showToc && blogData.tocPosition === 'after-title' && (
-          <nav class="blog-toc" id="blogToc" aria-label="目次">
-            <h2 class="blog-toc-title">目次</h2>
-            <ul class="blog-toc-list" id="blogTocList"></ul>
+        {blogData?.showToc && blogData.tocPosition === 'after-title' && blogData.headings && blogData.headings.length > 0 && (
+          <nav class="blog-toc" aria-label="目次">
+            <div class="blog-toc-header">
+              <p class="blog-toc-title">目次</p>
+              <button class="blog-toc-accordion" aria-label="目次を開閉" aria-expanded="false">
+                <svg class="toc-icon-up" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 5.29688L11.8564 9.14987L11.1494 9.85787L8.00244 6.71087L4.85644 9.85787L4.14844 9.14987L8.00244 5.29688Z" fill="currentColor"/>
+                </svg>
+                <svg class="toc-icon-down" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 10.7031L4.14844 6.85013L4.85644 6.14213L8.00244 9.28913L11.1494 6.14213L11.8564 6.85013L8.00244 10.7031Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+            <ul class="blog-toc-list">
+              {blogData.headings.map((heading) => (
+                <li class={`toc-item toc-item-h${heading.level}`}>
+                  <a href={`#${heading.id}`} class="toc-link">{heading.text}</a>
+                </li>
+              ))}
+            </ul>
           </nav>
         )}
 
@@ -205,24 +267,46 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
         )}
 
         <!-- 目次（after-image位置） -->
-        {blogData?.showToc && blogData.tocPosition === 'after-image' && (
-          <nav class="blog-toc" id="blogToc" aria-label="目次">
-            <h2 class="blog-toc-title">目次</h2>
-            <ul class="blog-toc-list" id="blogTocList"></ul>
+        {blogData?.showToc && blogData.tocPosition === 'after-image' && blogData.headings && blogData.headings.length > 0 && (
+          <nav class="blog-toc" aria-label="目次">
+            <div class="blog-toc-header">
+              <p class="blog-toc-title">目次</p>
+              <button class="blog-toc-accordion" aria-label="目次を開閉" aria-expanded="false">
+                <svg class="toc-icon-up" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 5.29688L11.8564 9.14987L11.1494 9.85787L8.00244 6.71087L4.85644 9.85787L4.14844 9.14987L8.00244 5.29688Z" fill="currentColor"/>
+                </svg>
+                <svg class="toc-icon-down" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 10.7031L4.14844 6.85013L4.85644 6.14213L8.00244 9.28913L11.1494 6.14213L11.8564 6.85013L8.00244 10.7031Z" fill="currentColor"/>
+                </svg>
+              </button>
+            </div>
+            <ul class="blog-toc-list">
+              {blogData.headings.map((heading) => (
+                <li class={`toc-item toc-item-h${heading.level}`}>
+                  <a href={`#${heading.id}`} class="toc-link">{heading.text}</a>
+                </li>
+              ))}
+            </ul>
           </nav>
         )}
 
         <!-- 目次（before-content位置） -->
-        {blogData?.showToc && blogData.tocPosition === 'before-content' && (
-          <nav class="blog-toc" id="blogToc" aria-label="目次">
-            <h2 class="blog-toc-title">目次</h2>
-            <ul class="blog-toc-list" id="blogTocList"></ul>
+        {blogData?.showToc && blogData.tocPosition === 'before-content' && blogData.headings && blogData.headings.length > 0 && (
+          <nav class="blog-toc" aria-label="目次">
+            <p class="blog-toc-title">目次</p>
+            <ul class="blog-toc-list">
+              {blogData.headings.map((heading) => (
+                <li class={`toc-item toc-item-h${heading.level}`}>
+                  <a href={`#${heading.id}`} class="toc-link">{heading.text}</a>
+                </li>
+              ))}
+            </ul>
           </nav>
         )}
 
         <!-- 本文（Markdownコンテンツ） -->
         {blogData?.Content && (
-          <div class="blog-content-body">
+          <div class="blog-content-body" data-headings={JSON.stringify(blogData.headings || [])}>
             <blogData.Content />
           </div>
         )}
@@ -445,71 +529,164 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
     }
   })();
   
-  // 目次生成機能
+  // 見出しへのID付与と目次リンクのスムーススクロール設定、画像の処理
   (function() {
-    // 目次が表示されるかどうかを確認（クライアントサイドで判定）
-    const tocElement = document.getElementById('blogToc');
-    if (!tocElement) return;
-    
-    function generateTOC() {
+    function processContent() {
       const blogContentBody = document.querySelector('.blog-content-body');
-      const tocList = document.getElementById('blogTocList');
+      if (!blogContentBody) return;
       
-      if (!blogContentBody || !tocList) return;
-      
-      // 見出し（h2, h3）を取得
-      const headings = blogContentBody.querySelectorAll('h2, h3');
-      
-      if (headings.length === 0) {
-        // 見出しがない場合は目次を非表示
-        const toc = document.getElementById('blogToc');
-        if (toc) toc.style.display = 'none';
-        return;
+      // data-headings属性から見出し情報を取得
+      const headingsDataAttr = blogContentBody.getAttribute('data-headings');
+      let headingsData = [];
+      try {
+        headingsData = headingsDataAttr ? JSON.parse(headingsDataAttr) : [];
+      } catch (e) {
+        console.error('Failed to parse headings data:', e);
       }
       
-      // 見出しにIDを付与し、目次を生成
+      // 見出しにIDを付与
+      const headings = blogContentBody.querySelectorAll('h2, h3');
       headings.forEach((heading, index) => {
-        // IDが既に設定されている場合はスキップ
+        // 既にIDが付与されている場合はスキップ
         if (heading.id) return;
         
-        // 見出しテキストからIDを生成
         const text = heading.textContent || '';
-        const id = `heading-${index}-${text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
-        heading.id = id;
-        
-        // 目次アイテムを作成
-        const listItem = document.createElement('li');
-        listItem.className = `toc-item toc-item-${heading.tagName.toLowerCase()}`;
-        
-        const link = document.createElement('a');
-        link.href = `#${id}`;
-        link.textContent = text;
-        link.className = 'toc-link';
-        link.addEventListener('click', (e) => {
-          e.preventDefault();
-          const target = document.getElementById(id);
-          if (target) {
-            const offset = 80; // ヘッダーの高さ分のオフセット
-            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
-            window.scrollTo({
-              top: targetPosition,
-              behavior: 'smooth'
-            });
-          }
+        // headingsDataから該当する見出しを探す（テキストが一致するもの）
+        const matchingHeading = headingsData.find((h) => {
+          const headingText = text.trim();
+          const hText = h.text.trim();
+          // 完全一致、または空白を除いて比較
+          return headingText === hText || 
+                 headingText.replace(/\s+/g, ' ') === hText.replace(/\s+/g, ' ') ||
+                 headingText.toLowerCase() === hText.toLowerCase();
         });
         
-        listItem.appendChild(link);
-        tocList.appendChild(listItem);
+        let targetId = null;
+        if (matchingHeading) {
+          targetId = matchingHeading.id;
+        } else {
+          // 一致する見出しがない場合は、テキストからIDを生成
+          targetId = text.toLowerCase()
+            .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]+/g, '-')
+            .replace(/^-|-$/g, '') || `heading-${index}`;
+        }
+        
+        if (targetId) {
+          heading.id = targetId;
+        }
+      });
+      
+      // Markdown内の画像リンクを画像要素に変換
+      // 画像パス（/assets/で始まる）を持つリンクを画像に変換
+      const imageLinks = blogContentBody.querySelectorAll('a[href^="/assets/images/"], a[href^="./"], a[href*=".webp"], a[href*=".png"], a[href*=".jpg"], a[href*=".jpeg"]');
+      imageLinks.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+        
+        // リンクの中身が画像パスのみ、またはaltテキストのみの場合
+        const linkText = link.textContent?.trim() || '';
+        const isImageLink = href.match(/\.(webp|png|jpg|jpeg|gif|svg)$/i) || 
+                           (linkText && link.children.length === 0);
+        
+        if (isImageLink) {
+          // リンクを画像要素に変換
+          const img = document.createElement('img');
+          img.src = href.startsWith('./') ? href.replace('./', '/assets/images/blogs/') : href;
+          img.alt = linkText || link.getAttribute('title') || '画像';
+          img.className = 'markdown-image';
+          
+          // 親要素が<p>の場合、段落ごと置き換え
+          const parent = link.parentElement;
+          if (parent && parent.tagName === 'P' && parent.children.length === 1) {
+            parent.replaceWith(img);
+          } else {
+            link.replaceWith(img);
+          }
+        }
+      });
+      
+      // 目次リンクのスムーススクロール設定
+      const tocLinks = document.querySelectorAll('.blog-toc .toc-link');
+      tocLinks.forEach(link => {
+        // 既にイベントリスナーが設定されている場合はスキップ
+        if (link.__tocClickHandler) return;
+        
+        const clickHandler = (e) => {
+          e.preventDefault();
+          const href = link.getAttribute('href');
+          if (href && href.startsWith('#')) {
+            const targetId = href.substring(1);
+            const target = document.getElementById(targetId);
+            if (target) {
+              const offset = 80;
+              const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+              window.scrollTo({
+                top: targetPosition,
+                behavior: 'smooth'
+              });
+            }
+          }
+        };
+        
+        link.addEventListener('click', clickHandler);
+        link.__tocClickHandler = clickHandler;
       });
     }
     
-    // DOMContentLoadedを待つ、または即座に実行
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(generateTOC, 100);
+        setTimeout(processContent, 300);
       });
     } else {
-      setTimeout(generateTOC, 100);
+      setTimeout(processContent, 300);
+    }
+  })();
+  
+  // 目次の開閉機能
+  (function() {
+    function initTocAccordion() {
+      const tocAccordionButtons = document.querySelectorAll('.blog-toc-accordion');
+      
+      tocAccordionButtons.forEach(button => {
+        // 既にイベントリスナーが設定されている場合はスキップ
+        if (button.__tocAccordionHandler) return;
+        
+        const clickHandler = (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          const tocNav = button.closest('.blog-toc');
+          if (!tocNav) return;
+          
+          // is-openクラスの切り替え
+          const isOpen = tocNav.classList.contains('is-open');
+          
+          if (isOpen) {
+            tocNav.classList.remove('is-open');
+            button.setAttribute('aria-expanded', 'false');
+          } else {
+            tocNav.classList.add('is-open');
+            button.setAttribute('aria-expanded', 'true');
+          }
+        };
+        
+        button.addEventListener('click', clickHandler);
+        button.__tocAccordionHandler = clickHandler;
+        
+        // 初期状態を設定
+        const tocNav = button.closest('.blog-toc');
+        if (tocNav) {
+          button.setAttribute('aria-expanded', 'false');
+        }
+      });
+    }
+    
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(initTocAccordion, 100);
+      });
+    } else {
+      setTimeout(initTocAccordion, 100);
     }
   })();
   
@@ -658,7 +835,7 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
   }
 
   .blog-title {
-    font-size: 32px;
+    font-size: 28px;
     font-weight: 600;
     color: var(--color-text-primary);
     margin: 0;
@@ -816,12 +993,13 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
 
   /* 画像のスタイル */
   .blog-content-body :global(img) {
-    width: 100%;
+    width: calc(100% - 64px);
+    padding: 32px;
     max-width: 100%;
     height: auto;
-    border-radius: 8px;
+    background-color: var(--color-background-gray);
+    border-radius: 16px;
     margin: 2.5em 0;
-    box-shadow: 0 0 32px rgba(0, 0, 0, 0.08);
     display: block;
   }
 
@@ -916,20 +1094,81 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
      目次（Table of Contents）
      ======================================== */
   .blog-toc {
+    max-height: 104px;
+    overflow: hidden;
     margin: 2em 0;
     padding: 24px;
     background-color: var(--color-background-gray);
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
+    transition: max-height 0.2s ease-out;
+  }
+
+  .blog-toc.is-open {
+    max-height: 2000px;
+  }
+
+  .blog-toc-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .blog-toc-accordion {
+    background: none;
+    border: none;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    background-color: var(--color-background-gray);
+    border-radius: 8px;
+    border: 1px solid var(--color-border-light);
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    width: 40px;
+    height: 32px;
+  }
+
+  .blog-toc-accordion:hover {
+    opacity: 1;
+    background-color: var(--color-white);
+  }
+
+  .blog-toc-accordion svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+  }
+
+  /* 閉じているとき：downアイコンを表示（展開する方向） */
+  .blog-toc-accordion .toc-icon-up {
+    display: none;
+  }
+
+  .blog-toc-accordion .toc-icon-down {
+    display: block;
+  }
+
+  /* 開いているとき：upアイコンを表示（折りたたむ方向） */
+  .blog-toc.is-open .blog-toc-accordion .toc-icon-down {
+    display: none;
+  }
+
+  .blog-toc.is-open .blog-toc-accordion .toc-icon-up {
+    display: block;
   }
 
   .blog-toc-title {
     font-size: 14px;
     font-weight: 600;
     color: var(--color-text-primary);
-    margin: 0 0 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--color-border-light);
+    margin: 0;
   }
 
   .blog-toc-list {
@@ -939,6 +1178,13 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
     display: flex;
     flex-direction: column;
     gap: 8px;
+    filter: blur(1px);
+    transition: filter 0.4s ease-out;
+  }
+
+  .blog-toc.is-open .blog-toc-list {
+    filter: none;
+    transition: filter 0.4s ease-out;
   }
 
   .blog-toc-list .toc-item {
@@ -961,6 +1207,10 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
     text-decoration: none;
     transition: opacity 0.2s ease;
     line-height: 1.6;
+  }
+
+  .toc-item-h2 .toc-link {
+    font-weight: 600;
   }
 
   .blog-toc-list .toc-link:hover {
@@ -1115,6 +1365,14 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
       padding: 56px 0 80px;
     }
 
+    .blog-toc {
+      padding: 16px 20px;
+    }
+
+    .toc-item .toc-link {
+      font-size: 12px;
+    }
+
     .blog-content-container {
       max-width: 100%;
       padding: 0 20px;
@@ -1207,6 +1465,9 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
 
     .blog-content-body :global(img) {
       margin: 2em 0;
+      padding: 16px;
+      border-radius: 12px;
+      background-color: var(--color-background-gray);
     }
 
     .blog-content-body :global(blockquote:not(.twitter-tweet)) {
