@@ -1,6 +1,7 @@
 ---
 // 新しいポートフォリオビューデザイン - Figmaデザイン準拠
 import { worksData } from '../data/worksData.js';
+import { blogsData } from '../data/blogsData.js';
 import { profileData } from '../data/profileData.js';
 import { Image } from 'astro:assets';
 
@@ -46,8 +47,9 @@ if (worksData.heroBackgroundImages) {
 }
 
 const workNames: string[] = worksData.names;
+const blogNames: string[] = blogsData.names;
 
-// Heroセクション用のフィーチャー作品（初期表示はIttow）
+// Heroセクション用のフィーチャー作品（初期表示はIttow、作品のみ）
 const initialWorkIndex = workNames.indexOf('Ittow');
 const initialWorkName = workNames[initialWorkIndex >= 0 ? initialWorkIndex : 0];
 const featuredWork = {
@@ -198,6 +200,51 @@ const featuredWork = {
                 <h3 class="work-name">{workName}</h3>
                 <p class="work-description">{workDescription}</p>
               </div>
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <!-- Blogs Section -->
+  <section class="blogs-section" id="blogs">
+    <div class="section-container">
+      <div class="section-header">
+        <h2 class="section-title">Blogs</h2>
+        <div class="section-underline"></div>
+      </div>
+      
+      <div class="blogs-grid">
+        {blogNames.map((blogName) => {
+          const blogImageObject = blogsData.images[blogName as keyof typeof blogsData.images] || null;
+          const blogImageSrc = blogImageObject && typeof blogImageObject === 'object' && 'src' in blogImageObject ? blogImageObject.src : '';
+          const blogDescription = blogsData.descriptions[blogName as keyof typeof blogsData.descriptions] || '';
+          const blogTitle = blogsData.titles[blogName as keyof typeof blogsData.titles] || blogName;
+          
+          return (
+            <article class="blog-card">
+              <a href={`/blogs/${blogName}`} class="blog-link">
+                <div class="blog-thumbnail">
+                  {blogImageObject && (
+                    <Image 
+                      src={blogImageObject} 
+                      alt={`${blogTitle}のサムネイル画像`}
+                      class="blog-image"
+                      loading="lazy"
+                      fetchpriority="low"
+                    />
+                  )}
+                  <div class="blog-view-overlay">
+                    <span class="blog-view-text">詳細を見る</span>
+                  </div>
+                </div>
+                <div class="blog-info">
+                  <p class="blog-category">ブログ</p>
+                  <h3 class="blog-name">{blogTitle}</h3>
+                  <p class="blog-description">{blogDescription}</p>
+                </div>
               </a>
             </article>
           );
@@ -538,13 +585,16 @@ const featuredWork = {
 
   // Mobile Menu Toggle - PortfolioHeaderコンポーネントに移動したため削除
 
-  // Intersection Observer for mobile work cards
+  // Intersection Observer for mobile work cards and blog cards
   function setupWorkCardIntersectionObserver() {
     // モバイルサイズでのみ動作
     if (window.innerWidth > 768) return;
     
     const workCards = document.querySelectorAll('.work-card');
-    if (workCards.length === 0) return;
+    const blogCards = document.querySelectorAll('.blog-card');
+    const allCards = [...workCards, ...blogCards];
+    
+    if (allCards.length === 0) return;
     
     const observerOptions = {
       root: null,
@@ -562,7 +612,7 @@ const featuredWork = {
       });
     }, observerOptions);
     
-    workCards.forEach(card => {
+    allCards.forEach(card => {
       observer.observe(card);
     });
     
@@ -573,12 +623,12 @@ const featuredWork = {
       resizeTimer = setTimeout(() => {
         // モバイルサイズの場合のみ再設定
         if (window.innerWidth <= 768) {
-          workCards.forEach(card => {
+          allCards.forEach(card => {
             observer.observe(card);
           });
         } else {
           // PCサイズの場合は全てのクラスを削除
-          workCards.forEach(card => {
+          allCards.forEach(card => {
             card.classList.remove('in-view');
             observer.unobserve(card);
           });
@@ -1554,6 +1604,132 @@ const featuredWork = {
   }
 
   /* ========================================
+     Blogs Section (Worksと同じ構造・見た目)
+     ======================================== */
+  .blogs-section {
+    position: relative;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .blogs-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 64px 40px;
+  }
+
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .blog-link {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+  }
+
+  .blog-link:hover {
+    opacity: 1;
+  }
+
+  .blog-thumbnail {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16/9;
+    border-radius: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid var(--color-border-light);
+    box-shadow: 0 0 120px rgba(0, 0, 0, 0.15);
+  }
+
+  .blog-image {
+    width: 100%;
+    object-fit: contain;
+    z-index: 2;
+    transition: transform 0.5s ease;
+  }
+  
+  .blog-card:hover .blog-image {
+    transform: scale(1.1);
+  }
+  
+  /* PCサイズ: ホバー時にオーバーレイを表示 */
+  .blog-view-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 6;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border-radius: 8px;
+  }
+  
+  .blog-card:hover .blog-view-overlay {
+    opacity: 1;
+  }
+  
+  .blog-view-text {
+    color: var(--color-white);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    z-index: 7;
+    position: relative;
+  }
+
+  .blog-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .blog-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 8px 0 0;
+  }
+
+  .blog-category {
+    font-size: 10px;
+    font-weight: 300;
+    color: var(--color-text-tertiary);
+    margin: 0;
+  }
+
+  .blog-description {
+    font-size: 12px;
+    font-weight: 300;
+    color: var(--color-text-tertiary);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  /* ========================================
      Expertise Section
      ======================================== */
   .expertise-section {
@@ -1646,7 +1822,8 @@ const featuredWork = {
       padding: 100px 60px;
     }
 
-    .works-grid {
+    .works-grid,
+    .blogs-grid {
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 60px 30px;
     }
@@ -2022,6 +2199,56 @@ const featuredWork = {
     }
 
     .work-description {
+      line-height: 1.6;
+      color: var(--color-text-tertiary);
+    }
+
+    /* Blogs Section - Mobile (Worksと同じスタイル) */
+    .blogs-grid {
+      gap: 64px;
+      grid-template-columns: 1fr;
+    }
+
+    .blog-card {
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      gap: 10px;
+    }
+
+    .blog-thumbnail {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 0 24px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* モバイルサイズ: ホバー時はオーバーレイを表示しない（PCサイズのホバースタイルを上書き） */
+    .blog-card:hover .blog-view-overlay {
+      opacity: 0;
+      animation: none;
+    }
+    
+    /* モバイルサイズ: 画面中央に来た時にオーバーレイを表示（緩やかにフェードインアウト） */
+    .blog-card.in-view .blog-view-overlay {
+      opacity: 1;
+      animation: mobileFadeInOut 4s ease-in-out infinite;
+    }
+
+    .blog-info {
+      gap: 8px;
+    }
+
+    .blog-category {
+    }
+
+    .blog-name {
+      font-size: 16px;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    .blog-description {
       line-height: 1.6;
       color: var(--color-text-tertiary);
     }
