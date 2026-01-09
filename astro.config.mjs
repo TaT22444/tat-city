@@ -3,5 +3,5 @@ import { defineConfig } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://tat-city.netlify.app',
+	site: 'https://tat-archive.com',
 });

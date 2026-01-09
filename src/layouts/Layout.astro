@@ -46,7 +46,7 @@ const {
 const currentUrl = new URL(Astro.url.pathname, Astro.site || Astro.url.origin).toString();
 
 // OG画像のURLを生成（相対パスの場合は絶対URLに変換）
-const fullOgImage = ogImage 
+const fullOgImage = ogImage && typeof ogImage === 'string' && ogImage.trim() !== ''
 	? (ogImage.startsWith('http') ? ogImage : new URL(ogImage.startsWith('/') ? ogImage : `/${ogImage}`, Astro.site || Astro.url.origin).toString())
 	: undefined;
 

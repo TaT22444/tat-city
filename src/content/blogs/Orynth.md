@@ -3,7 +3,7 @@ title: '【Orynthとは？】Solana発の「Web3版Product Hunt」'
 description: '【Orynthとは？】個人開発者がプロダクトを公開して資金調達できる、Solana発「Web3版Product Hunt」について、日本人ユーザーの事例も紹介しながら解説していきます'
 ---
 
-## Orynth（オリンス）とは？
+## Orynthとは？
 
 Orynthは、一言で表すと **「Solanaブロックチェーンを活用した、開発者のための製品ローンチプラットフォーム」** です。
 
@@ -95,4 +95,4 @@ Orynthは、単なる仮想通貨のプラットフォームではなく、**「
 
 開発者は、資金繰りやマーケティングに奔走する時間を減らし、プロダクトの改善に集中する。その結果、より良い製品が生まれ、ユーザーも喜ぶ。そんな健全なサイクルがOrynth上で生まれつつあります。
 
-もしあなたが「何かを作っている」なら、一度公式ページ [https://www.orynth.dev/](https://www.orynth.dev/) を覗いてみてください。
+もし興味がある方は、ぜひ一度公式ページ [https://www.orynth.dev/](https://www.orynth.dev/) を覗いてみてください！

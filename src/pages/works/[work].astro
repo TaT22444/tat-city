@@ -22,6 +22,7 @@ const workData = {
 
 // Markdownコンテンツの取得（存在する場合）
 let Content = null;
+let workMarkdownTitle: string | undefined = undefined;
 try {
   const worksContent = await getCollection('works');
   // item.idはファイル名（拡張子付き、例: Hamori.md）なので、拡張子を除いて比較
@@ -33,6 +34,7 @@ try {
   if (workContent) {
     const renderResult = await workContent.render();
     Content = renderResult.Content;
+    workMarkdownTitle = workContent.data.title;
   }
 } catch (error) {
   // Content Collectionsが設定されていない場合は無視
@@ -58,13 +60,14 @@ if (!workName || !worksData.names.includes(workName)) {
 }
 
 // SEO用のデータ準備
-const workDescription = workData.description || `${workData.name}のポートフォリオページです。`;
+const workTitle = workMarkdownTitle || workData.name;
+const workDescription = workData.description || `${workTitle}のポートフォリオページです。`;
 const homeUrl = new URL('/', Astro.site || Astro.url.origin).toString();
 const workUrl = new URL(`/works/${workName}`, Astro.site || Astro.url.origin).toString();
 const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toString();
 // OG画像の絶対URLを生成（Astro.siteが設定されている場合はそれを使用）
 // 作品画像が相対パス（/_astro/...など）の場合も絶対URLに変換
-const workImageFullUrl = workImageSrc 
+const workImageFullUrl = workImageSrc && workImageSrc.trim() !== ''
   ? (workImageSrc.startsWith('http') 
       ? workImageSrc 
       : new URL(
@@ -85,9 +88,9 @@ export async function getStaticPaths() {
 ---
 
 <Layout 
-  title={`${workData.name} | TaT Archive / 2025 ~ 2026`}
+  title={`${workTitle} | TaT Archive / 2025 ~ 2026`}
   description={workDescription}
-  ogImage={workImageFullUrl || workImageSrc}
+  ogImage={workImageFullUrl || (workImageSrc && workImageSrc.trim() !== '' ? workImageSrc : undefined)}
   ogType="article"
   canonical={true}
   showNavigation={true}
@@ -127,7 +130,7 @@ export async function getStaticPaths() {
       {
         "@type": "ListItem",
         "position": 3,
-        "name": workData.name,
+        "name": workTitle,
         "item": workUrl
       }
     ]
@@ -138,7 +141,7 @@ export async function getStaticPaths() {
     const schema: any = {
       "@context": "https://schema.org",
       "@type": "CreativeWork",
-      "name": workData.name,
+      "name": workTitle,
       "description": workDescription,
       "url": workUrl,
       "creator": {
@@ -195,7 +198,7 @@ export async function getStaticPaths() {
         <!-- タイトルとCTA（リリースリンク） -->
         <div class="work-header">
           <div class="work-title-section">
-            <h1 class="work-title">{workData.name}</h1>
+            <h1 class="work-title">{workTitle}</h1>
             {workData.releaseLinks.length > 0 && (
               <div class="work-cta-buttons">
                 {workData.releaseLinks.map((link) => (
@@ -249,7 +252,7 @@ export async function getStaticPaths() {
           <div class="work-hero-image-wrapper">
             <Image 
               src={rawWorkImage} 
-              alt={`${workData.name}のプレビュー画像`}
+              alt={`${workTitle}のプレビュー画像`}
               class="work-hero-image"
               loading="eager"
               fetchpriority="high"
@@ -275,7 +278,7 @@ export async function getStaticPaths() {
             <a 
               href={`https://twitter.com/intent/tweet?text=${encodeURIComponent((() => {
                 // 作品名と説明文を含めたツイート文を作成
-                const tweetText = `${"「" + workData.name + "」"}\n${workDescription}`;
+                const tweetText = `${"「" + workTitle + "」"}\n${workDescription}`;
                 // Xのツイート文字数制限（280文字）を考慮して、URL分（約23文字）を除いた257文字以内に調整
                 const maxLength = 240;
                 if (tweetText.length > maxLength) {

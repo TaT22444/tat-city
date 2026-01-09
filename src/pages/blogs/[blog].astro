@@ -34,6 +34,7 @@ try {
       title: blogsData.titles[blogSlug as keyof typeof blogsData.titles] || blogContent.data.title || blogSlug || '',
       description: blogsData.descriptions[blogSlug as keyof typeof blogsData.descriptions] || blogContent.data.description || '',
       image: blogsData.images[blogSlug as keyof typeof blogsData.images] || null,
+      references: blogsData.references[blogSlug as keyof typeof blogsData.references] || [],
       Content: renderResult.Content
     };
   }
@@ -68,7 +69,7 @@ const blogUrl = new URL(`/blogs/${blogSlug}`, Astro.site || Astro.url.origin).to
 const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toString();
 
 // OG画像の絶対URLを生成
-const blogImageFullUrl = blogImageSrc 
+const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
   ? (blogImageSrc.startsWith('http') 
       ? blogImageSrc 
       : new URL(
@@ -81,7 +82,7 @@ const blogImageFullUrl = blogImageSrc
 <Layout 
   title={`${blogTitle} | TaT Archive / 2025 ~ 2026`}
   description={blogDescription}
-  ogImage={blogImageFullUrl || blogImageSrc}
+  ogImage={blogImageFullUrl || (blogImageSrc && blogImageSrc.trim() !== '' ? blogImageSrc : undefined)}
   ogType="article"
   canonical={true}
   showNavigation={true}
@@ -189,6 +190,27 @@ const blogImageFullUrl = blogImageSrc
         {blogData?.Content && (
           <div class="blog-content-body">
             <blogData.Content />
+          </div>
+        )}
+        
+        <!-- 引用先・参考リンクセクション -->
+        {blogData?.references && blogData.references.length > 0 && (
+          <div class="blog-references-section">
+            <h2 class="blog-references-title">参考リンク</h2>
+            <ul class="blog-references-list">
+              {blogData.references.map((ref) => (
+                <li class="blog-reference-item">
+                  <a 
+                    href={ref.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    class="blog-reference-link"
+                  >
+                    {ref.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
         
@@ -731,6 +753,52 @@ const blogImageFullUrl = blogImageSrc
   }
 
   /* ========================================
+     引用先・参考リンクセクション
+     ======================================== */
+  .blog-references-section {
+    margin-top: 64px;
+    padding-top: 40px;
+    border-top: 1px solid var(--color-border-light);
+  }
+
+  .blog-references-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 20px;
+    line-height: 1.4;
+  }
+
+  .blog-references-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .blog-reference-item {
+    margin: 0;
+  }
+
+  .blog-reference-link {
+    display: inline-flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+    word-break: break-all;
+  }
+
+  .blog-reference-link:hover {
+    opacity: 0.7;
+  }
+
+  /* ========================================
      シェアセクション（worksと同じスタイル）
      ======================================== */
   .blog-share-section {
@@ -934,6 +1002,24 @@ const blogImageFullUrl = blogImageSrc
 
     .blog-content-body :global(hr) {
       margin: 2em 0;
+    }
+
+    .blog-references-section {
+      margin-top: 48px;
+      padding-top: 32px;
+    }
+
+    .blog-references-title {
+      font-size: 14px;
+      margin-bottom: 16px;
+    }
+
+    .blog-references-list {
+      gap: 10px;
+    }
+
+    .blog-reference-link {
+      font-size: 12px;
     }
 
     .blog-share-section {
