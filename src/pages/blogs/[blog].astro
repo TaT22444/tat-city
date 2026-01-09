@@ -1,0 +1,844 @@
+---
+// ブログ詳細ページ - worksと同じ構造
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+// 静的パス生成
+export async function getStaticPaths() {
+  const blogs = await getCollection('blogs');
+  return blogs.map((blog) => ({
+    params: { blog: blog.id.replace(/\.md$/, '') }
+  }));
+}
+
+// URLパラメータからブログ名を取得
+const blogSlug = Astro.params.blog;
+
+// ブログコンテンツの取得
+let blogContent = null;
+let blogData = null;
+
+try {
+  const blogsContent = await getCollection('blogs');
+  // item.idはファイル名（拡張子付き、例: Orynth.md）なので、拡張子を除いて比較
+  blogContent = blogsContent.find((item) => {
+    const idWithoutExt = item.id.replace(/\.md$/, '');
+    return idWithoutExt === blogSlug;
+  });
+  
+  if (blogContent) {
+    const renderResult = await blogContent.render();
+    blogData = {
+      title: blogContent.data.title || blogSlug || '',
+      description: blogContent.data.description || '',
+      Content: renderResult.Content
+    };
+  }
+} catch (error) {
+  // Content Collectionsが設定されていない場合は無視
+}
+
+// ブログが存在しない場合は404
+if (!blogSlug || !blogContent) {
+  return Astro.redirect('/portfolio');
+}
+
+// SEO用のデータ準備
+const blogTitle = blogData?.title || blogSlug || 'ブログ記事';
+const blogDescription = blogData?.description || `${blogTitle}のブログ記事です。`;
+const homeUrl = new URL('/', Astro.site || Astro.url.origin).toString();
+const blogUrl = new URL(`/blogs/${blogSlug}`, Astro.site || Astro.url.origin).toString();
+const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toString();
+---
+
+<Layout 
+  title={`${blogTitle} | TaT Archive / 2025 ~ 2026`}
+  description={blogDescription}
+  ogType="article"
+  canonical={true}
+  showNavigation={true}
+  navigationLinks={[
+    { href: '/portfolio#portfolioView', label: 'home' },
+    { href: '/portfolio#about', label: 'about' },
+    { href: '/portfolio#works', label: 'works' },
+    { href: '/portfolio#contact', label: 'contact' }
+  ]}
+  viewToggleLink="/"
+  viewToggleActiveIcon="grid"
+  showMobileViewToggle={true}
+  mobileViewToggleLink="/"
+  mobileViewToggleActiveIcon="3d"
+>
+  {/* BreadcrumbList構造化データ（JSON-LD） */}
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": homeUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Portfolio",
+        "item": portfolioUrl
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": blogTitle,
+        "item": blogUrl
+      }
+    ]
+  })} />
+  
+  {/* Article構造化データ（JSON-LD） */}
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": blogTitle,
+    "description": blogDescription,
+    "url": blogUrl,
+    "author": {
+      "@type": "Person",
+      "name": "Tatsuya Aihara"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "TaT Archive / 2025 ~ 2026"
+    }
+  })} />
+  
+  <div class="blog-detail-page">
+    <!-- ブログ詳細コンテンツ -->
+    <article class="blog-content">
+      <div class="blog-content-container">
+        <!-- 戻るボタン（上部に配置） -->
+        <nav class="blog-back-links" aria-label="ナビゲーション">
+          <a href="/portfolio#works" class="back-link">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>作品一覧に戻る</span>
+          </a>
+        </nav>
+
+        <!-- タイトル -->
+        <div class="blog-header">
+          <h1 class="blog-title">{blogTitle}</h1>
+        </div>
+
+        <!-- 本文（Markdownコンテンツ） -->
+        {blogData?.Content && (
+          <div class="blog-content-body">
+            <blogData.Content />
+          </div>
+        )}
+        
+        <!-- X埋め込みスクリプト -->
+        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+        <!-- シェアボタン -->
+        <div class="blog-share-section">
+          <p class="blog-share-title">シェアしてあげる</p>
+          <div class="blog-share-buttons">
+            <a 
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent((() => {
+                // ブログタイトルと説明文を含めたツイート文を作成
+                const tweetText = `「${blogTitle}」\n${blogDescription}`;
+                // Xのツイート文字数制限（280文字）を考慮して、URL分（約23文字）を除いた240文字以内に調整
+                const maxLength = 240;
+                if (tweetText.length > maxLength) {
+                  return tweetText.substring(0, maxLength - 3) + '...';
+                }
+                return tweetText;
+              })())}&url=${encodeURIComponent(blogUrl)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="share-button share-button-twitter"
+              aria-label="X（Twitter）でシェア"
+            >
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12.6009 0.730469H15.0544L9.69434 6.95147L16 15.2695H11.0629L7.19566 10.0035L2.77087 15.2695H0.31595L6.04904 8.61747L0 0.730469H5.06262L8.55811 5.55903L12.6009 0.730469ZM11.7399 13.7705H13.0993L4.32392 2.13447H2.86506L11.7399 13.7705Z" fill="currentColor"/>
+              </svg>
+              <span>Xでシェア</span>
+            </a>
+            <button 
+              class="share-button share-button-copy"
+              aria-label="リンクをコピー"
+              id="copyLinkButton"
+            >
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13.333 1.667H6.667c-1.833 0-3.334 1.5-3.334 3.333v10c0 1.833 1.5 3.333 3.334 3.333h6.666c1.833 0 3.334-1.5 3.334-3.333V5c0-1.833-1.5-3.333-3.334-3.333z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13.333 1.667v3.333h3.334" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span>リンクをコピー</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+</Layout>
+
+<script is:inline>
+  // Xのリンクを埋め込みに変換
+  (function() {
+    function convertXLinksToEmbeds() {
+      const blogContentBody = document.querySelector('.blog-content-body');
+      if (!blogContentBody) return;
+      
+      // XのURLパターン（x.com または twitter.com）
+      const xUrlPattern = /https?:\/\/(x\.com|twitter\.com)\/([\w]+)\/status\/(\d+)/g;
+      
+      // すべてのリンクを検索
+      const links = blogContentBody.querySelectorAll('a[href*="x.com"], a[href*="twitter.com"]');
+      
+      links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (!href) return;
+        
+        const match = href.match(xUrlPattern);
+        if (match) {
+          // リンクを埋め込みブロックに置き換え
+          const blockquote = document.createElement('blockquote');
+          blockquote.className = 'twitter-tweet';
+          blockquote.setAttribute('data-theme', 'light');
+          blockquote.setAttribute('data-dnt', 'true');
+          
+          const tweetLink = document.createElement('a');
+          tweetLink.href = href;
+          tweetLink.textContent = href;
+          blockquote.appendChild(tweetLink);
+          
+          // リンクの親要素（通常は<p>）を置き換え
+          const parent = link.parentNode;
+          if (parent && parent.tagName === 'P' && parent.textContent.trim() === href) {
+            // 段落全体がリンクのみの場合
+            parent.replaceWith(blockquote);
+          } else {
+            // リンクのみを置き換え
+            link.replaceWith(blockquote);
+          }
+        }
+      });
+      
+      // Xのウィジェットスクリプトが読み込まれたら、埋め込みを初期化
+      if (window.twttr && window.twttr.widgets) {
+        window.twttr.widgets.load();
+      } else {
+        // スクリプトがまだ読み込まれていない場合は、読み込みを待つ
+        const checkTwttr = setInterval(() => {
+          if (window.twttr && window.twttr.widgets) {
+            window.twttr.widgets.load();
+            clearInterval(checkTwttr);
+          }
+        }, 100);
+        
+        // 10秒後にタイムアウト
+        setTimeout(() => clearInterval(checkTwttr), 10000);
+      }
+    }
+    
+    // DOMContentLoadedを待つ
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', convertXLinksToEmbeds);
+    } else {
+      // すでに読み込み済みの場合は即座に実行
+      setTimeout(convertXLinksToEmbeds, 100);
+    }
+  })();
+  
+  // リンクコピー機能
+  (function() {
+    const copyLinkButton = document.getElementById('copyLinkButton');
+    if (!copyLinkButton) return;
+
+    copyLinkButton.addEventListener('click', async () => {
+      const url = window.location.href;
+      
+      try {
+        await navigator.clipboard.writeText(url);
+        
+        // ボタンのテキストを一時的に変更
+        const originalText = copyLinkButton.querySelector('span');
+        if (originalText) {
+          const originalContent = originalText.textContent;
+          originalText.textContent = 'コピーしました！';
+          copyLinkButton.classList.add('copied');
+          
+          setTimeout(() => {
+            originalText.textContent = originalContent;
+            copyLinkButton.classList.remove('copied');
+          }, 2000);
+        }
+      } catch (err) {
+        // フォールバック: 古いブラウザ対応
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+          document.execCommand('copy');
+          const originalText = copyLinkButton.querySelector('span');
+          if (originalText) {
+            const originalContent = originalText.textContent;
+            originalText.textContent = 'コピーしました！';
+            copyLinkButton.classList.add('copied');
+            
+            setTimeout(() => {
+              originalText.textContent = originalContent;
+              copyLinkButton.classList.remove('copied');
+            }, 2000);
+          }
+        } catch (err) {
+          alert('リンクのコピーに失敗しました');
+        }
+        
+        document.body.removeChild(textArea);
+      }
+    });
+  })();
+</script>
+
+<style is:global>
+  html, body {
+    overflow: visible !important;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    height: auto !important;
+  }
+</style>
+
+<style>
+  /* ========================================
+     CSS Variables & Base（works/[work].astroと同じ）
+     ======================================== */
+  :root {
+    --font-primary: 'Hiragino Kaku Gothic Pro', 'Hiragino Sans', sans-serif;
+    --color-white: #ffffff;
+    --color-black: #191919;
+    --color-text-primary: #343434;
+    --color-text-secondary: #808080;
+    --color-text-tertiary: #707070;
+    --color-border: #c6c6c6;
+    --color-border-light: #e2e2e2;
+    --color-background-gray: #fafafa;
+    --color-badge-green: #20b946;
+    --spacing-unit: 8px;
+  }
+
+  .blog-detail-page {
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--color-white);
+    font-family: var(--font-primary);
+    color: var(--color-text-primary);
+    line-height: 1.6;
+  }
+
+  /* ========================================
+     ブログ情報セクション
+     ======================================== */
+  .blog-content {
+    width: 100%;
+    padding: 100px 0 120px;
+  }
+
+  .blog-content-container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 108px;
+  }
+
+  /* 戻るボタン */
+  .blog-back-links {
+    margin-bottom: 32px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 12px;
+    background-color: var(--color-background-gray);
+    border: 1px solid var(--color-border-light);
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .back-link:hover {
+    opacity: 0.7;
+  }
+
+  .back-link svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* タイトルセクション */
+  .blog-header {
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #ededed;
+  }
+
+  .blog-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+  }
+
+  /* Markdownコンテンツ（本文） */
+  .blog-content-body {
+    margin: 64px 0;
+    max-width: 100%;
+  }
+
+  /* 見出しのスタイル */
+  .blog-content-body :global(h1),
+  .blog-content-body :global(h2),
+  .blog-content-body :global(h3),
+  .blog-content-body :global(h4),
+  .blog-content-body :global(h5),
+  .blog-content-body :global(h6) {
+    font-weight: 600;
+    color: var(--color-text-primary);
+    line-height: 1.4;
+    letter-spacing: 0.01em;
+    margin: 0;
+  }
+
+  .blog-content-body :global(h1) {
+    font-size: 24px;
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+  }
+
+  .blog-content-body :global(h1:first-child) {
+    margin-top: 0;
+  }
+
+  .blog-content-body :global(h2) {
+    font-size: 20px;
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+    padding-bottom: 0.5em;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .blog-content-body :global(h2:first-child) {
+    margin-top: 0;
+  }
+
+  .blog-content-body :global(h3) {
+    font-size: 16px;
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+  }
+
+  .blog-content-body :global(h4) {
+    font-size: 16px;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .blog-content-body :global(h5) {
+    font-size: 16px;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .blog-content-body :global(h6) {
+    font-size: 14px;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+  }
+
+  /* 段落のスタイル */
+  .blog-content-body :global(p) {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 2;
+    color: var(--color-text-primary);
+    margin: 0 0 1.5em;
+  }
+
+  .blog-content-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* リストのスタイル */
+  .blog-content-body :global(ul),
+  .blog-content-body :global(ol) {
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 2;
+    color: var(--color-text-primary);
+    margin: 0 0 1.5em;
+    padding-left: 1.75em;
+  }
+
+  .blog-content-body :global(li) {
+    margin-bottom: 0.75em;
+  }
+
+  .blog-content-body :global(li:last-child) {
+    margin-bottom: 0;
+  }
+
+  .blog-content-body :global(ul:last-child),
+  .blog-content-body :global(ol:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* ネストされたリスト */
+  .blog-content-body :global(ul ul),
+  .blog-content-body :global(ol ol),
+  .blog-content-body :global(ul ol),
+  .blog-content-body :global(ol ul) {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  /* リンクのスタイル - Xのリンクなども自動的にリンクとして認識される */
+  .blog-content-body :global(a) {
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: opacity 0.2s ease;
+    word-break: break-all;
+    display: inline;
+  }
+
+  .blog-content-body :global(a:hover) {
+    opacity: 0.7;
+  }
+
+  /* 段落内のURLが自動リンクとして認識されるようにする（Astroのデフォルト動作を補完） */
+  .blog-content-body :global(p) {
+    word-break: break-word;
+  }
+
+  /* 画像のスタイル */
+  .blog-content-body :global(img) {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 2.5em 0;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.08);
+    display: block;
+  }
+
+  /* 引用のスタイル（X埋め込み以外のblockquote） */
+  .blog-content-body :global(blockquote:not(.twitter-tweet)) {
+    border-left: 3px solid var(--color-border);
+    padding-left: 1.5em;
+    margin: 2em 0;
+    font-style: italic;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+    line-height: 2;
+  }
+
+  .blog-content-body :global(blockquote:not(.twitter-tweet) p) {
+    margin-bottom: 0.75em;
+  }
+
+  .blog-content-body :global(blockquote:not(.twitter-tweet) p:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* X埋め込みのスタイル（twitter-tweetクラスはXのウィジェットが自動的に追加） */
+  .blog-content-body :global(.twitter-tweet) {
+    margin: 2em auto;
+    max-width: 100%;
+  }
+
+  /* コードのスタイル */
+  .blog-content-body :global(code) {
+    background-color: var(--color-background-gray);
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+    color: var(--color-text-primary);
+    font-weight: 400;
+  }
+
+  .blog-content-body :global(pre) {
+    background-color: var(--color-background-gray);
+    padding: 1.5em;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 2em 0;
+    border: 1px solid var(--color-border-light);
+  }
+
+  .blog-content-body :global(pre code) {
+    background-color: transparent;
+    padding: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    display: block;
+    color: var(--color-text-primary);
+  }
+
+  /* 水平線のスタイル */
+  .blog-content-body :global(hr) {
+    border: none;
+    border-top: 1px solid var(--color-border-light);
+    margin: 2.5em 0;
+  }
+
+  /* 強調のスタイル */
+  .blog-content-body :global(strong) {
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .blog-content-body :global(em) {
+    font-style: italic;
+  }
+
+  /* ========================================
+     シェアセクション（worksと同じスタイル）
+     ======================================== */
+  .blog-share-section {
+    margin-top: 120px;
+    padding-top: 40px;
+    border-top: 2px dotted var(--color-border-light);
+  }
+
+  .blog-share-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 24px;
+  }
+
+  .blog-share-buttons {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .share-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid var(--color-border-light);
+    background-color: var(--color-white);
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+
+  .share-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .share-button:active {
+    transform: translateY(0);
+  }
+
+  .share-button svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .share-button span {
+    line-height: 1;
+  }
+
+  .share-button-twitter {
+    color: #000;
+  }
+
+  .share-button-twitter:hover {
+    background-color: #f5f5f5;
+    border-color: #e2e2e2;
+  }
+
+  .share-button-copy {
+    color: var(--color-text-primary);
+  }
+
+  .share-button-copy:hover {
+    background-color: var(--color-background-gray);
+  }
+
+  .share-button-copy.copied {
+    background-color: var(--color-badge-green);
+    color: var(--color-white);
+    border-color: var(--color-badge-green);
+  }
+
+  .share-button-copy.copied:hover {
+    background-color: #1ea83a;
+    border-color: #1ea83a;
+  }
+
+  /* ========================================
+     モバイル対応
+     ======================================== */
+  @media (max-width: 768px) {
+    .blog-content {
+      padding: 56px 0 80px;
+    }
+
+    .blog-content-container {
+      max-width: 100%;
+      padding: 0 20px;
+    }
+
+    .blog-back-links {
+      margin-bottom: 24px;
+      gap: 6px;
+    }
+    
+    .back-link {
+      font-size: 10px;
+      gap: 4px;
+    }
+
+    .blog-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+    }
+
+    .blog-title {
+      font-size: 24px;
+    }
+
+    .blog-content-body {
+      margin: 40px 0;
+    }
+
+    .blog-content-body :global(h1) {
+      font-size: 18px;
+      margin-top: 2em;
+      margin-bottom: 0.75em;
+    }
+
+    .blog-content-body :global(h2) {
+      font-size: 16px;
+      margin-top: 2em;
+      margin-bottom: 0.75em;
+      padding-bottom: 0.4em;
+    }
+
+    .blog-content-body :global(h3) {
+      font-size: 14px;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .blog-content-body :global(h4) {
+      font-size: 13px;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .blog-content-body :global(h5) {
+      font-size: 13px;
+      margin-top: 1.25em;
+      margin-bottom: 0.5em;
+    }
+
+    .blog-content-body :global(h6) {
+      font-size: 13px;
+      margin-top: 1.25em;
+      margin-bottom: 0.5em;
+    }
+
+    .blog-content-body :global(p),
+    .blog-content-body :global(ul),
+    .blog-content-body :global(ol),
+    .blog-content-body :global(blockquote) {
+      font-size: 12px;
+      line-height: 1.9;
+    }
+
+    .blog-content-body :global(ul),
+    .blog-content-body :global(ol) {
+      padding-left: 1.5em;
+    }
+
+    .blog-content-body :global(li) {
+      margin-bottom: 0.5em;
+    }
+
+    .blog-content-body :global(img) {
+      margin: 2em 0;
+    }
+
+    .blog-content-body :global(blockquote) {
+      padding-left: 1.25em;
+      margin: 1.5em 0;
+    }
+
+    .blog-content-body :global(pre) {
+      padding: 1.25em;
+      margin: 1.5em 0;
+    }
+
+    .blog-content-body :global(pre code) {
+      font-size: 11px;
+    }
+
+    .blog-content-body :global(hr) {
+      margin: 2em 0;
+    }
+
+    .blog-share-section {
+      margin-top: 60px;
+      padding-top: 32px;
+    }
+
+    .blog-share-title {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .blog-share-buttons {
+      gap: 8px;
+    }
+
+    .share-button {
+      padding: 10px 16px;
+      font-size: 11px;
+      gap: 6px;
+    }
+
+    .share-button svg {
+      width: 18px;
+      height: 18px;
+    }
+  }
+</style>
