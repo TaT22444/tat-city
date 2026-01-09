@@ -35,6 +35,8 @@ try {
       description: blogsData.descriptions[blogSlug as keyof typeof blogsData.descriptions] || blogContent.data.description || '',
       image: blogsData.images[blogSlug as keyof typeof blogsData.images] || null,
       references: blogsData.references[blogSlug as keyof typeof blogsData.references] || [],
+      showToc: blogContent.data.showToc ?? false,
+      tocPosition: blogContent.data.tocPosition || 'after-title',
       Content: renderResult.Content
     };
   }
@@ -168,10 +170,26 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
           </a>
         </nav>
 
+        <!-- 目次（before-title位置） -->
+        {blogData?.showToc && blogData.tocPosition === 'before-title' && (
+          <nav class="blog-toc" id="blogToc" aria-label="目次">
+            <h2 class="blog-toc-title">目次</h2>
+            <ul class="blog-toc-list" id="blogTocList"></ul>
+          </nav>
+        )}
+
         <!-- タイトル -->
         <div class="blog-header">
           <h1 class="blog-title">{blogTitle}</h1>
         </div>
+
+        <!-- 目次（after-title位置） -->
+        {blogData?.showToc && blogData.tocPosition === 'after-title' && (
+          <nav class="blog-toc" id="blogToc" aria-label="目次">
+            <h2 class="blog-toc-title">目次</h2>
+            <ul class="blog-toc-list" id="blogTocList"></ul>
+          </nav>
+        )}
 
         <!-- サムネイル画像 -->
         {rawBlogImage && (
@@ -184,6 +202,22 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
               fetchpriority="high"
             />
           </div>
+        )}
+
+        <!-- 目次（after-image位置） -->
+        {blogData?.showToc && blogData.tocPosition === 'after-image' && (
+          <nav class="blog-toc" id="blogToc" aria-label="目次">
+            <h2 class="blog-toc-title">目次</h2>
+            <ul class="blog-toc-list" id="blogTocList"></ul>
+          </nav>
+        )}
+
+        <!-- 目次（before-content位置） -->
+        {blogData?.showToc && blogData.tocPosition === 'before-content' && (
+          <nav class="blog-toc" id="blogToc" aria-label="目次">
+            <h2 class="blog-toc-title">目次</h2>
+            <ul class="blog-toc-list" id="blogTocList"></ul>
+          </nav>
         )}
 
         <!-- 本文（Markdownコンテンツ） -->
@@ -260,6 +294,32 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
 </Layout>
 
 <script is:inline>
+  // Xの埋め込みを初期化する前に、data-width属性を設定
+  (function() {
+    function setupXEmbeds() {
+      const blogContentBody = document.querySelector('.blog-content-body');
+      if (!blogContentBody) {
+        return;
+      }
+      
+      // ウィジェットが読み込まれる前に、既存の埋め込みにdata-width属性を追加
+      const existingEmbeds = blogContentBody.querySelectorAll('blockquote.twitter-tweet');
+      existingEmbeds.forEach(embed => {
+        if (!embed.hasAttribute('data-width')) {
+          embed.setAttribute('data-width', '500'); // 埋め込みの幅を400pxに設定
+        }
+      });
+    }
+    
+    // 即座に実行（ウィジェットスクリプトが読み込まれる前）
+    setupXEmbeds();
+    
+    // DOMContentLoaded時にも実行（念のため）
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', setupXEmbeds);
+    }
+  })();
+  
   // Xのリンクを埋め込みに変換
   (function() {
     function convertXLinksToEmbeds() {
@@ -272,6 +332,16 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
       // XのURLパターン（x.com または twitter.com、status IDを含む）
       const xUrlPattern = /https?:\/\/(x\.com|twitter\.com)\/([\w]+)\/status\/(\d+)/;
       
+      // すでに埋め込み済みのblockquoteがある場合
+      const existingEmbeds = blogContentBody.querySelectorAll('blockquote.twitter-tweet');
+      if (existingEmbeds.length > 0) {
+        // 既存の埋め込みを読み込む
+        if (window.twttr && window.twttr.widgets) {
+          window.twttr.widgets.load(blogContentBody);
+        }
+        return;
+      }
+      
       // すべてのリンクを検索
       const links = blogContentBody.querySelectorAll('a');
       const processedLinks = new Set();
@@ -279,6 +349,11 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
       links.forEach(link => {
         // すでに処理済みのリンクはスキップ
         if (processedLinks.has(link)) return;
+        
+        // すでにblockquote.twitter-tweet内のリンクはスキップ
+        if (link.closest('blockquote.twitter-tweet')) {
+          return;
+        }
         
         const href = link.getAttribute('href');
         if (!href) return;
@@ -294,6 +369,7 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
           blockquote.className = 'twitter-tweet';
           blockquote.setAttribute('data-theme', 'light');
           blockquote.setAttribute('data-dnt', 'true');
+          blockquote.setAttribute('data-width', '500'); // 埋め込みの幅を400pxに設定
           
           const tweetLink = document.createElement('a');
           tweetLink.href = href;
@@ -366,6 +442,74 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
     } else {
       // すでに読み込み済みの場合は少し待ってから実行（Markdownのレンダリングを待つ）
       setTimeout(convertXLinksToEmbeds, 500);
+    }
+  })();
+  
+  // 目次生成機能
+  (function() {
+    // 目次が表示されるかどうかを確認（クライアントサイドで判定）
+    const tocElement = document.getElementById('blogToc');
+    if (!tocElement) return;
+    
+    function generateTOC() {
+      const blogContentBody = document.querySelector('.blog-content-body');
+      const tocList = document.getElementById('blogTocList');
+      
+      if (!blogContentBody || !tocList) return;
+      
+      // 見出し（h2, h3）を取得
+      const headings = blogContentBody.querySelectorAll('h2, h3');
+      
+      if (headings.length === 0) {
+        // 見出しがない場合は目次を非表示
+        const toc = document.getElementById('blogToc');
+        if (toc) toc.style.display = 'none';
+        return;
+      }
+      
+      // 見出しにIDを付与し、目次を生成
+      headings.forEach((heading, index) => {
+        // IDが既に設定されている場合はスキップ
+        if (heading.id) return;
+        
+        // 見出しテキストからIDを生成
+        const text = heading.textContent || '';
+        const id = `heading-${index}-${text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`;
+        heading.id = id;
+        
+        // 目次アイテムを作成
+        const listItem = document.createElement('li');
+        listItem.className = `toc-item toc-item-${heading.tagName.toLowerCase()}`;
+        
+        const link = document.createElement('a');
+        link.href = `#${id}`;
+        link.textContent = text;
+        link.className = 'toc-link';
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = document.getElementById(id);
+          if (target) {
+            const offset = 80; // ヘッダーの高さ分のオフセット
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+        
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+      });
+    }
+    
+    // DOMContentLoadedを待つ、または即座に実行
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(generateTOC, 100);
+      });
+    } else {
+      setTimeout(generateTOC, 100);
     }
   })();
   
@@ -583,7 +727,7 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
 
   .blog-content-body :global(h3) {
     font-size: 16px;
-    margin-top: 2em;
+    margin-top: 2.5em;
     margin-bottom: 0.75em;
   }
 
@@ -702,8 +846,24 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
 
   /* X埋め込みのスタイル（twitter-tweetクラスはXのウィジェットが自動的に追加） */
   .blog-content-body :global(.twitter-tweet) {
-    margin: 2em auto;
-    max-width: 100%;
+    margin: 2em auto 4em !important;
+    margin-bottom: 100px;
+    max-height: 500px;
+    width: calc(100% - 48px) !important;
+    display: flex;
+    overflow-y: scroll; /* 縮小時にはみ出さないように */
+    padding: 24px;
+    background-color: var(--color-background-gray);
+    border-radius: 16px;
+  }
+  
+  /* Xの埋め込みiframeのサイズを調整 - transform: scale()で確実に縮小 */
+  .blog-content-body :global(.twitter-tweet iframe) {
+    transform: scale(0.85); /* 85%に縮小 */
+    transform-origin: top center; /* 縮小時の基準点を上部中央に */
+    max-width: 117.5% !important; /* scale(0.85)なので、117.5%にすることで元のサイズを維持 */
+    width: 117.5% !important;
+    border-radius: 4px;
   }
 
   /* コードのスタイル */
@@ -750,6 +910,69 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
 
   .blog-content-body :global(em) {
     font-style: italic;
+  }
+
+  /* ========================================
+     目次（Table of Contents）
+     ======================================== */
+  .blog-toc {
+    margin: 2em 0;
+    padding: 24px;
+    background-color: var(--color-background-gray);
+    border: 1px solid var(--color-border-light);
+    border-radius: 12px;
+  }
+
+  .blog-toc-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .blog-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .blog-toc-list .toc-item {
+    margin: 0;
+  }
+
+  .blog-toc-list .toc-item-h2 {
+    margin-left: 0;
+  }
+
+  .blog-toc-list .toc-item-h3 {
+    margin-left: 16px;
+  }
+
+  .blog-toc-list .toc-link {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    line-height: 1.6;
+  }
+
+  .blog-toc-list .toc-link:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* 見出しにスクロール時のアンカーオフセットを追加 */
+  .blog-content-body :global(h2),
+  .blog-content-body :global(h3) {
+    scroll-margin-top: 80px; /* ヘッダーの高さ分のオフセット */
   }
 
   /* ========================================
@@ -986,9 +1209,24 @@ const blogImageFullUrl = blogImageSrc && blogImageSrc.trim() !== ''
       margin: 2em 0;
     }
 
-    .blog-content-body :global(blockquote) {
-      padding-left: 1.25em;
+    .blog-content-body :global(blockquote:not(.twitter-tweet)) {
+      /* padding-left: 1.25em; */
       margin: 1.5em 0;
+    }
+    
+    /* X埋め込みのモバイル対応 */
+    .blog-content-body :global(.twitter-tweet) {
+      margin: 1.5em auto;
+      max-height: 280px !important;
+      padding: 16px;
+      border-radius: 12px;
+      width: calc(100% - 32px) !important;
+    }
+    
+    .blog-content-body :global(.twitter-tweet iframe) {
+      transform: scale(0.75); /* モバイルでは75%に縮小 */
+      max-width: 133.33% !important; /* scale(0.75)なので、133.33%にすることで元のサイズを維持 */
+      width: 133.33% !important;
     }
 
     .blog-content-body :global(pre) {

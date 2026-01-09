@@ -23,6 +23,15 @@ const workData = {
 // Markdownコンテンツの取得（存在する場合）
 let Content = null;
 let workMarkdownTitle: string | undefined = undefined;
+// 作品の目次設定を取得（初期値）
+let workTocSettings: {
+  showToc: boolean;
+  tocPosition: 'before-title' | 'after-title' | 'after-image' | 'before-content';
+} = {
+  showToc: false,
+  tocPosition: 'after-title'
+};
+
 try {
   const worksContent = await getCollection('works');
   // item.idはファイル名（拡張子付き、例: Hamori.md）なので、拡張子を除いて比較
@@ -35,6 +44,11 @@ try {
     const renderResult = await workContent.render();
     Content = renderResult.Content;
     workMarkdownTitle = workContent.data.title;
+    // 目次設定を更新
+    workTocSettings = {
+      showToc: workContent.data.showToc ?? false,
+      tocPosition: (workContent.data.tocPosition || 'after-title') as 'before-title' | 'after-title' | 'after-image' | 'before-content'
+    };
   }
 } catch (error) {
   // Content Collectionsが設定されていない場合は無視
@@ -247,6 +261,22 @@ export async function getStaticPaths() {
           </dl>
         </div>
 
+        <!-- 目次（before-title位置） -->
+        {workTocSettings.showToc && workTocSettings.tocPosition === 'before-title' && (
+          <nav class="work-toc" id="workToc" aria-label="目次">
+            <h2 class="work-toc-title">目次</h2>
+            <ul class="work-toc-list" id="workTocList"></ul>
+          </nav>
+        )}
+
+        <!-- 目次（after-title位置） -->
+        {workTocSettings.showToc && workTocSettings.tocPosition === 'after-title' && (
+          <nav class="work-toc" id="workToc" aria-label="目次">
+            <h2 class="work-toc-title">目次</h2>
+            <ul class="work-toc-list" id="workTocList"></ul>
+          </nav>
+        )}
+
         <!-- Hero画像（コンテンツ内に統合） -->
         {rawWorkImage && (
           <div class="work-hero-image-wrapper">
@@ -258,6 +288,22 @@ export async function getStaticPaths() {
               fetchpriority="high"
             />
           </div>
+        )}
+
+        <!-- 目次（after-image位置） -->
+        {workTocSettings.showToc && workTocSettings.tocPosition === 'after-image' && (
+          <nav class="work-toc" id="workToc" aria-label="目次">
+            <h2 class="work-toc-title">目次</h2>
+            <ul class="work-toc-list" id="workTocList"></ul>
+          </nav>
+        )}
+
+        <!-- 目次（before-content位置） -->
+        {workTocSettings.showToc && workTocSettings.tocPosition === 'before-content' && (
+          <nav class="work-toc" id="workToc" aria-label="目次">
+            <h2 class="work-toc-title">目次</h2>
+            <ul class="work-toc-list" id="workTocList"></ul>
+          </nav>
         )}
 
         <!-- 本文（Markdownコンテンツまたは説明文） -->
@@ -787,6 +833,69 @@ export async function getStaticPaths() {
 
   .work-content-body :global(em) {
     font-style: italic;
+  }
+
+  /* ========================================
+     目次（Table of Contents）
+     ======================================== */
+  .work-toc {
+    margin: 2em 0;
+    padding: 24px;
+    background-color: var(--color-background-gray);
+    border: 1px solid var(--color-border-light);
+    border-radius: 12px;
+  }
+
+  .work-toc-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin: 0 0 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .work-toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .work-toc-list .toc-item {
+    margin: 0;
+  }
+
+  .work-toc-list .toc-item-h2 {
+    margin-left: 0;
+  }
+
+  .work-toc-list .toc-item-h3 {
+    margin-left: 16px;
+  }
+
+  .work-toc-list .toc-link {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+    line-height: 1.6;
+  }
+
+  .work-toc-list .toc-link:hover {
+    opacity: 0.7;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* 見出しにスクロール時のアンカーオフセットを追加 */
+  .work-content-body :global(h2),
+  .work-content-body :global(h3) {
+    scroll-margin-top: 80px; /* ヘッダーの高さ分のオフセット */
   }
 
   /* Hero画像（コンテンツ内に統合） */
