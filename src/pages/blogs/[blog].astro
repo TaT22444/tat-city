@@ -2,6 +2,8 @@
 // ブログ詳細ページ - worksと同じ構造
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
+import { blogsData } from '../../data/blogsData.js';
+import { Image } from 'astro:assets';
 
 // 静的パス生成
 export async function getStaticPaths() {
@@ -29,8 +31,9 @@ try {
   if (blogContent) {
     const renderResult = await blogContent.render();
     blogData = {
-      title: blogContent.data.title || blogSlug || '',
-      description: blogContent.data.description || '',
+      title: blogsData.titles[blogSlug as keyof typeof blogsData.titles] || blogContent.data.title || blogSlug || '',
+      description: blogsData.descriptions[blogSlug as keyof typeof blogsData.descriptions] || blogContent.data.description || '',
+      image: blogsData.images[blogSlug as keyof typeof blogsData.images] || null,
       Content: renderResult.Content
     };
   }
@@ -43,17 +46,42 @@ if (!blogSlug || !blogContent) {
   return Astro.redirect('/portfolio');
 }
 
+// 画像の取得関数（URL文字列用：ogImageやpreload用）
+const getBlogImageSrc = (image: any): string => {
+  if (!image) return '';
+  if (typeof image === 'object' && 'src' in image) {
+    return image.src;
+  }
+  return typeof image === 'string' ? image : '';
+};
+
+// 画像オブジェクト（Imageコンポーネント用）
+const rawBlogImage = blogData?.image || null;
+// 画像URL文字列（ogImageやpreload用）
+const blogImageSrc = getBlogImageSrc(blogData?.image);
+
 // SEO用のデータ準備
 const blogTitle = blogData?.title || blogSlug || 'ブログ記事';
 const blogDescription = blogData?.description || `${blogTitle}のブログ記事です。`;
 const homeUrl = new URL('/', Astro.site || Astro.url.origin).toString();
 const blogUrl = new URL(`/blogs/${blogSlug}`, Astro.site || Astro.url.origin).toString();
 const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toString();
+
+// OG画像の絶対URLを生成
+const blogImageFullUrl = blogImageSrc 
+  ? (blogImageSrc.startsWith('http') 
+      ? blogImageSrc 
+      : new URL(
+          blogImageSrc.startsWith('/') ? blogImageSrc : `/${blogImageSrc}`,
+          Astro.site || Astro.url.origin
+        ).toString())
+  : undefined;
 ---
 
 <Layout 
   title={`${blogTitle} | TaT Archive / 2025 ~ 2026`}
   description={blogDescription}
+  ogImage={blogImageFullUrl || blogImageSrc}
   ogType="article"
   canonical={true}
   showNavigation={true}
@@ -69,6 +97,13 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
   mobileViewToggleLink="/"
   mobileViewToggleActiveIcon="3d"
 >
+  <!-- X埋め込みスクリプト -->
+  <script slot="head" async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  
+  {blogImageSrc && (
+    <link slot="head" rel="preload" as="image" href={blogImageSrc} fetchpriority="high" />
+  )}
+  
   {/* BreadcrumbList構造化データ（JSON-LD） */}
   <script slot="head" type="application/ld+json" set:html={JSON.stringify({
     "@context": "https://schema.org",
@@ -96,21 +131,27 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
   })} />
   
   {/* Article構造化データ（JSON-LD） */}
-  <script slot="head" type="application/ld+json" set:html={JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": blogTitle,
-    "description": blogDescription,
-    "url": blogUrl,
-    "author": {
-      "@type": "Person",
-      "name": "Tatsuya Aihara"
-    },
-    "publisher": {
-      "@type": "Organization",
-      "name": "TaT Archive / 2025 ~ 2026"
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify((() => {
+    const schema: any = {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": blogTitle,
+      "description": blogDescription,
+      "url": blogUrl,
+      "author": {
+        "@type": "Person",
+        "name": "Tatsuya Aihara"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "TaT Archive / 2025 ~ 2026"
+      }
+    };
+    if (blogImageFullUrl) {
+      schema.image = blogImageFullUrl;
     }
-  })} />
+    return schema;
+  })())} />
   
   <div class="blog-detail-page">
     <!-- ブログ詳細コンテンツ -->
@@ -131,6 +172,19 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
           <h1 class="blog-title">{blogTitle}</h1>
         </div>
 
+        <!-- サムネイル画像 -->
+        {rawBlogImage && (
+          <div class="blog-hero-image-wrapper">
+            <Image 
+              src={rawBlogImage} 
+              alt={`${blogTitle}のサムネイル画像`}
+              class="blog-hero-image"
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+        )}
+
         <!-- 本文（Markdownコンテンツ） -->
         {blogData?.Content && (
           <div class="blog-content-body">
@@ -138,8 +192,7 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
           </div>
         )}
         
-        <!-- X埋め込みスクリプト -->
-        <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+        <!-- X埋め込みスクリプト（headセクションに移動して確実に読み込む） -->
 
         <!-- シェアボタン -->
         <div class="blog-share-section">
@@ -189,21 +242,32 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
   (function() {
     function convertXLinksToEmbeds() {
       const blogContentBody = document.querySelector('.blog-content-body');
-      if (!blogContentBody) return;
+      if (!blogContentBody) {
+        console.error('Blog content body not found');
+        return;
+      }
       
-      // XのURLパターン（x.com または twitter.com）
-      const xUrlPattern = /https?:\/\/(x\.com|twitter\.com)\/([\w]+)\/status\/(\d+)/g;
+      // XのURLパターン（x.com または twitter.com、status IDを含む）
+      const xUrlPattern = /https?:\/\/(x\.com|twitter\.com)\/([\w]+)\/status\/(\d+)/;
       
       // すべてのリンクを検索
-      const links = blogContentBody.querySelectorAll('a[href*="x.com"], a[href*="twitter.com"]');
+      const links = blogContentBody.querySelectorAll('a');
+      const processedLinks = new Set();
       
       links.forEach(link => {
+        // すでに処理済みのリンクはスキップ
+        if (processedLinks.has(link)) return;
+        
         const href = link.getAttribute('href');
         if (!href) return;
         
         const match = href.match(xUrlPattern);
         if (match) {
-          // リンクを埋め込みブロックに置き換え
+          // リンクの親要素を取得
+          const parent = link.parentNode;
+          if (!parent) return;
+          
+          // 埋め込みブロックを作成
           const blockquote = document.createElement('blockquote');
           blockquote.className = 'twitter-tweet';
           blockquote.setAttribute('data-theme', 'light');
@@ -214,41 +278,70 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
           tweetLink.textContent = href;
           blockquote.appendChild(tweetLink);
           
-          // リンクの親要素（通常は<p>）を置き換え
-          const parent = link.parentNode;
-          if (parent && parent.tagName === 'P' && parent.textContent.trim() === href) {
-            // 段落全体がリンクのみの場合
-            parent.replaceWith(blockquote);
+          // 親要素が<p>で、その中身がリンクのみ（またはリンクと空白のみ）の場合
+          if (parent.tagName === 'P') {
+            const parentText = parent.textContent.trim();
+            const linkText = link.textContent.trim();
+            // 段落全体がリンクのみ、またはURLのみの場合
+            if (parentText === href || parentText === linkText || parent.children.length === 1) {
+              // 段落全体を置き換え
+              parent.replaceWith(blockquote);
+              processedLinks.add(link);
+            } else {
+              // リンクのみを置き換え
+              link.replaceWith(blockquote);
+              processedLinks.add(link);
+            }
           } else {
             // リンクのみを置き換え
             link.replaceWith(blockquote);
+            processedLinks.add(link);
+          }
+        } else {
+          // Xのリンクだが、status IDがない場合は新しいタブで開くように設定
+          if (href.includes('x.com') || href.includes('twitter.com')) {
+            link.setAttribute('target', '_blank');
+            link.setAttribute('rel', 'noopener noreferrer');
           }
         }
       });
       
       // Xのウィジェットスクリプトが読み込まれたら、埋め込みを初期化
-      if (window.twttr && window.twttr.widgets) {
-        window.twttr.widgets.load();
-      } else {
-        // スクリプトがまだ読み込まれていない場合は、読み込みを待つ
-        const checkTwttr = setInterval(() => {
-          if (window.twttr && window.twttr.widgets) {
-            window.twttr.widgets.load();
-            clearInterval(checkTwttr);
-          }
-        }, 100);
-        
-        // 10秒後にタイムアウト
-        setTimeout(() => clearInterval(checkTwttr), 10000);
+      function initTwitterWidgets() {
+        if (window.twttr && window.twttr.widgets) {
+          window.twttr.widgets.load(blogContentBody);
+          console.log('Twitter widgets initialized');
+        } else {
+          console.log('Waiting for Twitter widgets script...');
+        }
       }
+      
+      // 即座に試行
+      initTwitterWidgets();
+      
+      // スクリプトがまだ読み込まれていない場合は、読み込みを待つ
+      let checkCount = 0;
+      const maxChecks = 100; // 10秒（100ms × 100回）
+      const checkTwttr = setInterval(() => {
+        checkCount++;
+        if (window.twttr && window.twttr.widgets) {
+          initTwitterWidgets();
+          clearInterval(checkTwttr);
+        } else if (checkCount >= maxChecks) {
+          clearInterval(checkTwttr);
+          console.warn('Twitter widgets script failed to load after 10 seconds');
+        }
+      }, 100);
     }
     
-    // DOMContentLoadedを待つ
+    // DOMContentLoadedを待つ、または即座に実行
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', convertXLinksToEmbeds);
+      document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(convertXLinksToEmbeds, 300);
+      });
     } else {
-      // すでに読み込み済みの場合は即座に実行
-      setTimeout(convertXLinksToEmbeds, 100);
+      // すでに読み込み済みの場合は少し待ってから実行（Markdownのレンダリングを待つ）
+      setTimeout(convertXLinksToEmbeds, 500);
     }
   })();
   
@@ -403,6 +496,23 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
     margin: 0;
     line-height: 1.4;
     letter-spacing: 0.01em;
+  }
+
+  /* サムネイル画像（Hero画像） */
+  .blog-hero-image-wrapper {
+    width: 100%;
+    margin: 40px 0;
+    text-align: center;
+  }
+
+  .blog-hero-image {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-shadow: 0 0 32px rgba(0, 0, 0, 0.08);
   }
 
   /* Markdownコンテンツ（本文） */
@@ -734,6 +844,14 @@ const portfolioUrl = new URL('/portfolio', Astro.site || Astro.url.origin).toStr
 
     .blog-title {
       font-size: 24px;
+    }
+
+    .blog-hero-image-wrapper {
+      margin: 0 0 24px;
+    }
+
+    .blog-hero-image {
+      max-width: 100%;
     }
 
     .blog-content-body {
