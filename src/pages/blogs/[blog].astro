@@ -276,6 +276,8 @@ const blogImageFullUrl = blogImageSrc
           const tweetLink = document.createElement('a');
           tweetLink.href = href;
           tweetLink.textContent = href;
+          tweetLink.setAttribute('target', '_blank');
+          tweetLink.setAttribute('rel', 'noopener noreferrer');
           blockquote.appendChild(tweetLink);
           
           // 親要素が<p>で、その中身がリンクのみ（またはリンクと空白のみ）の場合
@@ -298,8 +300,8 @@ const blogImageFullUrl = blogImageSrc
             processedLinks.add(link);
           }
         } else {
-          // Xのリンクだが、status IDがない場合は新しいタブで開くように設定
-          if (href.includes('x.com') || href.includes('twitter.com')) {
+          // 外部リンク（httpまたはhttpsで始まる）は新しいタブで開くように設定
+          if (href.startsWith('http://') || href.startsWith('https://')) {
             link.setAttribute('target', '_blank');
             link.setAttribute('rel', 'noopener noreferrer');
           }
