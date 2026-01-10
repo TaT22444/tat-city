@@ -333,17 +333,39 @@ const blogNames: string[] = [
 
 <!-- テーマ切替スクリプト - より直接的なアプローチ -->
 <script is:inline>
-document.querySelector('#theme-toggle')?.addEventListener('click', function() {
-  const html = document.documentElement;
-  const isDark = html.classList.toggle('dark-theme');
-  this.classList.toggle('dark-active', isDark);
-  localStorage.setItem('cityTheme', isDark ? 'dark' : 'light');
-});
+// テーマ切替の初期化関数
+function initializeThemeToggle() {
+  const themeToggle = document.querySelector('#theme-toggle');
+  if (!themeToggle) {
+    // DOM要素が見つからない場合、少し待ってから再試行
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeThemeToggle);
+    } else {
+      setTimeout(initializeThemeToggle, 100);
+    }
+    return;
+  }
+  
+  themeToggle.addEventListener('click', function() {
+    const html = document.documentElement;
+    const isDark = html.classList.toggle('dark-theme');
+    this.classList.toggle('dark-active', isDark);
+    localStorage.setItem('cityTheme', isDark ? 'dark' : 'light');
+  });
 
-// 保存されたテーマを適用
-if (localStorage.getItem('cityTheme') === 'dark') {
-  document.documentElement.classList.add('dark-theme');
-  document.querySelector('#theme-toggle')?.classList.add('dark-active');
+  // 保存されたテーマを適用
+  if (localStorage.getItem('cityTheme') === 'dark') {
+    document.documentElement.classList.add('dark-theme');
+    themeToggle.classList.add('dark-active');
+  }
+}
+
+// 即座に実行を試みる、またはDOMContentLoadedを待つ
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeThemeToggle);
+} else {
+  // 既に読み込み済みの場合は即座に実行
+  initializeThemeToggle();
 }
 
 // 表示モード切替はonclick属性で処理
@@ -520,14 +542,22 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   const INERTIA_DECAY = 0.92; // 慣性減衰率（少し強くして早く止まるように）
   const MIN_INERTIA_VELOCITY = 0.01; // 慣性停止の閾値
   
-  // DOMが読み込まれた後に実行
-  document.addEventListener('DOMContentLoaded', () => {
+  // 初期化関数（DOMContentLoadedでも既に読み込み済みでも実行できるように）
+  function initializeCity() {
     cityView = document.getElementById('cityView');
     cityGrid = document.getElementById('cityGrid');
     person = document.getElementById('mainPerson');
     buildingModal = document.getElementById('buildingModal');
     modalTitle = document.getElementById('modalTitle');
     modalContent = document.getElementById('modalContent');
+    
+    // 必須要素の存在確認
+    if (!cityView || !cityGrid || !person) {
+      console.error('City.astro: 必須要素が見つかりません。初期化をリトライします。');
+      // 100ms後にリトライ
+      setTimeout(initializeCity, 100);
+      return;
+    }
     
     // 建物の配置処理
     setupBuildings();
@@ -577,72 +607,87 @@ if (localStorage.getItem('cityTheme') === 'dark') {
     setupResetPositionButton();
     
     // プロフィールポップアップのイベントリスナー設定
+    setupProfilePopupEvents();
+  }
+  
+  // DOMが読み込まれた後に実行、または既に読み込み済みの場合は即座に実行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeCity);
+  } else {
+    // 既に読み込み済みの場合は即座に実行
+    initializeCity();
+  }
+  
+  // プロフィールポップアップのイベントリスナー設定（initializeCity内で呼び出される）
+  function setupProfilePopupEvents() {
     const profilePopup = document.getElementById('profilePopup');
-    if (profilePopup) {
-      const setupProfilePopupEvents = () => {
-        const closeButton = profilePopup.querySelector('.popup-close-button');
-        const closeBtn = profilePopup.querySelector('.popup-close-btn');
-        const moreBtn = profilePopup.querySelector('.popup-more-btn');
-        const coinGiveBtn = profilePopup.querySelector('.popup-coin-give-btn');
-        
-        // 閉じるボタンクリックイベント
-        const closePopup = () => {
-          profilePopup.classList.remove('active');
-          
-          // ポップアップが閉じられたらズームモードも終了
-          exitZoomMode();
-          
-          // ポップアップが閉じられたらisEventLockedを解除
-          isEventLocked = false;
-          
-          setTimeout(() => {
-            profilePopup.style.display = 'none';
-          }, 300);
-        };
-        
-        if (closeButton) {
-          closeButton.addEventListener('click', closePopup);
-        }
-        
-        if (closeBtn) {
-          closeBtn.addEventListener('click', closePopup);
-        }
-        
-        if (moreBtn) {
-          moreBtn.addEventListener('click', () => {
-            // 詳細ページに遷移するなどの処理
-          });
-        }
-        
-        // コイン応援ボタンのイベントリスナー
-        if (coinGiveBtn) {
-          coinGiveBtn.addEventListener('click', () => {
-            supportWithCoin('profile');
-          });
-        }
-        
-        // ESCキーでポップアップを閉じる
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && profilePopup.classList.contains('active')) {
-            closePopup();
-          }
-        });
-        
-        // ポップアップの外側をクリックしたときに閉じる
-        document.addEventListener('click', function(e) {
-          const profilePoint = document.querySelector('.profile-card .profile-point');
-          if (profilePopup.classList.contains('active') && 
-              !profilePopup.contains(e.target) && 
-              e.target !== profilePoint) {
-            closePopup();
-          }
-        });
-      };
-      
-      // イベントリスナーのセットアップを実行
-      setupProfilePopupEvents();
+    if (!profilePopup) {
+      // DOM要素が見つからない場合、少し待ってから再試行
+      setTimeout(setupProfilePopupEvents, 100);
+      return;
     }
-  });
+    
+    const closeButton = profilePopup.querySelector('.popup-close-button');
+    const closeBtn = profilePopup.querySelector('.popup-close-btn');
+    const moreBtn = profilePopup.querySelector('.popup-more-btn');
+    const coinGiveBtn = profilePopup.querySelector('.popup-coin-give-btn');
+    
+    // 閉じるボタンクリックイベント
+    const closePopup = () => {
+      profilePopup.classList.remove('active');
+      
+      // ポップアップが閉じられたらズームモードも終了
+      exitZoomMode();
+      
+      // ポップアップが閉じられたらisEventLockedを解除
+      isEventLocked = false;
+      
+      setTimeout(() => {
+        profilePopup.style.display = 'none';
+      }, 300);
+    };
+    
+    if (closeButton) {
+      closeButton.addEventListener('click', closePopup);
+    }
+    
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closePopup);
+    }
+    
+    if (moreBtn) {
+      moreBtn.addEventListener('click', () => {
+        // 詳細ページに遷移するなどの処理
+      });
+    }
+    
+    // コイン応援ボタンのイベントリスナー
+    if (coinGiveBtn) {
+      coinGiveBtn.addEventListener('click', () => {
+        supportWithCoin('profile');
+      });
+    }
+    
+    // ESCキーでポップアップを閉じる
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && profilePopup.classList.contains('active')) {
+        closePopup();
+      }
+    });
+    
+    // ポップアップの外側をクリックしたときに閉じる
+    document.addEventListener('click', function(e) {
+      const profilePoint = document.querySelector('.profile-card .profile-point');
+      if (profilePopup.classList.contains('active') && 
+          !profilePopup.contains(e.target) && 
+          e.target !== profilePoint) {
+        closePopup();
+      }
+    });
+  }
+  
+  // initializeCity内でsetupProfilePopupEventsを呼び出す
+  // （元のコード構造を維持）
   
   // ポイントとの衝突判定関連のコードを削除
   
@@ -1230,7 +1275,16 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   function setupVirtualJoystick() {
     const joystickBase = document.getElementById('joystickBase');
     const joystickStick = document.getElementById('joystickStick');
-    if (!joystickBase || !joystickStick) return;
+    if (!joystickBase || !joystickStick) {
+      // モバイル要素が見つからない場合、少し待ってから再試行（モバイルでのみ必要）
+      if (window.innerWidth <= 768) {
+        console.warn('City.astro: 仮想ジョイスティックの要素が見つかりません。100ms後にリトライします。');
+        setTimeout(() => {
+          setupVirtualJoystick();
+        }, 100);
+      }
+      return;
+    }
     
     let joystickActive = false;
     let joystickBaseRect = null;
@@ -2793,9 +2847,27 @@ if (localStorage.getItem('cityTheme') === 'dark') {
   
   // コインを配置する関数（初期表示時のみ）
   function setupCoins() {
+    const coinsContainer = document.getElementById('coinsContainer');
+    if (!coinsContainer) {
+      console.error('City.astro: coinsContainer not found. setupCoins failed.');
+      return;
+    }
+    
     // 初期表示は最大3つ
+    let createdCount = 0;
     for (let i = 0; i < MAX_VISIBLE_COINS; i++) {
-      createSingleCoin();
+      const result = createSingleCoin();
+      if (result) {
+        createdCount++;
+      }
+    }
+    
+    // コインが1つも生成できなかった場合、リトライ
+    if (createdCount === 0) {
+      console.warn('City.astro: コインが1つも生成できませんでした。100ms後にリトライします。');
+      setTimeout(() => {
+        setupCoins();
+      }, 100);
     }
   }
   
