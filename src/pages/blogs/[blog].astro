@@ -1179,7 +1179,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     gap: 16px;
     margin: 0 0 16px;
     padding-bottom: 12px;
-    border-bottom: 1px solid var(--color-border-light);
+    border-bottom: 1px solid #ededed;
   }
 
   .blog-toc-accordion {
@@ -1433,6 +1433,14 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     .blog-toc {
       max-height: 104px;
       padding: 16px 20px;
+    }
+
+    .blog-toc-header {
+      gap: 8px;
+    }
+
+    .blog-toc-title {
+      font-size: 12px;
     }
 
     .toc-item .toc-link {
