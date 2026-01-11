@@ -72,9 +72,14 @@ const workNames: string[] = worksData.names;
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, maximum-scale=1.0, viewport-fit=cover" />
 		<!-- Favicon -->
+		{/* SVG形式を優先（モダンブラウザ向け、Google推奨） */}
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		{/* PNGフォールバック（古いブラウザ対応） */}
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png" />
 		<link rel="icon" type="image/png" sizes="16x16" href="/favicon.png" />
+		{/* Apple Touch Icon（iOS用） */}
 		<link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+		{/* 高解像度対応（Google検索結果表示用） */}
 		<link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
 		<link rel="icon" type="image/png" sizes="512x512" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
