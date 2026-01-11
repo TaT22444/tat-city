@@ -5,12 +5,14 @@ import orynthThumbImage from '../assets/images/blogs/thumb/blog-orynth-thumb.web
 export const blogsData = {
   // ブログの詳細情報（説明文）
   descriptions: {
-    'Orynth': '【Orynthとは？】個人開発者がプロダクトを公開して「持続的な開発支援」を得られる、Solana発「Web3版Product Hunt」について、日本人ユーザーの事例も紹介しながら解説していきます'
+    'Orynth': '【Orynthとは？】個人開発者がプロダクトを公開して「持続的な開発支援」を得られる、Solana発「Web3版Product Hunt」について、日本人ユーザーの事例も紹介しながら解説していきます',
+    // 'ui': 'AI時代におけるいいUIとは'
   },
   
   // ブログのタイトル（Markdownのfrontmatterのtitleと一致させる）
   titles: {
-    'Orynth': '【Orynthとは？】Solana発の「Web3版Product Hunt」'
+    'Orynth': '【Orynthとは？】Solana発の「Web3版Product Hunt」',
+    // 'ui': 'AI時代におけるいいUIとは'
   },
   
   // 表示用画像（AstroのImageコンポーネント用）
@@ -58,6 +60,7 @@ export const blogsData = {
   
   // ブログ名リスト（表示順序）
   names: ['Orynth']
+  // names: ['Orynth', 'ui']
 };
 
 // 新しいブログを追加する関数
