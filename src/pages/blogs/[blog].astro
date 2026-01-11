@@ -65,6 +65,9 @@ try {
       image: blogsData.images[blogSlug as keyof typeof blogsData.images] || null,
       ogImage: (blogsData as any).ogImages?.[blogSlug as string] || null,
       references: blogsData.references[blogSlug as keyof typeof blogsData.references] || [],
+      publishedDate: (blogsData as any).publishedDates?.[blogSlug as string] || null,
+      updatedDate: (blogsData as any).updatedDates?.[blogSlug as string] || null,
+      types: (blogsData as any).types?.[blogSlug as string] || [],
       showToc: blogContent.data.showToc ?? false,
       tocPosition: blogContent.data.tocPosition || 'after-title',
       headings: headings,
@@ -230,6 +233,28 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
         <!-- タイトル -->
         <div class="blog-header">
           <h1 class="blog-title">{blogTitle}</h1>
+          
+          <!-- メタ情報 -->
+          <dl class="blog-meta">
+            {blogData?.publishedDate && (
+              <div class="blog-meta-item">
+                <dt class="blog-meta-label">公開日</dt>
+                <dd class="blog-meta-value">{new Date(blogData.publishedDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}</dd>
+              </div>
+            )}
+            {blogData?.updatedDate && blogData.updatedDate !== blogData.publishedDate && (
+              <div class="blog-meta-item">
+                <dt class="blog-meta-label">最終更新日</dt>
+                <dd class="blog-meta-value">{new Date(blogData.updatedDate).toLocaleDateString('ja-JP', { year: 'numeric', month: 'long', day: 'numeric' })}</dd>
+              </div>
+            )}
+            {blogData?.types && blogData.types.length > 0 && (
+              <div class="blog-meta-item">
+                <dt class="blog-meta-label">カテゴリー</dt>
+                <dd class="blog-meta-value">{blogData.types.join(' / ')}</dd>
+              </div>
+            )}
+          </dl>
         </div>
 
         <!-- 目次（after-title位置） -->
@@ -841,9 +866,46 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     font-size: 28px;
     font-weight: 600;
     color: var(--color-text-primary);
-    margin: 0;
+    margin: 0 0 16px 0;
     line-height: 1.4;
     letter-spacing: 0.01em;
+  }
+
+  /* メタ情報 */
+  .blog-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px 32px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .blog-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .blog-meta-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 0;
+  }
+
+  .blog-meta-label::after {
+    content: ':';
+    margin-left: 0;
+  }
+
+  .blog-meta-value {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin: 0;
   }
 
   /* サムネイル画像（Hero画像） */
@@ -1398,6 +1460,14 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
 
     .blog-title {
       font-size: 24px;
+    }
+
+    .blog-meta {
+      gap: 8px 24px;
+    }
+
+    .blog-meta-value {
+      font-size: 10px;
     }
 
     .blog-hero-image-wrapper {
