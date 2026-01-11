@@ -210,7 +210,6 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
         {blogData?.showToc && blogData.tocPosition === 'before-title' && blogData.headings && blogData.headings.length > 0 && (
           <nav class="blog-toc" aria-label="目次">
             <div class="blog-toc-header">
-              <p class="blog-toc-title">目次</p>
               <button class="blog-toc-accordion" aria-label="目次を開閉" aria-expanded="false">
                 <svg class="toc-icon-up" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 5.29688L11.8564 9.14987L11.1494 9.85787L8.00244 6.71087L4.85644 9.85787L4.14844 9.14987L8.00244 5.29688Z" fill="currentColor"/>
@@ -219,6 +218,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 10.7031L4.14844 6.85013L4.85644 6.14213L8.00244 9.28913L11.1494 6.14213L11.8564 6.85013L8.00244 10.7031Z" fill="currentColor"/>
                 </svg>
               </button>
+              <p class="blog-toc-title">目次</p>
             </div>
             <ul class="blog-toc-list">
               {blogData.headings.map((heading) => (
@@ -261,7 +261,6 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
         {blogData?.showToc && blogData.tocPosition === 'after-title' && blogData.headings && blogData.headings.length > 0 && (
           <nav class="blog-toc" aria-label="目次">
             <div class="blog-toc-header">
-              <p class="blog-toc-title">目次</p>
               <button class="blog-toc-accordion" aria-label="目次を開閉" aria-expanded="false">
                 <svg class="toc-icon-up" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 5.29688L11.8564 9.14987L11.1494 9.85787L8.00244 6.71087L4.85644 9.85787L4.14844 9.14987L8.00244 5.29688Z" fill="currentColor"/>
@@ -270,6 +269,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 10.7031L4.14844 6.85013L4.85644 6.14213L8.00244 9.28913L11.1494 6.14213L11.8564 6.85013L8.00244 10.7031Z" fill="currentColor"/>
                 </svg>
               </button>
+              <p class="blog-toc-title">目次</p>
             </div>
             <ul class="blog-toc-list">
               {blogData.headings.map((heading) => (
@@ -298,7 +298,6 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
         {blogData?.showToc && blogData.tocPosition === 'after-image' && blogData.headings && blogData.headings.length > 0 && (
           <nav class="blog-toc" aria-label="目次">
             <div class="blog-toc-header">
-              <p class="blog-toc-title">目次</p>
               <button class="blog-toc-accordion" aria-label="目次を開閉" aria-expanded="false">
                 <svg class="toc-icon-up" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 5.29688L11.8564 9.14987L11.1494 9.85787L8.00244 6.71087L4.85644 9.85787L4.14844 9.14987L8.00244 5.29688Z" fill="currentColor"/>
@@ -307,6 +306,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
                   <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 10.7031L4.14844 6.85013L4.85644 6.14213L8.00244 9.28913L11.1494 6.14213L11.8564 6.85013L8.00244 10.7031Z" fill="currentColor"/>
                 </svg>
               </button>
+              <p class="blog-toc-title">目次</p>
             </div>
             <ul class="blog-toc-list">
               {blogData.headings.map((heading) => (
@@ -957,7 +957,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
 
   .blog-content-body :global(h2) {
     font-size: 20px;
-    margin-top: 2.5em;
+    margin-top: 3.0em;
     margin-bottom: 1em;
     padding-bottom: 0.5em;
     border-bottom: 1px solid var(--color-border-light);
@@ -969,7 +969,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
 
   .blog-content-body :global(h3) {
     font-size: 16px;
-    margin-top: 2.5em;
+    margin-top: 2.8em;
     margin-bottom: 0.75em;
   }
 
@@ -1159,7 +1159,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
      目次（Table of Contents）
      ======================================== */
   .blog-toc {
-    max-height: 104px;
+    max-height: 114px;
     overflow: hidden;
     margin: 2em 0;
     padding: 24px;
@@ -1176,7 +1176,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
   .blog-toc-header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 16px;
     margin: 0 0 16px;
     padding-bottom: 12px;
     border-bottom: 1px solid var(--color-border-light);
@@ -1431,6 +1431,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     }
 
     .blog-toc {
+      max-height: 104px;
       padding: 16px 20px;
     }
 
@@ -1454,8 +1455,8 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     }
 
     .blog-header {
-      margin-bottom: 24px;
-      padding-bottom: 16px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
     }
 
     .blog-title {
@@ -1490,14 +1491,14 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
 
     .blog-content-body :global(h2) {
       font-size: 16px;
-      margin-top: 2em;
+      margin-top: 2.5em;
       margin-bottom: 0.75em;
       padding-bottom: 0.4em;
     }
 
     .blog-content-body :global(h3) {
       font-size: 14px;
-      margin-top: 1.5em;
+      margin-top: 2.2em;
       margin-bottom: 0.5em;
     }
 
@@ -1537,6 +1538,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     }
 
     .blog-content-body :global(img) {
+      width: calc(100% - 32px);
       margin: 2em 0;
       padding: 16px;
       border-radius: 12px;
