@@ -27,12 +27,12 @@ export const blogsData = {
   
   // 公開日（YYYY-MM-DD形式の文字列）
   publishedDates: {
-    'Orynth': '2025-01-09'
+    'Orynth': '2026-01-09'
   },
   
   // 最終更新日（YYYY-MM-DD形式の文字列、公開日と同じ場合は省略可能）
   updatedDates: {
-    'Orynth': '2025-01-11'
+    'Orynth': '2026-01-11'
   },
   
   // カテゴリー/タイプ（複数指定可能）
