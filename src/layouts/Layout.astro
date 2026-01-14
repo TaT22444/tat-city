@@ -72,12 +72,14 @@ const workNames: string[] = worksData.names;
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, maximum-scale=1.0, viewport-fit=cover" />
 		<!-- Favicon -->
-		{/* Google検索結果用: 48pxの倍数（192×192）を1つ指定 */}
+		{/* SVG Favicon (Google検索結果や高解像度ディスプレイで推奨) */}
+		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		{/* Google検索結果用フォールバック: 48pxの倍数（192×192） */}
 		<link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
-		{/* ブラウザ互換性のため、.icoファイルを優先（Googleが自動検索する） */}
-		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+		{/* ブラウザ互換性のため、.icoファイルを指定 */}
+		<link rel="icon" href="/favicon.ico" sizes="any" />
 		{/* Apple Touch Icon（iOS用） */}
-		<link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
+		<link rel="apple-touch-icon" href="/favicon.png" />
 		<meta name="generator" content={Astro.generator} />
 		<!-- Google Search Console 所有権確認 -->
 		<meta name="google-site-verification" content="RQfaisHC2R_v40fW83t8vvKtRv7mZlmhqbKvLl" />
