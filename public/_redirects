@@ -1,0 +1,2 @@
+# Redirect from the old Netlify subdomain to the primary custom domain
+https://tat-city.netlify.app/*  https://tat-archive.com/:splat  301!
