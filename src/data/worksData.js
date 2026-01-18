@@ -139,7 +139,7 @@ export const worksData = {
     ],
     'Wink': [],
     'Copipe': [
-      { label: 'サービスサイト', url: 'https://copipe-lp.netlify.app/' }
+      { label: 'サービスサイト', url: 'https://co-pipe.com/' }
     ],
     'えむいち、': [
       { label: 'LP', url: 'https://m1-ten.netlify.app/' }
