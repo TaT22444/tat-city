@@ -77,7 +77,7 @@ const faviconIcoUrl = new URL('favicon.ico', Astro.site).href;
 		<meta name="viewport" content="width=device-width, maximum-scale=1.0, viewport-fit=cover" />
 		<!-- Favicon -->
 		{/* SVG Favicon (Google検索結果や高解像度ディスプレイで推奨) */}
-		<link rel="icon" href={faviconSvgUrl} type="image/svg+xml" />
+		{/* <link rel="icon" href={faviconSvgUrl} type="image/svg+xml" /> */}
 		{/* Google検索結果用フォールバック: 48pxの倍数（192×192） */}
 		<link rel="icon" type="image/png" sizes="192x192" href={faviconPngUrl} />
 		{/* ブラウザ互換性のため、.icoファイルを指定 */}

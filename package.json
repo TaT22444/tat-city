@@ -12,5 +12,9 @@
     "@astrojs/sitemap": "^3.6.1",
     "astro": "^5.7.10",
     "three": "^0.176.0"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.5",
+    "svgo": "^4.0.0"
   }
 }
