@@ -53,6 +53,10 @@ const fullOgImage = ogImage && typeof ogImage === 'string' && ogImage.trim() !==
 
 // Portfolio List用のworkNames（City.astro用）
 const workNames: string[] = worksData.names;
+
+const faviconSvgUrl = new URL('favicon.svg', Astro.site).href;
+const faviconPngUrl = new URL('favicon.png', Astro.site).href;
+const faviconIcoUrl = new URL('favicon.ico', Astro.site).href;
 ---
 
 <!doctype html>
@@ -73,13 +77,13 @@ const workNames: string[] = worksData.names;
 		<meta name="viewport" content="width=device-width, maximum-scale=1.0, viewport-fit=cover" />
 		<!-- Favicon -->
 		{/* SVG Favicon (Google検索結果や高解像度ディスプレイで推奨) */}
-		<link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+		<link rel="icon" href={faviconSvgUrl} type="image/svg+xml" />
 		{/* Google検索結果用フォールバック: 48pxの倍数（192×192） */}
-		<link rel="icon" type="image/png" sizes="192x192" href="/favicon.png" />
+		<link rel="icon" type="image/png" sizes="192x192" href={faviconPngUrl} />
 		{/* ブラウザ互換性のため、.icoファイルを指定 */}
-		<link rel="icon" href="/favicon.ico" sizes="any" />
+		<link rel="icon" href={faviconIcoUrl} sizes="any" />
 		{/* Apple Touch Icon（iOS用） */}
-		<link rel="apple-touch-icon" href="/favicon.png" />
+		<link rel="apple-touch-icon" href={faviconPngUrl} />
 		<meta name="generator" content={Astro.generator} />
 		<!-- Google Search Console 所有権確認 -->
 		<meta name="google-site-verification" content="RQfaisHC2R_v40fW83t8vvKtRv7mZlmhqbKvLl" />
