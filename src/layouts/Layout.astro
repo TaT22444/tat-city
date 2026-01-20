@@ -80,6 +80,9 @@ const faviconIcoUrl = new URL('favicon.ico', Astro.site).href;
 		<link rel="icon" type="image/png" sizes="192x192" href={faviconPngUrl} />
 		<link rel="apple-touch-icon" href={faviconPngUrl} />
 		<link rel="icon" href={faviconIcoUrl} sizes="any" />
+		<!-- Web App Manifest -->
+		<link rel="manifest" href="/site.webmanifest" />
+		<meta name="theme-color" content="#ffffff" />
 		<meta name="generator" content={Astro.generator} />
 		<!-- Google Search Console 所有権確認 -->
 		<meta name="google-site-verification" content="RQfaisHC2R_v40fW83t8vvKtRv7mZlmhqbKvLl" />

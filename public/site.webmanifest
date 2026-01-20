@@ -1,0 +1,24 @@
+{
+  "name": "TaT Archive / 2025 ~ 2026",
+  "short_name": "TaT Archive",
+  "description": "Tatsuya Aiharaのポートフォリオサイト",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}
