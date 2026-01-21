@@ -1,0 +1,61 @@
+---
+// 動画コンポーネント - MDXファイルで動画を埋め込むため
+interface Props {
+  src: string;
+  poster?: string; // サムネイル画像（オプション）
+  autoplay?: boolean;
+  loop?: boolean;
+  muted?: boolean;
+  controls?: boolean;
+}
+
+const { 
+  src, 
+  poster,
+  autoplay = false,
+  loop = false,
+  muted = false,
+  controls = true
+} = Astro.props;
+---
+
+<div class="video-container">
+  <video 
+    src={src}
+    poster={poster}
+    autoplay={autoplay}
+    loop={loop}
+    muted={muted}
+    controls={controls}
+    playsinline
+    class="blog-video"
+  >
+    お使いのブラウザは動画タグをサポートしていません。
+  </video>
+</div>
+
+<style is:global>
+  .video-container {
+    width: 100%;
+    margin: 2.5em 0;
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: var(--color-background-gray);
+  }
+
+  .blog-video {
+    width: calc(100% - 96px);
+    height: 100%;
+    display: block;
+    padding: 24px 48px;
+    background-color: var(--color-background-gray);
+  }
+
+  /* レスポンシブ対応 */
+  @media (max-width: 768px) {
+    .video-container {
+      margin: 2em 0;
+      border-radius: 12px;
+    }
+  }
+</style>

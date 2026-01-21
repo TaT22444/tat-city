@@ -1,6 +1,7 @@
 // ブログデータを外部ファイルで管理
 // 表示用の画像はsrc/assetsから、OG画像用はpublicフォルダから
 import orynthThumbImage from '../assets/images/blogs/thumb/blog-orynth-thumb.webp';
+import copipeUsageThumbImage from '../assets/images/blogs/thumb/copipe-main.webp';
 
 export const blogsData = {
   // ブログの詳細情報（説明文）
@@ -13,18 +14,20 @@ export const blogsData = {
   // ブログのタイトル（Markdownのfrontmatterのtitleと一致させる）
   titles: {
     'Orynth': '【Orynthとは？】Solana発の「Web3版Product Hunt」',
-    'copipe-usage': 'Mac専用作業効率AIツール「Copipe」の使い方を徹底解説',
+    'copipe-usage': 'デザイナーやライター、ビジネスマンにおすすめ！Mac専用作業効率AIツール「Copipe」の使い方を徹底解説',
     // 'ui': 'AI時代におけるいいUIとは'
   },
   
   // 表示用画像（AstroのImageコンポーネント用）
   images: {
-    'Orynth': orynthThumbImage
+    'Orynth': orynthThumbImage,
+    'copipe-usage': copipeUsageThumbImage
   },
   
   // OG画像用パス（publicフォルダからの直接パス）
   ogImages: {
-    'Orynth': '/assets/images/blogs/blog-orynth-thumb.webp'
+    'Orynth': '/assets/images/blogs/blog-orynth-thumb.webp',
+    'copipe-usage': '/assets/images/blogs/copipe-usage/copipe-main.webp'
   },
   
   // 公開日（YYYY-MM-DD形式の文字列）
@@ -64,8 +67,8 @@ export const blogsData = {
   },
   
   // ブログ名リスト（表示順序）
-  names: ['Orynth']
-  // names: ['Orynth', 'copipe-usage']
+  // names: ['Orynth']
+  names: ['Orynth', 'copipe-usage']
   // names: ['Orynth', 'ui']
 };
 

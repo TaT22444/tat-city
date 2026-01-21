@@ -9,7 +9,7 @@ import { Image } from 'astro:assets';
 export async function getStaticPaths() {
   const blogs = await getCollection('blogs');
   return blogs.map((blog) => ({
-    params: { blog: blog.id.replace(/\.md$/, '') }
+    params: { blog: blog.id.replace(/\.(md|mdx)$/, '') }
   }));
 }
 
@@ -22,9 +22,9 @@ let blogData = null;
 
 try {
   const blogsContent = await getCollection('blogs');
-  // item.idはファイル名（拡張子付き、例: Orynth.md）なので、拡張子を除いて比較
+  // item.idはファイル名（拡張子付き、例: Orynth.md または copipe-usage.mdx）なので、拡張子を除いて比較
   blogContent = blogsContent.find((item) => {
-    const idWithoutExt = item.id.replace(/\.md$/, '');
+    const idWithoutExt = item.id.replace(/\.(md|mdx)$/, '');
     return idWithoutExt === blogSlug;
   });
   
@@ -76,6 +76,7 @@ try {
   }
 } catch (error) {
   // Content Collectionsが設定されていない場合は無視
+  console.error('Error loading blog content:', error);
 }
 
 // ブログが存在しない場合は404
@@ -614,7 +615,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
   }
 
   .blog-content-body :global(h2) {
-    font-size: 20px;
+    font-size: 22px;
     margin-top: 3.0em;
     margin-bottom: 1em;
     padding-bottom: 0.5em;
@@ -626,13 +627,13 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
   }
 
   .blog-content-body :global(h3) {
-    font-size: 16px;
-    margin-top: 2.8em;
+    font-size: 18px;
+    margin-top: 3.0em;
     margin-bottom: 0.75em;
   }
 
   .blog-content-body :global(h4) {
-    font-size: 16px;
+    font-size: 17px;
     margin-top: 1.5em;
     margin-bottom: 0.5em;
   }
@@ -644,7 +645,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
   }
 
   .blog-content-body :global(h6) {
-    font-size: 14px;
+    font-size: 15px;
     margin-top: 1.5em;
     margin-bottom: 0.5em;
   }
@@ -653,9 +654,9 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
   .blog-content-body :global(p) {
     font-size: 14px;
     font-weight: 500;
-    line-height: 2;
+    line-height: 2.0;
     color: var(--color-text-primary);
-    margin: 0 0 1.5em;
+    margin: 0 0 1em;
   }
 
   .blog-content-body :global(p:last-child) {
@@ -696,7 +697,8 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
   }
 
   /* リンクのスタイル - Xのリンクなども自動的にリンクとして認識される */
-  .blog-content-body :global(a) {
+  /* LinkCardは除外 */
+  .blog-content-body :global(a:not(.link-card)) {
     color: var(--color-text-primary);
     text-decoration: underline;
     text-underline-offset: 2px;
@@ -705,19 +707,20 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     display: inline;
   }
 
-  .blog-content-body :global(a:hover) {
+  .blog-content-body :global(a:not(.link-card):hover) {
     opacity: 0.7;
   }
+
 
   /* 段落内のURLが自動リンクとして認識されるようにする（Astroのデフォルト動作を補完） */
   .blog-content-body :global(p) {
     word-break: break-word;
   }
 
-  /* 画像のスタイル */
-  .blog-content-body :global(img) {
-    width: calc(100% - 80px);
-    padding: 40px;
+  /* 画像のスタイル（LinkCardの画像は除外） */
+  .blog-content-body :global(img:not(.link-card-favicon)) {
+    width: calc(100% - 96px);
+    padding: 24px 48px;
     max-width: 100%;
     height: auto;
     background-color: var(--color-background-gray);
@@ -1208,7 +1211,7 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
       margin-bottom: 0.5em;
     }
 
-    .blog-content-body :global(img) {
+    .blog-content-body :global(img:not(.link-card-favicon)) {
       width: calc(100% - 32px);
       margin: 2em 0;
       padding: 16px;
