@@ -6,7 +6,7 @@ const worksCollection = defineCollection({
     title: z.string().optional(),
     description: z.string().optional(),
     showToc: z.boolean().optional().default(false), // 目次を表示するか
-    tocPosition: z.enum(['before-title', 'after-title', 'after-image', 'before-content']).optional().default('after-title'), // 目次の表示位置
+    tocPosition: z.enum(['before-title', 'after-title', 'after-image', 'before-content', 'before-first-h2']).optional().default('after-title'), // 目次の表示位置
   }),
 });
 
@@ -16,7 +16,7 @@ const blogsCollection = defineCollection({
     title: z.string(),
     description: z.string().optional(),
     showToc: z.boolean().optional().default(false), // 目次を表示するか
-    tocPosition: z.enum(['before-title', 'after-title', 'after-image', 'before-content']).optional().default('after-title'), // 目次の表示位置
+    tocPosition: z.enum(['before-title', 'after-title', 'after-image', 'before-content', 'before-first-h2']).optional().default('after-title'), // 目次の表示位置
   }),
 });
 

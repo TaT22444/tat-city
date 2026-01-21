@@ -6,12 +6,14 @@ export const blogsData = {
   // ブログの詳細情報（説明文）
   descriptions: {
     'Orynth': '【Orynthとは？】個人開発者がプロダクトを公開して「持続的な開発支援」を得られる、Solana発「Web3版Product Hunt」について、日本人ユーザーの事例も紹介しながら解説していきます',
+    'copipe-usage': 'Mac専用作業効率AIツール「Copipe」の使い方を徹底解説',
     // 'ui': 'AI時代におけるいいUIとは'
   },
   
   // ブログのタイトル（Markdownのfrontmatterのtitleと一致させる）
   titles: {
     'Orynth': '【Orynthとは？】Solana発の「Web3版Product Hunt」',
+    'copipe-usage': 'Mac専用作業効率AIツール「Copipe」の使い方を徹底解説',
     // 'ui': 'AI時代におけるいいUIとは'
   },
   
@@ -27,17 +29,20 @@ export const blogsData = {
   
   // 公開日（YYYY-MM-DD形式の文字列）
   publishedDates: {
-    'Orynth': '2026-01-09'
+    'Orynth': '2026-01-09',
+    'copipe-usage': '2026-01-20'
   },
   
   // 最終更新日（YYYY-MM-DD形式の文字列、公開日と同じ場合は省略可能）
   updatedDates: {
-    'Orynth': '2026-01-11'
+    'Orynth': '2026-01-11',
+    'copipe-usage': '2026-01-20'
   },
   
   // カテゴリー/タイプ（複数指定可能）
   types: {
-    'Orynth': ['Orynth', 'Web3', 'プロダクト紹介']
+    'Orynth': ['Orynth', 'Web3', 'プロダクト紹介'],
+    'copipe-usage': ['Copipe', 'AI', '作業効率化']
   },
   
   // 引用先・参考リンク（各ブログごとに配列で管理）
@@ -60,6 +65,7 @@ export const blogsData = {
   
   // ブログ名リスト（表示順序）
   names: ['Orynth']
+  // names: ['Orynth', 'copipe-usage']
   // names: ['Orynth', 'ui']
 };
 

@@ -2,7 +2,7 @@
 title: '【Orynthとは？】Solana発の「Web3版Product Hunt」'
 description: '【Orynthとは？】個人開発者がプロダクトを公開して「持続的な開発支援」を得られる、Solana発「Web3版Product Hunt」について、日本人ユーザーの事例も紹介しながら解説していきます'
 showToc: true
-tocPosition: 'after-image'   # 'after-title' 'before-title', 'after-title', 'after-image', 'before-content'のいずれか
+tocPosition: 'before-first-h2'   # 'before-title', 'after-title', 'after-image', 'before-content', 'before-first-h2'のいずれか
 ---
 
 今、Xで話題になっているSolana発のプラットフォーム「Orynth」について、その仕組みや特徴、実際に参入している日本人の事例や利用にあたっての注意点などをまとめました。

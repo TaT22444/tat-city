@@ -334,6 +334,30 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
           </nav>
         )}
 
+        <!-- 目次（before-first-h2位置：JavaScriptで動的に挿入） -->
+        {blogData?.showToc && blogData.tocPosition === 'before-first-h2' && blogData.headings && blogData.headings.length > 0 && (
+          <nav class="blog-toc blog-toc-before-first-h2" id="blogTocBeforeFirstH2" aria-label="目次" style="display: none;">
+            <div class="blog-toc-header">
+              <button class="blog-toc-accordion" aria-label="目次を開閉" aria-expanded="false">
+                <svg class="toc-icon-up" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 5.29688L11.8564 9.14987L11.1494 9.85787L8.00244 6.71087L4.85644 9.85787L4.14844 9.14987L8.00244 5.29688Z" fill="currentColor"/>
+                </svg>
+                <svg class="toc-icon-down" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M8.00244 10.7031L4.14844 6.85013L4.85644 6.14213L8.00244 9.28913L11.1494 6.14213L11.8564 6.85013L8.00244 10.7031Z" fill="currentColor"/>
+                </svg>
+              </button>
+              <p class="blog-toc-title">目次</p>
+            </div>
+            <ul class="blog-toc-list">
+              {blogData.headings.map((heading) => (
+                <li class={`toc-item toc-item-h${heading.level}`}>
+                  <a href={`#${heading.id}`} class="toc-link">{heading.text}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
         <!-- 本文（Markdownコンテンツ） -->
         {blogData?.Content && (
           <div class="blog-content-body" data-headings={JSON.stringify(blogData.headings || [])}>
@@ -801,6 +825,11 @@ const blogImageFullUrl = ogImagePath && ogImagePath.trim() !== ''
     border: 1px solid var(--color-border-light);
     border-radius: 12px;
     transition: max-height 0.2s ease-out;
+  }
+
+  /* 本文内に挿入された目次（before-first-h2） */
+  .blog-content-body :global(.blog-toc-before-first-h2) {
+    margin: 2.5em 0;
   }
 
   .blog-toc.is-open {

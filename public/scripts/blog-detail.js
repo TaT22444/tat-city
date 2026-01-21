@@ -1,3 +1,36 @@
+// 目次を最初のh2の前に挿入する機能
+(function() {
+  function moveTocBeforeFirstH2() {
+    const toc = document.getElementById('blogTocBeforeFirstH2');
+    if (!toc) return;
+    
+    const blogContentBody = document.querySelector('.blog-content-body');
+    if (!blogContentBody) return;
+    
+    // 最初のh2要素を探す
+    const firstH2 = blogContentBody.querySelector('h2');
+    if (!firstH2) {
+      // h2が見つからない場合は、本文の最初に挿入
+      blogContentBody.insertBefore(toc, blogContentBody.firstChild);
+    } else {
+      // 最初のh2の前に挿入
+      firstH2.parentNode.insertBefore(toc, firstH2);
+    }
+    
+    // 目次を表示
+    toc.style.display = 'block';
+  }
+  
+  // DOMContentLoaded後に実行
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(moveTocBeforeFirstH2, 100);
+    });
+  } else {
+    setTimeout(moveTocBeforeFirstH2, 100);
+  }
+})();
+
 // Xの埋め込みを初期化する前に、data-width属性を設定
 (function() {
   function setupXEmbeds() {
