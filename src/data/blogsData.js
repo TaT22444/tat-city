@@ -14,7 +14,7 @@ export const blogsData = {
   // ブログのタイトル（Markdownのfrontmatterのtitleと一致させる）
   titles: {
     'Orynth': '【Orynthとは？】Solana発の「Web3版Product Hunt」',
-    'copipe-usage': 'デザイナーやライター、ビジネスマンにおすすめ！Mac専用作業効率AIツール「Copipe」の使い方を徹底解説',
+    'copipe-usage': 'デザイナーやライターなど社会人から学生までおすすめ！デザイナーやライター、ビジネスマンにおすすめ！Mac専用作業効率AIツール「Copipe」の使い方を徹底解説',
     // 'ui': 'AI時代におけるいいUIとは'
   },
   
