@@ -6,7 +6,7 @@ import copipeUsageThumbImage from '../assets/images/blogs/thumb/copipe-main.webp
 export const blogsData = {
   // ブログの詳細情報（説明文）
   descriptions: {
-    'Orynth': '【Orynthとは？】個人開発者がプロダクトを公開して「持続的な開発支援」を得られる、Solana上で動くWeb3版Product Hunt、「Orynth」について、日本人ユーザーの事例も紹介しながら解説していきます',
+    'Orynth': '個人開発者がプロダクトを公開して「持続的な開発支援」を得られる、Solana上で動くWeb3版Product Hunt、「Orynth」について、日本人ユーザーの事例も紹介しながら解説していきます',
     'copipe-usage': 'Mac専用作業効率AIツール「Copipe」の使い方を徹底解説',
     // 'ui': 'AI時代におけるいいUIとは'
   },
