@@ -330,7 +330,9 @@
       // 初期状態を設定
       const tocNav = button.closest('.blog-toc');
       if (tocNav) {
-        button.setAttribute('aria-expanded', 'false');
+        // デフォルトで開いた状態にする
+        tocNav.classList.add('is-open');
+        button.setAttribute('aria-expanded', 'true');
       }
     });
   }
